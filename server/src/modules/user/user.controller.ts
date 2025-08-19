@@ -23,4 +23,14 @@ export class UserController {
   async getMe(@CurrentUser() user: any): Promise<UserResponseDto> {
     return this.userService.getProfile(user.id);
   }
+
+  @Get("all")
+  async getAllUsers(): Promise<UserResponseDto[]> {
+    return this.userService.getAllUsers();
+  }
+
+  @Get(":id")
+  async getUserById(@Param("id") id: string): Promise<UserResponseDto> {
+    return this.userService.getUserById(id);
+  }
 }
