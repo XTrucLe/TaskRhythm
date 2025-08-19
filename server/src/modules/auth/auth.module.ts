@@ -5,10 +5,11 @@ import { AuthService } from "./services/auth.service";
 import { AuthController } from "./auth.controller";
 import { JwtConfigModule } from "src/config/jwt-config.module";
 import { UserModule } from "../user/user.module";
+import { JwtStrategy } from "./strategies/jwt.strategy";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Auth]), JwtConfigModule, UserModule],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

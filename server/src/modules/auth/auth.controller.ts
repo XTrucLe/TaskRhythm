@@ -1,30 +1,32 @@
-import { Body, Controller, HttpStatus, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { AuthService } from "./services/auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { TokenDto } from "./dto/token.dto";
 
-@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("/register")
-  async register(@Body() registerDto: RegisterDto) {
-    const user = await this.authService.register(registerDto);
-    return { user };
+  async register(@Body() registerDto: RegisterDto): Promise<TokenDto> {
+    const tokens = await this.authService.register(registerDto);
+    return tokens;
   }
 
   @Post("/login")
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<TokenDto> {
     const tokens = await this.authService.login(loginDto);
-    return { tokens };
+    return tokens;
   }
 
-  @Post("/refresh-token")
-  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+  @Post("refresh-token")
+  async refreshToken(
+    @Body() refreshTokenDto: RefreshTokenDto
+  ): Promise<TokenDto> {
+    // Gọi service trả về TokenDto
     const tokens = await this.authService.refreshToken(refreshTokenDto);
-    return { tokens };
+    return tokens;
   }
 }

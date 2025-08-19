@@ -13,6 +13,7 @@ import { RegisterDto } from "../dto/register.dto";
 import { TokenDto } from "../dto/token.dto";
 import { DataSource, Repository } from "typeorm";
 import { UserService } from "src/modules/user/services/user.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,8 @@ export class AuthService {
     private readonly authRepository: Repository<Auth>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly dataSource: DataSource // Assuming you have a DataSource injected for database operations
+    private readonly dataSource: DataSource,
+    private readonly configService: ConfigService
   ) {}
 
   async register(authDto: RegisterDto): Promise<TokenDto> {
@@ -61,6 +63,7 @@ export class AuthService {
   async login(authDto: LoginDto): Promise<TokenDto> {
     const user = await this.authRepository.findOne({
       where: { email: authDto.email },
+      relations: ["user"],
     });
     if (
       !user ||
@@ -73,23 +76,63 @@ export class AuthService {
 
   async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<TokenDto> {
     const { refreshToken } = refreshTokenDto;
-    const payload = this.jwtService.verify(refreshToken);
-    const user = await this.authRepository.findOne({
-      where: { id: payload.id },
-    });
-    if (!user) {
-      throw new UnauthorizedException("Invalid refresh token");
+
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get("REFRESH_TOKEN_SECRET"),
+      });
+    } catch (err) {
+      throw new UnauthorizedException("Invalid or expired refresh token");
     }
-    return this.generateTokens(user);
+
+    // Tìm auth entity kèm relation user và role
+    const auth = await this.authRepository.findOne({
+      where: { user: { id: payload.sub } }, // dùng sub thay vì id
+      relations: ["user", "user.role"],
+    });
+
+    if (!auth || !auth.user) {
+      throw new UnauthorizedException("User associated with token not found");
+    }
+
+    // Tạo token mới
+    return { accessToken: this.generateAccessToken(auth), refreshToken };
   }
 
-  private async generateTokens(user: Auth): Promise<TokenDto> {
-    const accessToken = this.jwtService.sign({ id: user.id });
-    const refreshToken = this.jwtService.sign(
-      { id: user.id },
-      { expiresIn: "7d" }
-    );
+  private async generateTokens(auth: Auth): Promise<TokenDto> {
+    return {
+      accessToken: this.generateAccessToken(auth),
+      refreshToken: this.generateRefreshToken(auth),
+    };
+  }
 
-    return { accessToken, refreshToken };
+  // Tạo access token
+  private generateAccessToken(auth: Auth): string {
+    if (!auth.user || !auth.user.role)
+      throw new Error("User or role not found");
+
+    const payload = {
+      sub: auth.user.id,
+      email: auth.email,
+      role: auth.user.role.name,
+    };
+
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get("JWT_SECRET"),
+      expiresIn: this.configService.get("JWT_EXPIRATION_IN") || "15m",
+    });
+  }
+
+  // Tạo refresh token
+  private generateRefreshToken(auth: Auth): string {
+    if (!auth.user) throw new Error("User not found");
+
+    const payload = { sub: auth.user.id };
+
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get("REFRESH_TOKEN_SECRET"),
+      expiresIn: this.configService.get("REFRESH_TOKEN_EXPIRATION_IN") || "7d",
+    });
   }
 }
