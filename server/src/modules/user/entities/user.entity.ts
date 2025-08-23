@@ -8,10 +8,13 @@ import {
   ManyToOne,
   JoinColumn,
   Index,
+  OneToMany,
 } from "typeorm";
 import { UserGender } from "../constants/user-gender.enum";
 import { Auth } from "src/modules/auth/entities/auth.entity";
 import { Role } from "./role.entity";
+import { WorkspaceMember } from "src/modules/workspace/entities/workspace-member.entity";
+import { WorkspaceInvite } from "src/modules/workspace/entities/workspace-invite.entity";
 
 @Entity("users")
 export class User {
@@ -56,4 +59,13 @@ export class User {
   // Quan hệ 1-1 với Auth (security)
   @OneToOne(() => Auth, (auth) => auth.user, { cascade: true })
   auth!: Auth;
+
+  @OneToMany(() => WorkspaceMember, (member) => member.user)
+  workspaceMembers!: WorkspaceMember[];
+
+  @OneToMany(() => WorkspaceInvite, (invite) => invite.invitedBy)
+  workspaceInvites!: WorkspaceInvite[];
+
+  @OneToMany(() => WorkspaceInvite, (invite) => invite.invitedUser)
+  workspaceInvitesReceived!: WorkspaceInvite[];
 }
