@@ -14,11 +14,11 @@ export class UserService {
     private readonly roleService: RoleService
   ) {}
 
-  async create(dto: CreateUserDto): Promise<UserResponseDto> {
+  async create(dto: CreateUserDto): Promise<User> {
     const role = await this.roleService.getRoleOrDefault(dto.roleName || "");
     const user = this.userRepository.create({ ...dto, role });
     const saved = await this.userRepository.save(user);
-    return this.toResponseDto(saved);
+    return saved;
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
