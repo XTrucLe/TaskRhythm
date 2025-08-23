@@ -63,6 +63,15 @@ export class UserService {
     return this.toResponseDto(user);
   }
 
+  async getUserEntity(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ["role"],
+    });
+    if (!user) throw new NotFoundException(`User with id ${id} not found`);
+    return user;
+  }
+
   private async toResponseDto(user: User): Promise<UserResponseDto> {
     return {
       ...user,
