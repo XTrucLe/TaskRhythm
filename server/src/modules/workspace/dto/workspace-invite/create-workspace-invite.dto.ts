@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsUUID } from "class-validator";
-import { InviteStatus } from "../constants/invite-status.constant";
+import { InviteStatus } from "../../constants/invite-status.constant";
 
 export class CreateWorkspaceInviteDto {
   @IsUUID()
