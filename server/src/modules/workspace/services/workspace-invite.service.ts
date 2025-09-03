@@ -5,7 +5,6 @@ import { UserService } from "src/modules/user/services/user.service";
 import { WorkspaceService } from "./workspace.service";
 import { WorkspaceInvite } from "../entities/workspace-invite.entity";
 import { WorkspaceMemberService } from "./workspace-member.service";
-import { WorkspaceMemberPolicy } from "../policies/workspace-member.policy";
 import { InviteStatus } from "../constants/invite-status.constant";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
 
@@ -31,12 +30,6 @@ export class WorkspaceInviteService {
     if (isMember) {
       throw new ConflictException("User is already a member of the workspace");
     }
-
-    const inviterContext = await this.workspaceMemberService.getMemberContext(
-      inviterId
-    );
-
-    WorkspaceMemberPolicy.canInviteMember(inviterContext);
 
     const existingInvite = await this.InviteRepo.findOne({
       where: { workspace: { id: workspaceId }, invitedUserId: invitedId },

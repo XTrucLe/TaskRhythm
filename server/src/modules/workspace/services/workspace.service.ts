@@ -12,6 +12,9 @@ import { Workspace } from "../entities/workspace.entity";
 import { CreateWorkspaceDto, UpdateWorkspaceDto } from "../dto";
 import { WorkspaceMemberService } from "./workspace-member.service";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
+import { DataSource } from "typeorm";
+import { PolicyService } from "./policy.service";
+import { WorkspaceAction } from "../constants/workspace_action.constant";
 
 @Injectable()
 export class WorkspaceService {
@@ -19,48 +22,73 @@ export class WorkspaceService {
     @InjectRepository(Workspace)
     private readonly workspaceRepository: Repository<Workspace>,
     @Inject(forwardRef(() => WorkspaceMemberService))
-    private readonly workspaceMemberService: WorkspaceMemberService
+    private readonly workspaceMemberService: WorkspaceMemberService,
+    private dataSource: DataSource
   ) {}
 
   async createWorkspace(
     createWorkspaceDto: CreateWorkspaceDto,
     currentUserId: string
   ): Promise<Workspace> {
-    if (
-      await this.workspaceRepository.findOne({
+    return await this.dataSource.transaction(async (manager) => {
+      const exists = await this.workspaceRepository.exists({
         where: { name: createWorkspaceDto.name },
-      })
-    ) {
-      throw new ConflictException(
-        `Workspace with name ${createWorkspaceDto.name} already exists`
+      });
+      if (exists) {
+        throw new ConflictException(
+          `Workspace with name ${createWorkspaceDto.name} already exists`
+        );
+      }
+
+      const workspace = this.workspaceRepository.create(createWorkspaceDto);
+      const save = await this.workspaceRepository.save({
+        ...workspace,
+        ownerId: currentUserId,
+      });
+
+      await this.workspaceMemberService.addMember(
+        {
+          userId: currentUserId,
+          workspaceId: save.id,
+          role: WorkspaceRole.LEADER,
+        },
+        manager
       );
-    }
 
-    const workspace = this.workspaceRepository.create(createWorkspaceDto);
-    const save = await this.workspaceRepository.save({
-      ...workspace,
-      ownerId: currentUserId,
+      return { ...save, totalMembers: 1 };
     });
-
-    await this.workspaceMemberService.addMember({
-      userId: currentUserId,
-      workspaceId: save.id,
-      role: WorkspaceRole.LEADER,
-    });
-
-    return { ...save, totalMembers: 1 };
   }
 
   async updateWorkspace(
-    id: string,
-    updateWorkspaceDto: UpdateWorkspaceDto
+    workspaceId: string,
+    updateWorkspaceDto: UpdateWorkspaceDto,
+    currentUserId: string
   ): Promise<Workspace> {
+    const member = await this.workspaceMemberService.getMemberById(
+      currentUserId,
+      workspaceId
+    );
+    if (!member) {
+      throw new ForbiddenException(`You are not a member of this workspace`);
+    }
+
+    const isAllowed = PolicyService.can(
+      member?.role,
+      WorkspaceAction.UPDATE_WORKSPACE_INFO,
+      member.permissions
+    );
+    if (!isAllowed) {
+      throw new ForbiddenException(
+        `You do not have permission to update this workspace`
+      );
+    }
+
     const workspace = await this.workspaceRepository.findOne({
-      where: { id },
+      where: { id: workspaceId },
     });
 
     if (!workspace) {
-      throw new NotFoundException(`Workspace ${id} not found`);
+      throw new NotFoundException(`Workspace ${workspaceId} not found`);
     }
 
     Object.assign(workspace, updateWorkspaceDto);
@@ -69,18 +97,32 @@ export class WorkspaceService {
     return updated;
   }
 
-  async deleteWorkspace(id: string, userId: string): Promise<void> {
+  async deleteWorkspace(workspaceId: string, userId: string): Promise<void> {
+    const member = await this.workspaceMemberService.getMemberById(
+      userId,
+      workspaceId
+    );
+    if (!member) {
+      throw new ForbiddenException(`You are not a member of this workspace`);
+    }
+
+    const isAllowed = PolicyService.can(
+      member?.role,
+      WorkspaceAction.DELETE_WORKSPACE,
+      member.permissions
+    );
+    if (!isAllowed) {
+      throw new ForbiddenException(
+        `You do not have permission to delete this workspace`
+      );
+    }
+
     const workspace = await this.workspaceRepository.findOne({
-      where: { id },
+      where: { id: workspaceId },
       relations: ["owner"],
     });
     if (!workspace) {
-      throw new NotFoundException(`Workspace ${id} not found`);
-    }
-    if (workspace.ownerId !== userId) {
-      throw new ForbiddenException(
-        `You are not allowed to delete this workspace`
-      );
+      throw new NotFoundException(`Workspace ${workspaceId} not found`);
     }
     await this.workspaceRepository.remove(workspace);
   }
@@ -94,17 +136,6 @@ export class WorkspaceService {
     }
     return workspace;
   }
-
-  async getWorkspaceEntity(id: string): Promise<Workspace> {
-    const workspace = await this.workspaceRepository.findOne({
-      where: { id },
-    });
-    if (!workspace) {
-      throw new NotFoundException(`Workspace ${id} not found`);
-    }
-    return workspace;
-  }
-
   async getAllWorkspaces(): Promise<Workspace[]> {
     const workspaces = await this.workspaceRepository.find();
     return workspaces;

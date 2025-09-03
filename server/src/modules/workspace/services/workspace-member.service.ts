@@ -7,14 +7,12 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { EntityManager, Repository } from "typeorm";
 import { WorkspaceMember } from "../entities/workspace-member.entity";
-import { CreateWorkspaceMemberDto, WorkspaceMemberResponseDto } from "../dto";
+import { CreateWorkspaceMemberDto } from "../dto";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
 import { UserService } from "src/modules/user/services/user.service";
 import { WorkspaceService } from "./workspace.service";
-import { WorkspaceMemberPolicy } from "../policies/workspace-member.policy";
-import { WorkspaceMemberPolicyContext } from "../policies/workspace.policy-context";
 
 @Injectable()
 export class WorkspaceMemberService {
@@ -27,16 +25,15 @@ export class WorkspaceMemberService {
   ) {}
 
   async addMember(
-    createWorkspaceMemberDto: CreateWorkspaceMemberDto
+    createWorkspaceMemberDto: CreateWorkspaceMemberDto,
+    manager?: EntityManager
   ): Promise<WorkspaceMember> {
     const { userId, workspaceId, role } = createWorkspaceMemberDto;
 
     const user = await this.userService.getUserEntity(userId);
-    const workspace = await this.workspaceService.getWorkspaceEntity(
-      workspaceId
-    );
+    const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
 
-    const existingMember = await this.workspaceMemberRepository.findOne({
+    const existingMember = await this.workspaceMemberRepository.exists({
       where: { user: { id: userId }, workspace: { id: workspaceId } },
     });
 
@@ -52,7 +49,11 @@ export class WorkspaceMemberService {
       role,
     });
 
-    await this.workspaceMemberRepository.save(workspaceMember);
+    const repo = manager
+      ? manager.getRepository(WorkspaceMember)
+      : this.workspaceMemberRepository;
+
+    await repo.save(workspaceMember);
     return workspaceMember;
   }
 
@@ -80,13 +81,6 @@ export class WorkspaceMemberService {
       );
     }
 
-    WorkspaceMemberPolicy.canLeaveWorkspace({
-      userId,
-      role: member.role,
-      permissions: member.permissions,
-      ownerId: member.workspace.ownerId,
-    });
-
     await this.workspaceMemberRepository.remove(member);
   }
 
@@ -106,26 +100,6 @@ export class WorkspaceMemberService {
     });
   }
 
-  async getMemberContext(
-    userId: string
-  ): Promise<WorkspaceMemberPolicyContext> {
-    const member = await this.workspaceMemberRepository.findOne({
-      where: { user: { id: userId } },
-      select: ["id", "role", "permissions"],
-      relations: ["workspace"],
-    });
-    if (!member) {
-      throw new NotFoundException(
-        `Workspace member with user id ${userId} not found`
-      );
-    }
-    return {
-      userId,
-      role: member.role,
-      permissions: member.permissions,
-      ownerId: member.workspace.ownerId,
-    };
-  }
   async updateRole(
     userId: string,
     role: WorkspaceRole
@@ -165,12 +139,6 @@ export class WorkspaceMemberService {
     newOwnerId: string
   ): Promise<void> {
     const member = await this.getMemberById(userId, workspaceId);
-    WorkspaceMemberPolicy.canTransferOwnership({
-      userId,
-      role: member.role,
-      permissions: member.permissions,
-      ownerId: member.workspace.ownerId,
-    });
 
     member.workspace.ownerId = newOwnerId;
     await this.workspaceMemberRepository.save(member);
