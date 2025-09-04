@@ -8,6 +8,7 @@ export enum WorkspaceAction {
 
   // Membership Management
   INVITE_MEMBER = "inviteMember",
+  MANAGE_INVITES = "manageInvites",
   APPROVE_JOIN_REQUEST = "approveJoinRequest",
   REMOVE_MEMBER = "removeMember",
   LEAVE_WORKSPACE = "leaveWorkspace",
