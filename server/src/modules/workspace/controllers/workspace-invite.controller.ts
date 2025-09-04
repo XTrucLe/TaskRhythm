@@ -11,13 +11,15 @@ import { WorkspaceInviteResponseDto } from "../dto";
 import { WorkspaceInviteService } from "../services/workspace-invite.service";
 import { CurrentUser } from "src/common/decoretors/current-user.decorator";
 import { AuthGuard } from "@nestjs/passport";
+import { WorkspaceInviteMapper } from "../mappers/workspace-invite.mapper";
 
 @Controller("workspaces")
 @UseGuards(AuthGuard("jwt"))
 export class WorkspaceInviteController {
-  constructor(
-    private readonly workspaceInviteService: WorkspaceInviteService
-  ) {}
+  private readonly mapper: WorkspaceInviteMapper;
+  constructor(private readonly workspaceInviteService: WorkspaceInviteService) {
+    this.mapper = new WorkspaceInviteMapper();
+  }
 
   @Post("invite/:workspaceId")
   async createInvite(
@@ -47,9 +49,23 @@ export class WorkspaceInviteController {
     return { success: true };
   }
 
-  @Get("invites/:userId")
-  async getInvitesForUser(@Param("userId") userId: string): Promise<any> {
-    const invites = await this.workspaceInviteService.getInvitesForUser(userId);
-    return { success: true, data: invites };
+  @Get("invites/getPendingInvites")
+  async getInvitesForUser(
+    @CurrentUser() currentUser: any
+  ): Promise<WorkspaceInviteResponseDto[]> {
+    const invites = await this.workspaceInviteService.getPendingInvites(
+      currentUser?.id
+    );
+    return this.mapper.toDtos(invites);
+  }
+  @Get("invites/workspace/:workspaceId")
+  async getPendingInvitesForWorkspace(
+    @Param("workspaceId") workspaceId: string
+  ): Promise<WorkspaceInviteResponseDto[]> {
+    const invites =
+      await this.workspaceInviteService.getPendingInviteForWorkspace(
+        workspaceId
+      );
+    return this.mapper.toDtos(invites);
   }
 }

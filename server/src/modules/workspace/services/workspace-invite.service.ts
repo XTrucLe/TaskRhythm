@@ -23,7 +23,7 @@ export class WorkspaceInviteService {
     inviterId: string,
     invitedId: string
   ) {
-    const isMember = await this.workspaceMemberService.isMember(
+    const isMember = await this.workspaceMemberService.checkMembership(
       invitedId,
       workspaceId
     );
@@ -49,10 +49,10 @@ export class WorkspaceInviteService {
     await this.InviteRepo.save(invite);
   }
 
-  async getInvitesForUser(userId: string) {
+  async getPendingInvites(userId: string) {
     return this.InviteRepo.find({
-      where: { invitedUserId: userId },
-      relations: ["workspace", "invitedBy"],
+      where: { invitedUserId: userId, status: InviteStatus.PENDING },
+      relations: ["workspace", "invitedBy", "invitedUser"],
     });
   }
 
@@ -85,5 +85,12 @@ export class WorkspaceInviteService {
       invite.status = InviteStatus.DECLINED;
     }
     await this.InviteRepo.save(invite);
+  }
+
+  async getPendingInviteForWorkspace(workspaceId: string) {
+    return this.InviteRepo.find({
+      where: { workspace: { id: workspaceId }, status: InviteStatus.PENDING },
+      relations: ["workspace", "invitedBy", "invitedUser"],
+    });
   }
 }

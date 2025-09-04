@@ -13,6 +13,10 @@ import { CreateWorkspaceMemberDto } from "../dto";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
 import { UserService } from "src/modules/user/services/user.service";
 import { WorkspaceService } from "./workspace.service";
+import { WorkspaceRoleLimit } from "../constants/workspace_role_limit.constant";
+import { PolicyService } from "./policy.service";
+import { WorkspaceAction } from "../constants/workspace_action.constant";
+import { UpdateRoleDto } from "../dto/workspace-member/update-member-role.dto";
 
 @Injectable()
 export class WorkspaceMemberService {
@@ -43,6 +47,17 @@ export class WorkspaceMemberService {
       );
     }
 
+    const roleLimit = WorkspaceRoleLimit[role];
+    const currentMemberCount = await this.workspaceMemberRepository.count({
+      where: { workspace: { id: workspaceId }, role },
+    });
+
+    if (currentMemberCount >= roleLimit) {
+      throw new ForbiddenException(
+        `Cannot add more ${role} members to workspace`
+      );
+    }
+
     const workspaceMember = this.workspaceMemberRepository.create({
       workspace,
       user,
@@ -57,55 +72,78 @@ export class WorkspaceMemberService {
     return workspaceMember;
   }
 
-  async removeMember(actorId: string, id: string): Promise<void> {
-    const workspaceMember = await this.workspaceMemberRepository.findOne({
-      where: { id },
-    });
+  async leaveWorkspace(actorId: string, workspaceId: string): Promise<void> {
+    const actor = await this.getMemberById(actorId, workspaceId);
 
-    if (!workspaceMember) {
-      throw new NotFoundException(`Workspace member with id ${id} not found`);
-    }
+    PolicyService.assertCan(
+      actor.role,
+      WorkspaceAction.LEAVE_WORKSPACE,
+      actor.permissions
+    );
 
-    await this.workspaceMemberRepository.remove(workspaceMember);
+    await this.workspaceMemberRepository.remove(actor);
   }
 
-  async leave(userId: string): Promise<void> {
-    const member = await this.workspaceMemberRepository.findOne({
-      where: { user: { id: userId } },
-      relations: ["workspace"],
-    });
+  async removeMember(
+    actorId: string,
+    targetId: string,
+    workspaceId: string
+  ): Promise<void> {
+    const actor = await this.getMemberById(actorId, workspaceId);
 
-    if (!member) {
-      throw new NotFoundException(
-        `Workspace member with user id ${userId} not found`
-      );
+    PolicyService.assertCan(
+      actor.role,
+      WorkspaceAction.REMOVE_MEMBER,
+      actor.permissions
+    );
+
+    const member = await this.getMemberById(targetId, workspaceId);
+
+    if (member.role === WorkspaceRole.LEADER) {
+      throw new ForbiddenException("Cannot remove the workspace owner");
     }
 
     await this.workspaceMemberRepository.remove(member);
   }
 
-  async isMember(userId: string, workspaceId: string): Promise<boolean> {
-    const member = await this.workspaceMemberRepository.findOne({
-      where: { user: { id: userId }, workspace: { id: workspaceId } },
-      relations: ["user", "workspace"],
-      select: ["id"],
-    });
-    return !!member;
-  }
-
-  async findByWorkspaceId(workspaceId: string): Promise<WorkspaceMember[]> {
-    return this.workspaceMemberRepository.find({
-      where: { workspace: { id: workspaceId } },
-      relations: ["user"],
-    });
-  }
-
-  async updateRole(
-    userId: string,
-    role: WorkspaceRole
+  async changeMemberRole(
+    currentUserId: string,
+    updateRoleDto: UpdateRoleDto
   ): Promise<WorkspaceMember> {
-    // Implementation for updating a member's role in a workspace
-    return new WorkspaceMember();
+    const { targetUserId, role, workspaceId } = updateRoleDto;
+    const actor = await this.getMemberById(currentUserId, workspaceId);
+
+    PolicyService.assertCan(
+      actor.role,
+      WorkspaceAction.UPDATE_MEMBER_ROLE,
+      actor.permissions
+    );
+
+    const member = await this.getMemberById(targetUserId, workspaceId);
+
+    if (member.role === role)
+      throw new ConflictException(`Member is already in ${role} role`);
+
+    await this.validateRoleCapacity(workspaceId, role);
+
+    member.role = role;
+    await this.workspaceMemberRepository.save(member);
+    return member;
+  }
+
+  async transferOwnership(
+    userId: string,
+    workspaceId: string,
+    newOwnerId: string
+  ): Promise<void> {
+    const member = await this.getMemberById(userId, workspaceId);
+    PolicyService.assertCan(
+      member.role,
+      WorkspaceAction.TRANSFER_OWNERSHIP,
+      member.permissions
+    );
+    member.workspace.ownerId = newOwnerId;
+    await this.workspaceMemberRepository.save(member);
   }
 
   async getMemberById(
@@ -117,9 +155,7 @@ export class WorkspaceMemberService {
       relations: ["user", "workspace"],
     });
     if (!member) {
-      throw new NotFoundException(
-        `Workspace member with user id ${userId} and workspace id ${workspaceId} not found`
-      );
+      throw new NotFoundException(`Workspace member not found`);
     }
     return member;
   }
@@ -133,14 +169,34 @@ export class WorkspaceMemberService {
     });
   }
 
-  async transferOwnership(
-    userId: string,
+  async listMembersByRole(
     workspaceId: string,
-    newOwnerId: string
-  ): Promise<void> {
-    const member = await this.getMemberById(userId, workspaceId);
+    role: WorkspaceRole
+  ): Promise<WorkspaceMember[]> {
+    return this.workspaceMemberRepository.find({
+      where: { workspace: { id: workspaceId }, role },
+      relations: ["user"],
+    });
+  }
 
-    member.workspace.ownerId = newOwnerId;
-    await this.workspaceMemberRepository.save(member);
+  async checkMembership(userId: string, workspaceId: string): Promise<boolean> {
+    return this.workspaceMemberRepository.exists({
+      where: { user: { id: userId }, workspace: { id: workspaceId } },
+    });
+  }
+
+  private async validateRoleCapacity(
+    workspaceId: string,
+    role: WorkspaceRole
+  ): Promise<void> {
+    const roleLimit = WorkspaceRoleLimit[role];
+    const currentMemberCount = await this.workspaceMemberRepository.count({
+      where: { workspace: { id: workspaceId }, role },
+    });
+    if (currentMemberCount >= roleLimit) {
+      throw new ForbiddenException(
+        `Cannot promote member to ${role} role because of role limit is ${roleLimit}`
+      );
+    }
   }
 }

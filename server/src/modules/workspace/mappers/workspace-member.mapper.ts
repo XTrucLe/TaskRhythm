@@ -1,16 +1,17 @@
 import { WorkspaceMember } from "../entities/workspace-member.entity";
 import { WorkspaceMemberResponseDto } from "../dto";
+import { plainToInstance } from "class-transformer";
 
 export class WorkspaceMemberMapper {
   toDto(entity: WorkspaceMember): WorkspaceMemberResponseDto {
-    const dto = new WorkspaceMemberResponseDto();
-    dto.id = entity.id;
-    dto.fullName = entity.user.fullName;
-    dto.avatarUrl = entity.user.avatarUrl;
-    dto.email = entity.user.email;
-    dto.role = entity.role;
-    dto.joinedAt = entity.joinedAt;
-    return dto;
+    return plainToInstance(WorkspaceMemberResponseDto, {
+      id: entity.id,
+      fullName: entity.user.fullName,
+      avatarUrl: entity.user.avatarUrl,
+      email: entity.user.email,
+      role: entity.role,
+      joinedAt: entity.joinedAt,
+    });
   }
 
   toDtos(entities: WorkspaceMember[]): WorkspaceMemberResponseDto[] {
