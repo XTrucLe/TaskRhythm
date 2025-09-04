@@ -3,8 +3,10 @@ import {
   Controller,
   Get,
   Param,
-  Patch,
   Post,
+  Delete,
+  Patch,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { WorkspaceInviteResponseDto } from "../dto";
@@ -12,60 +14,81 @@ import { WorkspaceInviteService } from "../services/workspace-invite.service";
 import { CurrentUser } from "src/common/decoretors/current-user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { WorkspaceInviteMapper } from "../mappers/workspace-invite.mapper";
+import { InviteStatus } from "../constants/invite-status.constant";
 
-@Controller("workspaces")
+@Controller("workspaces/:workspaceId/invites")
 @UseGuards(AuthGuard("jwt"))
 export class WorkspaceInviteController {
-  private readonly mapper: WorkspaceInviteMapper;
-  constructor(private readonly workspaceInviteService: WorkspaceInviteService) {
-    this.mapper = new WorkspaceInviteMapper();
-  }
+  constructor(
+    private readonly inviteService: WorkspaceInviteService,
+    private readonly mapper: WorkspaceInviteMapper
+  ) {}
 
-  @Post("invite/:workspaceId")
-  async createInvite(
+  @Post()
+  async sendInvite(
+    @CurrentUser("id") userId: string,
     @Param("workspaceId") workspaceId: string,
-    @Body("inviterId") inviterId: string,
-    @Body("invitedId") invitedId: string
-  ): Promise<any> {
-    await this.workspaceInviteService.createInvite(
+    @Body("invitedUserId") invitedUserId: string
+  ) {
+    const invite = await this.inviteService.sendInvite(
       workspaceId,
-      inviterId,
-      invitedId
+      userId,
+      invitedUserId
     );
-    return { success: true };
+    return { message: "Invite sent successfully", invite };
   }
 
-  @Patch("invite/respond/:inviteId")
-  async respondToInvite(
-    @Param("inviteId") inviteId: string,
-    @CurrentUser() currentUser: any,
-    @Body("accept") accept: boolean
-  ): Promise<any> {
-    await this.workspaceInviteService.respondToInvite(
-      inviteId,
-      currentUser?.id,
-      accept
-    );
-    return { success: true };
+  @Patch(":inviteId/accept")
+  async acceptInvite(
+    @CurrentUser("id") userId: string,
+    @Param("inviteId") inviteId: string
+  ) {
+    await this.inviteService.acceptInvite(inviteId, userId);
+    return { message: "Invite accepted, joined workspace" };
   }
 
-  @Get("invites/getPendingInvites")
-  async getInvitesForUser(
-    @CurrentUser() currentUser: any
-  ): Promise<WorkspaceInviteResponseDto[]> {
-    const invites = await this.workspaceInviteService.getPendingInvites(
-      currentUser?.id
-    );
-    return this.mapper.toDtos(invites);
+  @Patch(":inviteId/decline")
+  async declineInvite(
+    @CurrentUser("id") userId: string,
+    @Param("inviteId") inviteId: string
+  ) {
+    await this.inviteService.declineInvite(inviteId, userId);
+    return { message: "Invite declined" };
   }
-  @Get("invites/workspace/:workspaceId")
-  async getPendingInvitesForWorkspace(
-    @Param("workspaceId") workspaceId: string
-  ): Promise<WorkspaceInviteResponseDto[]> {
-    const invites =
-      await this.workspaceInviteService.getPendingInviteForWorkspace(
-        workspaceId
-      );
-    return this.mapper.toDtos(invites);
+
+  @Patch(":inviteId/resend")
+  async resendInvite(
+    @CurrentUser("id") userId: string,
+    @Param("inviteId") inviteId: string
+  ) {
+    await this.inviteService.resendInvite(inviteId, userId);
+    return { message: "Invite resent" };
+  }
+
+  @Delete(":inviteId")
+  async cancelInvite(
+    @CurrentUser("id") userId: string,
+    @Param("inviteId") inviteId: string
+  ) {
+    await this.inviteService.cancelInvite(inviteId, userId);
+    return { message: "Invite cancelled" };
+  }
+
+  @Get("/my/pending")
+  async getMyPendingInvites(@CurrentUser("id") userId: string) {
+    const invites = await this.inviteService.getPendingInvitesByUser(userId);
+    return { totalCount: invites.length, items: invites };
+  }
+
+  @Get()
+  async listWorkspaceInvites(
+    @Param("workspaceId") workspaceId: string,
+    @Query("status") status?: InviteStatus
+  ) {
+    const invites = await this.inviteService.listInvitesByWorkspace(
+      workspaceId,
+      status
+    );
+    return { totalCount: invites.length, items: invites };
   }
 }
