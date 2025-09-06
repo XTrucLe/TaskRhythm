@@ -1,27 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { Milestone } from './milestone.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from "typeorm";
+import { Milestone } from "./milestone.entity";
+import { MilestoneActionType } from "../constants/milestone.constant";
 
-@Entity('milestone_history')
+@Entity("milestone_history")
 export class MilestoneHistory {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
   milestoneId!: string;
 
-  @ManyToOne(() => Milestone, milestone => milestone.history)
+  @ManyToOne(() => Milestone, (milestone) => milestone.history)
   milestone!: Milestone;
 
   @Column()
   actorId!: string; // User id who made the change
 
   @Column()
-  actionType!: string; // e.g., 'update', 'create', 'delete', 'status_change'
+  actionType!: MilestoneActionType;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: "json", nullable: true })
   previousValue?: any;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: "json", nullable: true })
   newValue?: any;
 
   @CreateDateColumn()

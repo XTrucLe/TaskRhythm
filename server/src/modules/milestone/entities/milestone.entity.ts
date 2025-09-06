@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Section } from "./section.entity";
 import { MilestoneHistory } from "./milestone-history.entity";
+import { MilestoneStatus } from "../constants/milestone.constant";
 
 @Entity("milestones")
 export class Milestone {
@@ -37,7 +38,7 @@ export class Milestone {
   dueDate?: Date;
 
   @Column({ default: "active" })
-  status!: "active" | "completed" | "archived";
+  status!: MilestoneStatus;
 
   @Column({ type: "int", default: 0 })
   order!: number;
