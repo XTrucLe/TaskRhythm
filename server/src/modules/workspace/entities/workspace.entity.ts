@@ -12,6 +12,7 @@ import { WorkspaceMember } from "./workspace-member.entity";
 import { WorkspaceStatus } from "../constants/workspace-status.constant";
 import { WorkspaceType } from "../constants/workspace-type.constant";
 import { WorkspaceInvite } from "./workspace-invite.entity";
+import { Milestone } from "src/modules/milestone/entities/milestone.entity";
 
 @Entity("workspaces")
 @Index(["ownerId", "name"], { unique: true })
@@ -75,4 +76,7 @@ export class Workspace {
 
   @OneToMany(() => WorkspaceInvite, (invite) => invite.workspace)
   invites!: WorkspaceInvite[];
+
+  @OneToMany(() => Milestone, (milestone) => milestone.workspace)
+  milestones!: Milestone[];
 }
