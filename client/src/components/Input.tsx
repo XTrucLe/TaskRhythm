@@ -44,7 +44,7 @@ export default function Input({
         {leftIcon && <span className="pl-3 text-gray-400">{leftIcon}</span>}
         <input
           className={`
-            flex-1 bg-transparent focus:outline-none ${sizes[size]} ${className} text-gray-900
+            flex-1 bg-transparent focus:outline-none overflow-hidden ${sizes[size]} ${className} text-gray-900
           `}
           {...props}
         />

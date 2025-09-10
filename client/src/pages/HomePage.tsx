@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Card from "../components/Card";
 
 export default function HomePage() {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen container mx-auto">
       {/* Navbar */}
@@ -18,7 +20,9 @@ export default function HomePage() {
             Contact
           </a>
         </nav>
-        <Button variant="primary">Get Started</Button>
+        <Button variant="primary" onClick={() => navigate("/auth")}>
+          Get Started
+        </Button>
       </header>
 
       {/* Hero */}
