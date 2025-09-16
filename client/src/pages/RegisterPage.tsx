@@ -20,17 +20,22 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const onSubmit = (data: RegisterFormValues) => {
     console.log("Register data:", data);
     console.log(errors);
-
     // call API register ở đây
   };
 
   return (
     <div className="space-y-6">
       <CardHeader className="text-center">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+        <h2
+          className="text-3xl font-extrabold 
+          bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] 
+          bg-clip-text text-transparent"
+        >
           Create Account
         </h2>
-        <p className="text-gray-600 mt-2">Join us and start your journey</p>
+        <p className="mt-2 text-[var(--color-text-muted)]">
+          Join us and start your journey
+        </p>
       </CardHeader>
 
       <CardBody className="space-y-4">
@@ -66,15 +71,15 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
         </div>
 
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
+          <label className="block mb-1 text-sm font-medium text-[var(--color-text-primary)]">
             Gender
           </label>
           <select
             defaultValue=""
             {...register("gender")}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 pl-3.5
-               focus:outline-none focus:ring-2 focus:ring-indigo-500
-               text-gray-900 placeholder-gray-400"
+            className="w-full border border-[var(--color-text-muted)] rounded-lg px-3 py-2 pl-3.5
+               focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]
+               text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] bg-white"
           >
             <option value="" disabled hidden>
               Select
@@ -84,7 +89,9 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
             <option value="other">Other</option>
           </select>
           {errors.gender && (
-            <p className="mt-1 text-sm text-red-500">{errors.gender.message}</p>
+            <p className="mt-1 text-sm text-[var(--color-danger)]">
+              {errors.gender.message}
+            </p>
           )}
         </div>
 
@@ -107,28 +114,34 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           <input
             type="checkbox"
             {...register("terms")}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded bg-transparent"
+            className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded bg-transparent"
             id="terms"
           />
-          <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
+          <label
+            htmlFor="terms"
+            className="ml-2 block text-sm text-[var(--color-text-primary)]"
+          >
             I agree to the{" "}
-            <a href="#" className="text-indigo-600 hover:underline">
+            <a href="#" className="text-[var(--color-primary)] hover:underline">
               terms and conditions
             </a>
           </label>
         </div>
         {errors.terms && (
-          <p className="mt-1 text-sm text-red-500">{errors.terms.message}</p>
+          <p className="mt-1 text-sm text-[var(--color-danger)]">
+            {errors.terms.message}
+          </p>
         )}
+
         <Button variant="primary" fullWidth onClick={handleSubmit(onSubmit)}>
           Sign Up
         </Button>
 
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-sm text-[var(--color-text-muted)]">
           Already have an account?{" "}
           <button
             onClick={onSwitch}
-            className="text-indigo-600 hover:underline"
+            className="text-[var(--color-primary)] hover:underline"
           >
             Login
           </button>

@@ -11,20 +11,27 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema), // ✅ kết nối zod với RHF
+    resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = (data: LoginFormValues) => {
     console.log("Login data:", data);
     // call API login ở đây
   };
+
   return (
     <div className="space-y-6">
       <CardHeader className="text-center">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
+        <h2
+          className="text-3xl font-extrabold 
+          bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] 
+          bg-clip-text text-transparent"
+        >
           Welcome Back
         </h2>
-        <p className="text-gray-600 mt-2">Sign in to continue</p>
+        <p className="mt-2 text-[var(--color-text-muted)]">
+          Sign in to continue
+        </p>
       </CardHeader>
 
       <CardBody className="space-y-4">
@@ -48,10 +55,13 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
         </Button>
 
         <div className="relative my-4">
-          <span className="absolute left-1/2 -translate-x-1/2 -top-3 bg-white/50 px-2 text-sm text-gray-600 backdrop-blur">
+          <span
+            className="absolute left-1/2 -translate-x-1/2 -top-3 
+            bg-white px-2 text-sm text-[var(--color-text-muted)]"
+          >
             or continue with
           </span>
-          <div className="border-t border-gray-300/50"></div>
+          <div className="border-t border-[var(--color-text-muted)]/50"></div>
         </div>
 
         <div className="flex gap-3">
@@ -63,11 +73,11 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           </Button>
         </div>
 
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-sm text-[var(--color-text-muted)]">
           Don’t have an account?{" "}
           <button
             onClick={onSwitch}
-            className="text-indigo-600 hover:underline"
+            className="text-[var(--color-primary)] hover:underline"
           >
             Register
           </button>

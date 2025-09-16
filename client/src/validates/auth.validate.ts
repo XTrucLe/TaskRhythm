@@ -29,24 +29,66 @@ export const registerSchema = z
       .email("Invalid email address"),
     phoneNumber: z
       .string()
-      .regex(/^\+?[0-9]{7,15}$/, {
+      .regex(/^\+?[0-9]{8,15}$/, {
         message: "Invalid phone number",
       })
       .optional(),
     dateOfBirth: z
       .string()
-      .refine((date) => {
-        if (!date) return true; // optional field
-        const dob = new Date(date);
-        const today = new Date();
-        const age = today.getFullYear() - dob.getFullYear();
-        const m = today.getMonth() - dob.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-          return age - 1 >= 13;
+      .optional()
+      .superRefine((date, ctx) => {
+        if (!date?.trim()) return; // optional
+
+        // Format: DD-MM-YYYY
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+
+        if (!match) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Format must be DD-MM-YYYY",
+          });
+          return;
         }
-        return age >= 13;
-      }, "You must be at least 13 years old")
-      .optional(),
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [_, y, m, d] = match;
+
+        const day = +d,
+          month = +m,
+          year = +y;
+
+        const today = new Date();
+        if (year < 1900 || year > today.getFullYear()) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Year must be between 1900 and ${today.getFullYear()}`,
+          });
+          return;
+        }
+
+        const dob = new Date(year, month - 1, day);
+
+        if (
+          dob.getFullYear() !== year ||
+          dob.getMonth() !== month - 1 ||
+          dob.getDate() !== day
+        ) {
+          ctx.addIssue({ code: "custom", message: "Invalid date" });
+          return;
+        }
+
+        let age = today.getFullYear() - dob.getFullYear();
+        const md = today.getMonth() - dob.getMonth();
+        if (md < 0 || (md === 0 && today.getDate() < dob.getDate())) age--;
+
+        if (age < 13)
+          ctx.addIssue({
+            code: "custom",
+            message: "Must be at least 13 years old",
+          });
+        if (age > 120)
+          ctx.addIssue({ code: "custom", message: "Age seems unrealistic" });
+      }),
     gender: z.enum(["male", "female", "other"]),
     password: z
       .string()

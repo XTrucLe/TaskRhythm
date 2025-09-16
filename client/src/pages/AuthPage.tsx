@@ -8,12 +8,15 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-100 via-white to-purple-100 px-4">
+    <div
+      className="relative min-h-screen flex items-center justify-center overflow-hidden 
+      bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-surface)] px-4"
+    >
       {/* Shapes background */}
       <motion.div className="absolute inset-0">
         {/* Circle */}
         <motion.div
-          className="absolute w-60 h-60 bg-amber-300 rounded-full "
+          className="absolute w-60 h-60 rounded-full bg-[var(--color-warning)]"
           animate={
             isLogin
               ? { top: "-10%", left: "-10%", scale: 1, opacity: 0.3 }
@@ -24,7 +27,7 @@ export default function AuthPage() {
 
         {/* Square */}
         <motion.div
-          className="absolute w-72 h-72 bg-indigo-400 rounded-lg "
+          className="absolute w-72 h-72 rounded-lg bg-[var(--color-primary)]"
           animate={
             isLogin
               ? { bottom: "-15%", right: "-10%", rotate: 15, opacity: 0.25 }
@@ -33,9 +36,9 @@ export default function AuthPage() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
         />
 
-        {/* Diamond (ẩn một phần, chỉ ló ra) */}
+        {/* Diamond */}
         <motion.div
-          className="absolute w-56 h-56 bg-indigo-200 rotate-45 "
+          className="absolute w-56 h-56 rotate-45 bg-[var(--color-secondary)]"
           animate={
             isLogin
               ? { top: "40%", right: "0%", opacity: 0.2 }
@@ -46,7 +49,12 @@ export default function AuthPage() {
       </motion.div>
 
       {/* Auth Card */}
-      <Card className="relative z-10 w-full max-w-lg p-8 bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl overflow-hidden">
+      <Card
+        className="relative z-10 w-full max-w-lg p-8 
+        bg-[var(--color-surface)]/70 backdrop-blur-xl 
+        border border-[var(--color-text-muted)]/20 
+        shadow-2xl overflow-hidden"
+      >
         <motion.div
           layout
           className="min-h-[480px]"
