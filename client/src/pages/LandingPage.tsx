@@ -1,9 +1,8 @@
 import Logo from "../components/Logo";
+import { ThemeSwitch } from "../components/ThemeSwitch";
 import useAppNavigation from "../hooks/useAppNavigation";
-import { useTheme } from "../hooks/useTheme";
 
 export default function LandingPage() {
-  const { theme, toggleTheme } = useTheme();
   const { goDashboard } = useAppNavigation();
 
   return (
@@ -43,16 +42,7 @@ export default function LandingPage() {
           >
             Get Started
           </button>
-          <button
-            onClick={() => toggleTheme()}
-            className="px-3 py-2 rounded border"
-            style={{
-              borderColor: "var(--color-text-muted)",
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            {theme == "light" ? "☀️ Light" : "🌙 Dark"}
-          </button>
+          <ThemeSwitch />
         </div>
       </header>
 

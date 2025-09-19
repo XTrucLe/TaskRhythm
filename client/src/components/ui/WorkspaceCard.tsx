@@ -1,101 +1,105 @@
 import React from "react";
-import { FiUsers, FiClock } from "react-icons/fi";
-import { CustomAvatar } from "./CustomAvatar"; // avatar component nhỏ gọn
+import { FaCheckCircle, FaFlag, FaTasks, FaUserCheck } from "react-icons/fa";
 
-interface Owner {
+interface Workspace {
+  id: string;
   name: string;
-  avatarUrl?: string;
+  role: string;
+  milestones: number;
+  totalTasks: number;
+  taskAssigned: number;
+  taskCompleted: number;
+  progress: number; // %
 }
 
-interface WorkspaceCardProps {
-  title: string;
-  description?: string;
-  milestones: string[];
-  owner: Owner;
-  membersCount: number;
-  updatedAt: string; // ISO string
-  status: "Active" | "Archived";
-  onClick?: () => void;
-}
-
-export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({
-  title,
-  description,
-  milestones,
-  owner,
-  membersCount,
-  updatedAt,
-  status,
-  onClick,
-}) => {
-  // format thời gian
-  const formatUpdatedAt = (date: string) => {
-    const diff = Math.floor(
-      (Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return diff === 0 ? "Today" : `${diff}d ago`;
-  };
-
+const WorkspaceCard = React.memo(({ workspace }: { workspace: Workspace }) => {
   return (
-    <div
-      onClick={onClick}
-      className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 cursor-pointer border border-gray-100 flex flex-col justify-between"
-    >
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 p-5 flex flex-col gap-5">
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <h2 className="text-base font-semibold text-gray-800 truncate pr-2">
-          {title}
-        </h2>
-        <span
-          className={`px-2 py-0.5 text-xs rounded-full font-medium ${
-            status === "Active"
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          {status}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-100 flex items-center justify-center rounded-xl"></div>
+          <h1 className="font-bold text-lg text-gray-900">{workspace.name}</h1>
+        </div>
+        <span className="bg-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow">
+          {workspace.role}
         </span>
       </div>
 
-      {/* Description */}
-      {description && (
-        <p className="text-gray-500 text-sm line-clamp-2 mb-3">{description}</p>
-      )}
-
-      {/* Milestones */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {milestones.slice(0, 3).map((ms, idx) => (
-          <span
-            key={idx}
-            className="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full"
-          >
-            {ms}
-          </span>
-        ))}
-        {milestones.length > 3 && (
-          <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">
-            +{milestones.length - 3} more
-          </span>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-        <div className="flex items-center gap-2">
-          <CustomAvatar src={owner.avatarUrl} alt={owner.name} size={28} />
-          <span className="truncate text-gray-700 text-sm">{owner.name}</span>
+      {/* Stats + Progress */}
+      <div className="flex justify-between items-center gap-4">
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <StatItem
+            label="Milestones"
+            value={workspace.milestones}
+            icon={<FaFlag size={16} />}
+          />
+          <StatItem
+            label="Total Tasks"
+            value={workspace.totalTasks}
+            icon={<FaTasks size={16} />}
+          />
+          <StatItem
+            label="Assigned"
+            value={workspace.taskAssigned}
+            icon={<FaUserCheck size={16} />}
+          />
+          <StatItem
+            label="Completed"
+            value={workspace.taskCompleted}
+            icon={<FaCheckCircle size={16} />}
+          />
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <FiUsers className="w-4 h-4" />
-            {membersCount}
-          </div>
-          <div className="flex items-center gap-1">
-            <FiClock className="w-4 h-4" />
-            {formatUpdatedAt(updatedAt)}
-          </div>
+        {/* Progress */}
+        <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
+          {Array.from({ length: 20 }, (_, index) => {
+            const isActive = index < workspace.progress / 5;
+            const angle = (index / 20) * 360 - 90; // Bắt đầu từ đỉnh
+            const radius = 40;
+
+            const x = radius * Math.cos((angle * Math.PI) / 180);
+            const y = radius * Math.sin((angle * Math.PI) / 180);
+
+            return (
+              <div
+                key={index}
+                className={`absolute w-2 h-2 rounded-full transition-all duration-300 ${
+                  isActive ? "bg-green-500 shadow-md" : "bg-gray-300"
+                }`}
+                style={{
+                  transform: `translate(${x}px, ${y}px)`,
+                }}
+              />
+            );
+          })}
+          <span className="absolute text-center text-xs font-semibold text-gray-700 leading-tight">
+            {workspace.progress}%
+            <br />
+            <span className="text-[10px] font-normal text-gray-500">
+              Progress
+            </span>
+          </span>
         </div>
       </div>
     </div>
   );
-};
+});
+
+interface StatItemProps {
+  label: string;
+  value: number;
+  icon?: React.ReactNode;
+}
+
+const StatItem: React.FC<StatItemProps> = ({ label, value, icon }) => (
+  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 shadow-sm">
+    <div className="text-gray-600 text-lg">{icon}</div>
+    <div className="flex flex-col leading-tight">
+      <span className="text-sm font-bold text-gray-900">{value}</span>
+      <span className="text-xs text-gray-500">{label}</span>
+    </div>
+  </div>
+);
+
+export default WorkspaceCard;

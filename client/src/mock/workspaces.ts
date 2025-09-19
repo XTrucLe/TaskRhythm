@@ -1,0 +1,43 @@
+// src/mock/workspaces.ts
+export const workspacesMockup = [
+  {
+    id: "ws-001",
+    name: "Design Team",
+    role: "Admin",
+    milestones: 12,
+    totalTasks: 120,
+    taskAssigned: 40,
+    taskCompleted: 32,
+    progress: 80,
+  },
+  {
+    id: "ws-002",
+    name: "Development Team",
+    role: "Member",
+    milestones: 8,
+    totalTasks: 200,
+    taskAssigned: 75,
+    taskCompleted: 50,
+    progress: 67,
+  },
+  {
+    id: "ws-003",
+    name: "Marketing",
+    role: "Viewer",
+    milestones: 5,
+    totalTasks: 60,
+    taskAssigned: 15,
+    taskCompleted: 10,
+    progress: 66,
+  },
+  {
+    id: "ws-004",
+    name: "HR & Recruitment",
+    role: "Admin",
+    milestones: 3,
+    totalTasks: 30,
+    taskAssigned: 12,
+    taskCompleted: 9,
+    progress: 75,
+  },
+];

@@ -1,75 +1,60 @@
-import { WorkspaceCard } from "../components/ui/WorkspaceCard";
-import { HeaderAvatar } from "../components/ui/HeaderAvatar";
-import { FiPlusCircle, FiSearch } from "react-icons/fi";
-
-const workspaces = [
-  {
-    id: "w1",
-    title: "Workspace A",
-    description: "Quản lý dự án A cho khách hàng ABC",
-    owner: { name: "John Doe", avatarUrl: "/avatars/john.png" },
-    membersCount: 12,
-    milestones: ["M1", "M2", "M3", "M4"],
-    updatedAt: "2025-09-09T10:00:00Z",
-    status: "Active" as const,
-  },
-  {
-    id: "w2",
-    title: "Workspace B",
-    description: "Nghiên cứu nội bộ cho sản phẩm B",
-    owner: { name: "Jane Smith", avatarUrl: "/avatars/jane.png" },
-    membersCount: 8,
-    milestones: ["M1", "M2"],
-    updatedAt: "2025-09-05T15:30:00Z",
-    status: "Archived" as const,
-  },
-];
+import React from "react";
+import Header from "../components/ui/Header";
+import WorkspaceCard from "../components/ui/WorkspaceCard";
+import { workspacesMockup } from "../mock/workspaces";
+import { useCurrentTime } from "../hooks/useCurrentTime";
 
 function DashboardPage() {
+  const currentTime = useCurrentTime();
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between bg-white shadow-sm px-6 py-3">
-        <div className="font-bold text-lg text-gray-700">TaskRhythm</div>
+    <div>
+      <Header />
+      <main className="p-6 pt-2">
+        {/* Greeting Header */}
+        <GreetingHeader currentTime={currentTime} />
 
-        {/* Search */}
-        <div className="hidden md:flex items-center w-1/3 bg-gray-100 rounded-lg px-3 py-1">
-          <FiSearch className="text-gray-400 mr-2" />
-          <input
-            type="text"
-            placeholder="Search workspaces..."
-            className="flex-1 bg-transparent outline-none text-sm text-gray-600"
-          />
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
-            <FiPlusCircle /> New Workspace
-          </button>
-          <HeaderAvatar alt="John Doe" />
-        </div>
-      </div>
-
-      {/* Workspace Cards */}
-      <div className="flex-1 p-6 overflow-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {workspaces.map((ws) => (
-            <WorkspaceCard
-              key={ws.id}
-              title={ws.title}
-              description={ws.description}
-              milestones={ws.milestones}
-              owner={ws.owner}
-              membersCount={ws.membersCount}
-              updatedAt={ws.updatedAt}
-              status={ws.status}
-            />
-          ))}
-        </div>
-      </div>
+        {/* Workspace Section */}
+        <section>
+          <h3 className="text-xl font-semibold mb-4">Your Workspaces</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  gap-6">
+            {workspacesMockup.map((workspace) => (
+              <WorkspaceCard key={workspace.id} workspace={workspace} />
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
+
+interface GreetingHeaderProps {
+  currentTime: Date;
+}
+
+const GreetingHeader = React.memo(({ currentTime }: GreetingHeaderProps) => {
+  return (
+    <div className="flex w-full justify-between items-center mb-8 mt-3">
+      <div>
+        <h2 className="text-3xl font-bold">Welcome back!</h2>
+        <p className="text-gray-500 ml-1">
+          {currentTime.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+          {" • "}
+          {currentTime.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
+      </div>
+      <button className="bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded-md font-medium shadow transition">
+        + New Workspace
+      </button>
+    </div>
+  );
+});
 
 export default DashboardPage;
