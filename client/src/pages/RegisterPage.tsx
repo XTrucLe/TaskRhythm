@@ -1,12 +1,13 @@
-import Button from "../components/Button";
-import { CardBody, CardHeader } from "../components/Card";
-import Input from "../components/Input";
+import { CardBody, CardHeader } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import Input from "../components/ui/Input";
 import { useForm } from "react-hook-form";
 import {
   registerSchema,
   type RegisterFormValues,
 } from "../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Select from "../components/ui/Select";
 
 export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   const {
@@ -70,30 +71,18 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           />
         </div>
 
-        <div>
-          <label className="block mb-1 text-sm font-medium text-[var(--color-text-primary)]">
-            Gender
-          </label>
-          <select
-            defaultValue=""
-            {...register("gender")}
-            className="w-full border border-[var(--color-text-muted)] rounded-lg px-3 py-2 pl-3.5
-               focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]
-               text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] bg-white"
-          >
-            <option value="" disabled hidden>
-              Select
-            </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          {errors.gender && (
-            <p className="mt-1 text-sm text-[var(--color-danger)]">
-              {errors.gender.message}
-            </p>
-          )}
-        </div>
+        <Select
+          label="Gender"
+          {...register("gender")}
+          error={errors.gender?.message}
+        >
+          <option value="" disabled hidden>
+            Select
+          </option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </Select>
 
         <Input
           label="Password"
@@ -114,7 +103,7 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           <input
             type="checkbox"
             {...register("terms")}
-            className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded bg-transparent"
+            className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded "
             id="terms"
           />
           <label
@@ -133,7 +122,7 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           </p>
         )}
 
-        <Button variant="primary" fullWidth onClick={handleSubmit(onSubmit)}>
+        <Button onClick={handleSubmit(onSubmit)} className="w-full">
           Sign Up
         </Button>
 

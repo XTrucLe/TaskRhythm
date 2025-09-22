@@ -1,6 +1,6 @@
-import Button from "../components/Button";
-import { CardBody, CardHeader } from "../components/Card";
-import Input from "../components/Input";
+import { CardBody, CardHeader } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import Input from "../components/ui/Input";
 import { useForm } from "react-hook-form";
 import { loginSchema, type LoginFormValues } from "../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,14 +50,19 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           error={errors.password?.message as string}
         />
 
-        <Button variant="primary" fullWidth onClick={handleSubmit(onSubmit)}>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          variant="primary"
+          size="lg"
+          className="w-full"
+        >
           Sign In
         </Button>
 
         <div className="relative my-4">
           <span
             className="absolute left-1/2 -translate-x-1/2 -top-3 
-            bg-white px-2 text-sm text-[var(--color-text-muted)]"
+            bg-[var(--color-background)] px-2 text-sm text-[var(--color-text-muted)]"
           >
             or continue with
           </span>
@@ -65,10 +70,10 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" fullWidth>
+          <Button variant="outline" className="flex-1">
             Google
           </Button>
-          <Button variant="outline" fullWidth>
+          <Button variant="outline" className="flex-1">
             GitHub
           </Button>
         </div>

@@ -15,7 +15,7 @@ export default function Input({
   helperText,
   leftIcon,
   rightIcon,
-  size = "md" as keyof InputProps["size"],
+  size,
   className = "",
   ...props
 }: InputProps) {
@@ -28,26 +28,17 @@ export default function Input({
   return (
     <div className="w-full">
       {label && (
-        <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-600">
-          {label}
-        </label>
+        <label className="block mb-1 text-sm font-medium">{label}</label>
       )}
 
-      <div
-        className={`
-          flex items-center w-full rounded-lg border 
-          ${error ? "border-red-500" : "border-gray-300 dark:border-gray-600"} 
-          focus-within:ring-2 focus-within:ring-indigo-500 
-          bg-white
-        `}
-      >
+      <div className={`input-base ${error ? "input-error" : ""}`}>
         {leftIcon && <span className="pl-3 text-gray-400">{leftIcon}</span>}
+
         <input
-          className={`
-            flex-1 bg-transparent focus:outline-none overflow-hidden ${sizes[size]} ${className} text-gray-900
-          `}
+          className={`input-field ${sizes[size || "md"]} ${className}`}
           {...props}
         />
+
         {rightIcon && <span className="pr-3 text-gray-400">{rightIcon}</span>}
       </div>
 

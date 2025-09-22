@@ -14,7 +14,7 @@ export default function Logo({ className = "", size = 80 }: LogoProps) {
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`banned-select ${className}`}
     >
       <text
         x={width * 0.04}

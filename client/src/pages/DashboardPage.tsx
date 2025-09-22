@@ -50,9 +50,7 @@ const GreetingHeader = React.memo(({ currentTime }: GreetingHeaderProps) => {
           })}
         </p>
       </div>
-      <button className="bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded-md font-medium shadow transition">
-        + New Workspace
-      </button>
+      <button className="btn btn-primary">+ New Workspace</button>
     </div>
   );
 });

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Card from "../components/Card";
+import Card from "../components/ui/Card";
 import LoginForm from "./LoginPage";
 import RegisterForm from "./RegisterPage";
 
@@ -9,8 +9,8 @@ export default function AuthPage() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center overflow-hidden 
-      bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-surface)] px-4"
+      className=" banned-select relative min-h-screen flex items-center justify-center overflow-hidden 
+      bg-gradient-to-br from-[var(--color-surface)] via-[var(--color-background)] to-[var(--color-surface)] px-4 my-2"
     >
       {/* Shapes background */}
       <motion.div className="absolute inset-0">

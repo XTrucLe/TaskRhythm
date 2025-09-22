@@ -14,14 +14,16 @@ interface Workspace {
 
 const WorkspaceCard = React.memo(({ workspace }: { workspace: Workspace }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 p-5 flex flex-col gap-5">
+    <div className="bg-[var(--color-card-bg)] rounded-2xl shadow-lg border border-[var(--color-card-border)] hover:shadow-2xl transition-all duration-300 p-5 flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-100 flex items-center justify-center rounded-xl"></div>
-          <h1 className="font-bold text-lg text-gray-900">{workspace.name}</h1>
+          <div className="w-10 h-10 bg-[var(--color-primary-opacity-20)] flex items-center justify-center rounded-xl"></div>
+          <h1 className="font-bold text-lg text-[var(--color-text-primary)]">
+            {workspace.name}
+          </h1>
         </div>
-        <span className="bg-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow">
+        <span className="bg-[var(--color-primary-light)] text-[var(--color-text-inverse)] text-xs font-semibold px-3 py-1 rounded-full shadow">
           {workspace.role}
         </span>
       </div>
@@ -65,7 +67,9 @@ const WorkspaceCard = React.memo(({ workspace }: { workspace: Workspace }) => {
               <div
                 key={index}
                 className={`absolute w-2 h-2 rounded-full transition-all duration-300 ${
-                  isActive ? "bg-green-500 shadow-md" : "bg-gray-300"
+                  isActive
+                    ? "bg-[var(--color-success)] shadow-md"
+                    : "bg-[var(--color-neutral-300)]"
                 }`}
                 style={{
                   transform: `translate(${x}px, ${y}px)`,
@@ -73,10 +77,10 @@ const WorkspaceCard = React.memo(({ workspace }: { workspace: Workspace }) => {
               />
             );
           })}
-          <span className="absolute text-center text-xs font-semibold text-gray-700 leading-tight">
+          <span className="absolute text-center text-xs font-semibold text-[var(--color-text-secondary)] leading-tight">
             {workspace.progress}%
             <br />
-            <span className="text-[10px] font-normal text-gray-500">
+            <span className="text-[10px] font-normal text-[var(--color-text-muted)]">
               Progress
             </span>
           </span>
@@ -93,11 +97,13 @@ interface StatItemProps {
 }
 
 const StatItem: React.FC<StatItemProps> = ({ label, value, icon }) => (
-  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 shadow-sm">
-    <div className="text-gray-600 text-lg">{icon}</div>
+  <div className="flex items-center gap-2 bg-[var(--color-neutral-50)] rounded-lg px-3 py-2 shadow-sm">
+    <div className="text-[var(--color-text-muted)] text-lg">{icon}</div>
     <div className="flex flex-col leading-tight">
-      <span className="text-sm font-bold text-gray-900">{value}</span>
-      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-sm font-bold text-[var(--color-text-primary)]">
+        {value}
+      </span>
+      <span className="text-xs text-[var(--color-text-muted)]">{label}</span>
     </div>
   </div>
 );

@@ -1,8 +1,8 @@
 import { FiBell } from "react-icons/fi";
-import Logo from "../Logo";
-import { SearchBox } from "../SearchBox";
-import { ThemeSwitch } from "../ThemeSwitch";
-import { Badge } from "../Badge";
+import Logo from "./Logo";
+import { SearchBox } from "./SearchBox";
+import { ThemeSwitch } from "./ThemeSwitch";
+import { Badge } from "./Badge";
 import { Avatar } from "./Avatar";
 
 interface HeaderProps {

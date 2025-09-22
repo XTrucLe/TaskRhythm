@@ -1,0 +1,90 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  outline: none;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 2px var(--color-focus);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.75rem; /* px-3 py-1 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.btn-md {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.btn-lg {
+  padding: 0.75rem 1.25rem; /* px-5 py-3 */
+  font-size: 1rem; /* text-base */
+}
+
+.btn-primary {
+  background-color: var(--color-button-primary-bg);
+  color: var(--color-button-primary-text);
+}
+.btn-primary:hover {
+  background-color: var(--color-button-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-button-secondary-bg);
+  color: var(--color-button-secondary-text);
+}
+.btn-secondary:hover {
+  background-color: var(--color-button-secondary-hover);
+}
+
+.btn-success {
+  background-color: var(--color-button-success-bg);
+  color: var(--color-button-success-text);
+}
+.btn-success:hover {
+  background-color: var(--color-button-success-hover);
+}
+
+.btn-warning {
+  background-color: var(--color-button-warning-bg);
+  color: var(--color-button-warning-text);
+}
+.btn-warning:hover {
+  background-color: var(--color-button-warning-hover);
+}
+
+.btn-danger {
+  background-color: var(--color-button-danger-bg);
+  color: var(--color-button-danger-text);
+}
+.btn-danger:hover {
+  background-color: var(--color-button-danger-hover);
+}
+
+.btn-outline {
+  background-color: var(--color-button-outline-bg);
+  color: var(--color-button-outline-text);
+  border: 1px solid var(--color-button-outline-border);
+}
+.btn-outline:hover {
+  background-color: var(--color-button-outline-hover);
+}
+
+.btn-ghost {
+  background-color: var(--color-button-ghost-bg);
+  color: var(--color-button-ghost-text);
+}
+.btn-ghost:hover {
+  background-color: var(--color-button-ghost-hover);
+}

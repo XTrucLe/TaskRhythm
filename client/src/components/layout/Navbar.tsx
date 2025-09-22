@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Logo from "../Logo";
+import Logo from "../ui/Logo";
 
 type NavbarItem = { label: string; url?: string; position?: "top" | "bottom" };
 type NavbarProps = { items: NavbarItem[] };
@@ -11,7 +11,7 @@ function Navbar({ items }: NavbarProps) {
   const bottomItems = items.filter((i) => i.position === "bottom");
 
   return (
-    <div className="flex flex-col h-screen w-48 bg-[var(--color-background)] border-r shadow-lg relative">
+    <div className="flex flex-col h-screen w-48 bg-[var(--color-background)] border-r shadow-lg relative banned-select">
       <Logo
         size={50}
         className="w-full h-20 border-b border-[var(--color-border)]"

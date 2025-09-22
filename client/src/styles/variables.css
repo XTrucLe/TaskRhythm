@@ -1,0 +1,388 @@
+/* =============================================
+   LIGHT MODE COLOR SYSTEM (HARMONIZED)
+   ============================================= */
+:root {
+  /* ===== BRAND COLORS ===== */
+  --color-primary: #4f46e5;
+  --color-primary-light: #6366f1;
+  --color-primary-lighter: #8b5cf6;
+  --color-primary-dark: #3730a3;
+  --color-primary-darker: #312e81;
+
+  --color-secondary: #be185d;
+  --color-secondary-light: #db2777;
+  --color-secondary-lighter: #ec4899;
+  --color-secondary-dark: #9f1239;
+  --color-secondary-darker: #831843;
+
+  /* ===== NEUTRAL COLORS (WARM GRAY) ===== */
+  --color-neutral-50: #fafaf9;
+  --color-neutral-100: #f5f5f4;
+  --color-neutral-200: #e7e5e4;
+  --color-neutral-300: #d6d3d1;
+  --color-neutral-400: #a8a29e;
+  --color-neutral-500: #78716c;
+  --color-neutral-600: #57534e;
+  --color-neutral-700: #44403c;
+  --color-neutral-800: #292524;
+  --color-neutral-900: #1c1917;
+
+  /* ===== BACKGROUND & SURFACE ===== */
+  --color-background: #fafaf9;
+  --color-background-secondary: #f5f5f4;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #fafaf9;
+  --color-surface-tertiary: #f5f5f4;
+  --color-surface-elevated: #ffffff;
+
+  /* ===== TEXT COLORS ===== */
+  --color-text-primary: #1c1917;
+  --color-text-secondary: #44403c;
+  --color-text-muted: #78716c;
+  --color-text-disabled: #a8a29e;
+  --color-text-inverse: #ffffff;
+  --color-text-placeholder: #a8a29e;
+
+  /* ===== SEMANTIC COLORS ===== */
+  --color-success: #16a34a;
+  --color-success-light: #22c55e;
+  --color-success-dark: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+
+  --color-warning: #ea580c;
+  --color-warning-light: #f97316;
+  --color-warning-dark: #c2410c;
+  --color-warning-bg: #fff7ed;
+  --color-warning-border: #fed7aa;
+
+  --color-danger: #dc2626;
+  --color-danger-light: #ef4444;
+  --color-danger-dark: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-danger-border: #fecaca;
+
+  --color-info: #0891b2;
+  --color-info-light: #06b6d4;
+  --color-info-dark: #0e7490;
+  --color-info-bg: #f0f9ff;
+  --color-info-border: #bae6fd;
+
+  /* ===== BORDER COLORS ===== */
+  --color-border-light: #e7e5e4;
+  --color-border-default: #d6d3d1;
+  --color-border-strong: #a8a29e;
+  --color-border-inverse: #57534e;
+
+  /* ===== INTERACTIVE STATES ===== */
+  --color-hover: #f5f5f4;
+  --color-hover-strong: #e7e5e4;
+  --color-active: #d6d3d1;
+  --color-focus: #4f46e5;
+  --color-disabled-bg: #f5f5f4;
+  --color-disabled-text: #a8a29e;
+
+  /* ===== COMPONENT SPECIFIC ===== */
+  --color-card-bg: #ffffff;
+  --color-card-border: #e7e5e4;
+  --color-card-shadow: color-mix(in srgb, #1c1917 8%, transparent);
+
+  --color-header-bg: #ffffff;
+  --color-header-border: #e7e5e4;
+  --color-header-text: #1c1917;
+
+  --color-sidebar-bg: #fafaf9;
+  --color-sidebar-active: #4f46e5;
+  --color-sidebar-hover: #f5f5f4;
+
+  --color-input-border: #d6d3d1;
+  --color-input-border-focus: #4f46e5;
+  --color-input-placeholder: #a8a29e;
+
+  /* ===== BUTTON COLORS ===== */
+  --color-button-primary-bg: #4f46e5;
+  --color-button-primary-text: #ffffff;
+  --color-button-primary-hover: #3730a3;
+
+  --color-button-secondary-bg: #be185d;
+  --color-button-secondary-text: #ffffff;
+  --color-button-secondary-hover: #9f1239;
+
+  --color-button-success-bg: #16a34a;
+  --color-button-success-text: #ffffff;
+  --color-button-success-hover: #15803d;
+
+  --color-button-warning-bg: #ea580c;
+  --color-button-warning-text: #ffffff;
+  --color-button-warning-hover: #c2410c;
+
+  --color-button-danger-bg: #dc2626;
+  --color-button-danger-text: #ffffff;
+  --color-button-danger-hover: #b91c1c;
+
+  --color-button-outline-bg: transparent;
+  --color-button-outline-text: #4f46e5;
+  --color-button-outline-border: #d6d3d1;
+  --color-button-outline-hover: #f5f5f4;
+
+  --color-button-ghost-bg: transparent;
+  --color-button-ghost-text: #44403c;
+  --color-button-ghost-hover: #f5f5f4;
+
+  /* ===== OPACITY VARIANTS ===== */
+  --color-primary-opacity-10: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    transparent
+  );
+  --color-primary-opacity-20: color-mix(
+    in srgb,
+    var(--color-primary) 20%,
+    transparent
+  );
+  --color-primary-opacity-50: color-mix(
+    in srgb,
+    var(--color-primary) 50%,
+    transparent
+  );
+
+  --color-secondary-opacity-10: color-mix(
+    in srgb,
+    var(--color-secondary) 10%,
+    transparent
+  );
+  --color-secondary-opacity-20: color-mix(
+    in srgb,
+    var(--color-secondary) 20%,
+    transparent
+  );
+  --color-secondary-opacity-50: color-mix(
+    in srgb,
+    var(--color-secondary) 50%,
+    transparent
+  );
+
+  --color-dark-overlay: color-mix(in srgb, #000000 40%, transparent);
+  --color-light-overlay: color-mix(in srgb, #ffffff 90%, transparent);
+
+  /* ===== GRADIENT VARIANTS ===== */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-light) 100%
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-light) 100%
+  );
+  --gradient-neutral: linear-gradient(
+    135deg,
+    var(--color-neutral-100) 0%,
+    var(--color-neutral-200) 100%
+  );
+
+  /* ===== SHADOW COLORS ===== */
+  --shadow-sm: 0 1px 2px 0
+    color-mix(in srgb, var(--color-neutral-900) 5%, transparent);
+  --shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--color-neutral-900) 10%, transparent),
+    0 2px 4px -1px color-mix(in srgb, var(--color-neutral-900) 6%, transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--color-neutral-900) 10%, transparent),
+    0 4px 6px -2px color-mix(in srgb, var(--color-neutral-900) 5%, transparent);
+  --shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--color-neutral-900) 10%, transparent),
+    0 10px 10px -5px color-mix(in srgb, var(--color-neutral-900) 4%, transparent);
+}
+
+/* =============================================
+   DARK MODE COLOR SYSTEM (HARMONIZED)
+   ============================================= */
+:root.dark {
+  /* ===== BRAND COLORS ===== */
+  --color-primary: #6366f1;
+  --color-primary-light: #8b5cf6;
+  --color-primary-lighter: #a855f7;
+  --color-primary-dark: #4f46e5;
+  --color-primary-darker: #3730a3;
+
+  --color-secondary: #f472b6;
+  --color-secondary-light: #f9a8d4;
+  --color-secondary-lighter: #fbcfe8;
+  --color-secondary-dark: #ec4899;
+  --color-secondary-darker: #db2777;
+
+  /* ===== NEUTRAL COLORS (COOL SLATE) ===== */
+  --color-neutral-50: #0c1222;
+  --color-neutral-100: #161b2e;
+  --color-neutral-200: #242c42;
+  --color-neutral-300: #374151;
+  --color-neutral-400: #6b7280;
+  --color-neutral-500: #9ca3af;
+  --color-neutral-600: #d1d5db;
+  --color-neutral-700: #e5e7eb;
+  --color-neutral-800: #f3f4f6;
+  --color-neutral-900: #ffffff;
+
+  /* ===== BACKGROUND & SURFACE ===== */
+  --color-background: #030712;
+  --color-background-secondary: #0c1222;
+  --color-surface: #161b2e;
+  --color-surface-secondary: #242c42;
+  --color-surface-tertiary: #374151;
+  --color-surface-elevated: #242c42;
+
+  /* ===== TEXT COLORS ===== */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e7eb;
+  --color-text-muted: #9ca3af;
+  --color-text-disabled: #6b7280;
+  --color-text-inverse: #030712;
+  --color-text-placeholder: #6b7280;
+
+  /* ===== SEMANTIC COLORS ===== */
+  --color-success: #10b981;
+  --color-success-light: #34d399;
+  --color-success-dark: #059669;
+  --color-success-bg: #064e3b;
+  --color-success-border: #047857;
+
+  --color-warning: #f59e0b;
+  --color-warning-light: #fbbf24;
+  --color-warning-dark: #d97706;
+  --color-warning-bg: #451a03;
+  --color-warning-border: #92400e;
+
+  --color-danger: #f87171;
+  --color-danger-light: #fca5a5;
+  --color-danger-dark: #ef4444;
+  --color-danger-bg: #450a0a;
+  --color-danger-border: #991b1b;
+
+  --color-info: #38bdf8;
+  --color-info-light: #7dd3fc;
+  --color-info-dark: #0ea5e9;
+  --color-info-bg: #0c4a6e;
+  --color-info-border: #0369a1;
+
+  /* ===== BORDER COLORS ===== */
+  --color-border-light: #242c42;
+  --color-border-default: #374151;
+  --color-border-strong: #6b7280;
+  --color-border-inverse: #d1d5db;
+
+  /* ===== INTERACTIVE STATES ===== */
+  --color-hover: #242c42;
+  --color-hover-strong: #374151;
+  --color-active: #374151;
+  --color-focus: #6366f1;
+  --color-disabled-bg: #161b2e;
+  --color-disabled-text: #6b7280;
+
+  /* ===== COMPONENT SPECIFIC ===== */
+  --color-card-bg: #161b2e;
+  --color-card-border: #242c42;
+  --color-card-shadow: color-mix(in srgb, #000000 50%, transparent);
+
+  --color-header-bg: #0c1222;
+  --color-header-border: #242c42;
+  --color-header-text: #ffffff;
+
+  --color-sidebar-bg: #030712;
+  --color-sidebar-active: #6366f1;
+  --color-sidebar-hover: #161b2e;
+
+  --color-input-border: #374151;
+  --color-input-border-focus: #6366f1;
+  --color-input-placeholder: #6b7280;
+
+  /* ===== BUTTON COLORS (DARK MODE) ===== */
+  --color-button-primary-bg: #6366f1;
+  --color-button-primary-text: #ffffff;
+  --color-button-primary-hover: #4f46e5;
+
+  --color-button-secondary-bg: #f472b6;
+  --color-button-secondary-text: #ffffff;
+  --color-button-secondary-hover: #ec4899;
+
+  --color-button-success-bg: #10b981;
+  --color-button-success-text: #ffffff;
+  --color-button-success-hover: #059669;
+
+  --color-button-warning-bg: #f59e0b;
+  --color-button-warning-text: #ffffff;
+  --color-button-warning-hover: #d97706;
+
+  --color-button-danger-bg: #f87171;
+  --color-button-danger-text: #ffffff;
+  --color-button-danger-hover: #ef4444;
+
+  --color-button-outline-bg: transparent;
+  --color-button-outline-text: #6366f1;
+  --color-button-outline-border: #374151;
+  --color-button-outline-hover: #242c42;
+
+  --color-button-ghost-bg: transparent;
+  --color-button-ghost-text: #e5e7eb;
+  --color-button-ghost-hover: #242c42;
+
+  /* ===== OPACITY VARIANTS ===== */
+  --color-primary-opacity-10: color-mix(
+    in srgb,
+    var(--color-primary) 10%,
+    transparent
+  );
+  --color-primary-opacity-20: color-mix(
+    in srgb,
+    var(--color-primary) 20%,
+    transparent
+  );
+  --color-primary-opacity-50: color-mix(
+    in srgb,
+    var(--color-primary) 50%,
+    transparent
+  );
+
+  --color-secondary-opacity-10: color-mix(
+    in srgb,
+    var(--color-secondary) 10%,
+    transparent
+  );
+  --color-secondary-opacity-20: color-mix(
+    in srgb,
+    var(--color-secondary) 20%,
+    transparent
+  );
+  --color-secondary-opacity-50: color-mix(
+    in srgb,
+    var(--color-secondary) 50%,
+    transparent
+  );
+
+  --color-dark-overlay: color-mix(in srgb, #000000 70%, transparent);
+  --color-light-overlay: color-mix(in srgb, #ffffff 5%, transparent);
+
+  /* ===== GRADIENT VARIANTS ===== */
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-light) 100%
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    var(--color-secondary) 0%,
+    var(--color-secondary-light) 100%
+  );
+  --gradient-neutral: linear-gradient(
+    135deg,
+    var(--color-neutral-100) 0%,
+    var(--color-neutral-200) 100%
+  );
+
+  /* ===== SHADOW COLORS ===== */
+  --shadow-sm: 0 1px 2px 0 color-mix(in srgb, #000000 50%, transparent);
+  --shadow-md: 0 4px 6px -1px color-mix(in srgb, #000000 60%, transparent),
+    0 2px 4px -1px color-mix(in srgb, #000000 30%, transparent);
+  --shadow-lg: 0 10px 15px -3px color-mix(in srgb, #000000 70%, transparent),
+    0 4px 6px -2px color-mix(in srgb, #000000 35%, transparent);
+  --shadow-xl: 0 20px 25px -5px color-mix(in srgb, #000000 80%, transparent),
+    0 10px 10px -5px color-mix(in srgb, #000000 40%, transparent);
+}

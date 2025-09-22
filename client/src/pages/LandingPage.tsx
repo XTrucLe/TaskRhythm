@@ -1,5 +1,5 @@
-import Logo from "../components/Logo";
-import { ThemeSwitch } from "../components/ThemeSwitch";
+import Logo from "../components/ui/Logo";
+import { ThemeSwitch } from "../components/ui/ThemeSwitch";
 import useAppNavigation from "../hooks/useAppNavigation";
 
 export default function LandingPage() {
