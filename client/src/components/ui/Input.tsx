@@ -42,11 +42,13 @@ export default function Input({
         {rightIcon && <span className="pr-3 text-gray-400">{rightIcon}</span>}
       </div>
 
-      {error ? (
-        <p className="mt-1 text-sm text-red-500">{error}</p>
-      ) : helperText ? (
-        <p className="mt-1 text-sm text-gray-500">{helperText}</p>
-      ) : null}
+      <p
+        className={`mt-1 text-sm ${
+          error ? "text-red-500" : "text-gray-500"
+        } min-h-[1.25rem]`}
+      >
+        {error || helperText || "\u00A0"}
+      </p>
     </div>
   );
 }

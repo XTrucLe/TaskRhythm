@@ -4,8 +4,23 @@ import Input from "../components/ui/Input";
 import { useForm } from "react-hook-form";
 import { loginSchema, type LoginFormValues } from "../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 
-export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
+function DividerWithText({ text }: { text: string }) {
+  return (
+    <div className="flex items-center my-4">
+      <div className="flex-1 border-t border-[var(--color-text-muted)]/50"></div>
+      <span className="px-3 text-sm text-[var(--color-text-muted)] whitespace-nowrap">
+        {text}
+      </span>
+      <div className="flex-1 border-t border-[var(--color-text-muted)]/50"></div>
+    </div>
+  );
+}
+
+export default function LoginForm() {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -20,73 +35,57 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
   };
 
   return (
-    <div className="space-y-6">
-      <CardHeader className="text-center">
-        <h2
-          className="text-3xl font-extrabold 
-          bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] 
-          bg-clip-text text-transparent"
-        >
+    <div className="w-full max-w-sm space-y-6">
+      <CardHeader className="text-center space-y-2">
+        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
           Welcome Back
         </h2>
-        <p className="mt-2 text-[var(--color-text-muted)]">
-          Sign in to continue
-        </p>
+        <p className="text-[var(--color-text-muted)]">Sign in to continue</p>
       </CardHeader>
 
-      <CardBody className="space-y-4">
-        <Input
-          label="Email"
-          {...register("email")}
-          type="email"
-          placeholder="you@example.com"
-          error={errors.email?.message}
-        />
-        <Input
-          label="Password"
-          {...register("password")}
-          type="password"
-          placeholder="••••••••"
-          error={errors.password?.message as string}
-        />
+      <CardBody>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Input
+            label="Email"
+            {...register("email")}
+            type="email"
+            placeholder="you@example.com"
+            error={errors.email?.message}
+          />
+          <Input
+            label="Password"
+            {...register("password")}
+            type="password"
+            placeholder="••••••••"
+            error={errors.password?.message as string}
+          />
 
-        <Button
-          onClick={handleSubmit(onSubmit)}
-          variant="primary"
-          size="lg"
-          className="w-full"
-        >
-          Sign In
-        </Button>
-
-        <div className="relative my-4">
-          <span
-            className="absolute left-1/2 -translate-x-1/2 -top-3 
-            bg-[var(--color-background)] px-2 text-sm text-[var(--color-text-muted)]"
-          >
-            or continue with
-          </span>
-          <div className="border-t border-[var(--color-text-muted)]/50"></div>
-        </div>
-
-        <div className="flex gap-3">
-          <Button variant="outline" className="flex-1">
-            Google
+          <Button type="submit" variant="primary" size="lg" className="w-full">
+            Sign In
           </Button>
-          <Button variant="outline" className="flex-1">
-            GitHub
-          </Button>
-        </div>
 
-        <p className="text-center text-sm text-[var(--color-text-muted)]">
-          Don’t have an account?{" "}
-          <button
-            onClick={onSwitch}
-            className="text-[var(--color-primary)] hover:underline"
-          >
-            Register
-          </button>
-        </p>
+          <DividerWithText text="or continue with" />
+
+          <div className="flex gap-3">
+            <Button variant="outline" className="flex-1">
+              Google
+            </Button>
+            <Button variant="outline" className="flex-1">
+              GitHub
+            </Button>
+          </div>
+
+          <p className="text-center text-sm text-[var(--color-text-muted)]">
+            Don’t have an account?{" "}
+            <button
+              type="button"
+              onClick={() => navigate("/register")}
+              className="text-[var(--color-primary)] hover:underline"
+            >
+              Register
+            </button>
+          </p>
+        </form>
       </CardBody>
     </div>
   );

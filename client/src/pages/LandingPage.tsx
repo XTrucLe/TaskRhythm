@@ -1,9 +1,9 @@
 import Logo from "../components/ui/Logo";
 import { ThemeSwitch } from "../components/ui/ThemeSwitch";
-import useAppNavigation from "../hooks/useAppNavigation";
+import useRouting from "../hooks/useRouting";
 
 export default function LandingPage() {
-  const { goDashboard } = useAppNavigation();
+  const { goDashboard } = useRouting();
 
   return (
     <div

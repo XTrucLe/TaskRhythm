@@ -9,7 +9,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "../components/ui/Select";
 
-export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
+export default function RegisterForm() {
   const {
     register,
     handleSubmit,
@@ -25,28 +25,46 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
   };
 
   return (
-    <div className="space-y-6">
-      <CardHeader className="text-center">
-        <h2
-          className="text-3xl font-extrabold 
-          bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] 
-          bg-clip-text text-transparent"
-        >
+    <div className="space-y-8 my-3">
+      {/* Header */}
+      <CardHeader className="text-center space-y-2">
+        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
           Create Account
         </h2>
-        <p className="mt-2 text-[var(--color-text-muted)]">
+        <p className="text-[var(--color-text-muted)] text-sm">
           Join us and start your journey
         </p>
       </CardHeader>
 
-      <CardBody className="space-y-4">
-        <Input
-          label="Full Name"
-          {...register("fullName")}
-          type="text"
-          placeholder="John Doe"
-          error={errors.fullName?.message as string}
-        />
+      {/* Body */}
+      <CardBody className="space-y-2">
+        {/* Full Name + Gender */}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2 w-full">
+            <Input
+              label="Full Name"
+              {...register("fullName")}
+              type="text"
+              placeholder="John Doe"
+              error={errors.fullName?.message as string}
+            />
+          </div>
+          <Select
+            label="Gender"
+            {...register("gender")}
+            className="col-span-1"
+            error={errors.gender?.message}
+          >
+            <option value="" disabled hidden>
+              Select
+            </option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </Select>
+        </div>
+
+        {/* Email */}
         <Input
           label="Email"
           {...register("email")}
@@ -55,6 +73,7 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           error={errors.email?.message}
         />
 
+        {/* Phone + DOB */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label="Phone"
@@ -71,19 +90,7 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           />
         </div>
 
-        <Select
-          label="Gender"
-          {...register("gender")}
-          error={errors.gender?.message}
-        >
-          <option value="" disabled hidden>
-            Select
-          </option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </Select>
-
+        {/* Passwords */}
         <Input
           label="Password"
           {...register("password")}
@@ -99,42 +106,39 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
           error={errors.confirmPassword?.message}
         />
 
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            {...register("terms")}
-            className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded "
-            id="terms"
-          />
-          <label
-            htmlFor="terms"
-            className="ml-2 block text-sm text-[var(--color-text-primary)]"
-          >
-            I agree to the{" "}
-            <a href="#" className="text-[var(--color-primary)] hover:underline">
-              terms and conditions
-            </a>
-          </label>
+        {/* Terms */}
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              {...register("terms")}
+              id="terms"
+              className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded"
+            />
+            <label
+              htmlFor="terms"
+              className="ml-2 block text-sm text-[var(--color-text-primary)]"
+            >
+              I agree to the{" "}
+              <a
+                href="#"
+                className="text-[var(--color-primary)] hover:underline"
+              >
+                terms and conditions
+              </a>
+            </label>
+          </div>
+          {errors.terms && (
+            <p className="text-sm text-[var(--color-danger)]">
+              {errors.terms.message}
+            </p>
+          )}
         </div>
-        {errors.terms && (
-          <p className="mt-1 text-sm text-[var(--color-danger)]">
-            {errors.terms.message}
-          </p>
-        )}
 
+        {/* Action */}
         <Button onClick={handleSubmit(onSubmit)} className="w-full">
           Sign Up
         </Button>
-
-        <p className="text-center text-sm text-[var(--color-text-muted)]">
-          Already have an account?{" "}
-          <button
-            onClick={onSwitch}
-            className="text-[var(--color-primary)] hover:underline"
-          >
-            Login
-          </button>
-        </p>
       </CardBody>
     </div>
   );

@@ -2,7 +2,7 @@ import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
-const AuthPage = lazy(() => import("../pages/AuthPage"));
+const OnboardingPage = lazy(() => import("../pages/OnboardingPage"));
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ManageDashboardPage = lazy(() => import("../pages/manage/DashboardPage"));
@@ -13,8 +13,12 @@ export const routes: RouteObject[] = [
     element: <LandingPage />,
   },
   {
-    path: "/auth",
-    element: <AuthPage />,
+    path: "/login",
+    element: <OnboardingPage />,
+  },
+  {
+    path: "/register",
+    element: <OnboardingPage />,
   },
   {
     path: "/boards",
