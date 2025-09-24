@@ -30,7 +30,7 @@ function FormWrapper({
           transition={{ duration: 1.4, ease: "easeInOut" }}
           className={sideClass}
         >
-          <div className="w-full h-full flex items-center justify-center p-6">
+          <div className="w-full h-full flex items-center justify-center p-4">
             {children}
           </div>
         </motion.div>

@@ -40,7 +40,7 @@ export const registerSchema = z
         if (!date?.trim()) return; // optional
 
         // Format: DD-MM-YYYY
-        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());
 
         if (!match) {
           ctx.addIssue({
@@ -61,7 +61,7 @@ export const registerSchema = z
         if (year < 1900 || year > today.getFullYear()) {
           ctx.addIssue({
             code: "custom",
-            message: `Year must be between 1900 and ${today.getFullYear()}`,
+            message: `Year must be 1900-${today.getFullYear()}`,
           });
           return;
         }
@@ -81,10 +81,10 @@ export const registerSchema = z
         const md = today.getMonth() - dob.getMonth();
         if (md < 0 || (md === 0 && today.getDate() < dob.getDate())) age--;
 
-        if (age < 13)
+        if (age < 10)
           ctx.addIssue({
             code: "custom",
-            message: "Must be at least 13 years old",
+            message: "Must be at least 10 years old",
           });
         if (age > 120)
           ctx.addIssue({ code: "custom", message: "Age seems unrealistic" });
