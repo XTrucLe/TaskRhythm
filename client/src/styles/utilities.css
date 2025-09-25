@@ -1,0 +1,7 @@
+.bg-info {
+  background-color: var(--color-surface-tertiary);
+}
+
+.color-info {
+  color: var(--color-text-primary);
+}

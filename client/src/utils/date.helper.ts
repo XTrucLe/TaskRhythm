@@ -20,6 +20,14 @@ export const isValidDate = (day: number, month: number, year: number) => {
   return month >= 1 && month <= 12 && day >= 1 && day <= monthDays[month - 1];
 };
 
+export function daysLeft(deadline: string | Date): number {
+  const now = new Date();
+  const endDate = new Date(deadline);
+  const diffTime = endDate.getTime() - now.getTime(); // chênh lệch tính bằng ms
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // chuyển sang ngày
+  return diffDays;
+}
+
 export const validateAge = (birthdate: Date, minAge: number) => {
   const today = new Date();
   let age = today.getFullYear() - birthdate.getFullYear();
