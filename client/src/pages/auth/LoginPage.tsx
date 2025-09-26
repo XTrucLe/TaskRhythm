@@ -1,8 +1,11 @@
-import { CardBody, CardHeader } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
-import Input from "../components/ui/Input";
+import { CardBody, CardHeader } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { useForm } from "react-hook-form";
-import { loginSchema, type LoginFormValues } from "../validates/auth.validate";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "../../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 

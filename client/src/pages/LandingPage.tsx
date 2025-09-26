@@ -14,7 +14,7 @@ export default function LandingPage() {
     >
       {/* Navbar */}
       <header
-        className="flex justify-between items-center px-8 py-4 shadow-md sticky top-0 z-50"
+        className="flex justify-between items-center px-8 sticky top-0 z-50 shadow-[var(--shadow-lg)]"
         style={{ backgroundColor: "var(--color-surface)" }}
       >
         <h1

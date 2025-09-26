@@ -1,9 +1,9 @@
-// src/mock/workspaces.ts
 export const workspacesMockup = [
   {
     id: "ws-001",
     name: "Design Team",
     role: "Admin",
+    description: "Workspace for the design team projects and tasks.",
     milestones: 12,
     totalTasks: 120,
     taskAssigned: 40,
@@ -14,6 +14,7 @@ export const workspacesMockup = [
     id: "ws-002",
     name: "Development Team",
     role: "Member",
+    description: "Workspace for the development team projects and tasks.",
     milestones: 8,
     totalTasks: 200,
     taskAssigned: 75,
@@ -24,6 +25,7 @@ export const workspacesMockup = [
     id: "ws-003",
     name: "Marketing",
     role: "Viewer",
+    description: "Workspace for the marketing team projects and tasks.",
     milestones: 5,
     totalTasks: 60,
     taskAssigned: 15,
@@ -34,6 +36,7 @@ export const workspacesMockup = [
     id: "ws-004",
     name: "HR & Recruitment",
     role: "Admin",
+    description: "Workspace for HR and recruitment activities.",
     milestones: 3,
     totalTasks: 30,
     taskAssigned: 12,

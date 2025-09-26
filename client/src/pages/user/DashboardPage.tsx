@@ -1,12 +1,12 @@
 import React from "react";
-import Header from "../components/ui/Header";
-import WorkspaceCard from "../components/ui/WorkspaceCard";
-import { workspacesMockup } from "../mock/workspaces";
-import { useCurrentTime } from "../hooks/useCurrentTime";
-import TaskEntry from "../components/ui/TaskEntry";
-import { mockTaskEntries } from "../mock/taskEntry";
-import { Button } from "../components/ui/Button";
-import Card from "../components/ui/Card";
+import Header from "../../components/ui/Header";
+import WorkspaceCard from "../../components/ui/WorkspaceCard";
+import { workspacesMockup } from "../../mock/workspaces";
+import { useCurrentTime } from "../../hooks/useCurrentTime";
+import TaskEntry from "../../components/ui/TaskEntry";
+import { mockTaskEntries } from "../../mock/taskEntry";
+import { Button } from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
 
 function DashboardPage() {
   const currentTime = useCurrentTime();
@@ -35,7 +35,7 @@ function DashboardPage() {
             {recentActivities.length === 0 ? (
               <p className="text-gray-500">No recent activities.</p>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-1 xl:grid-cols-2 [@media(min-width:1920px)]:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 [@media(min-width:1920px)]:grid-cols-3">
                 {recentActivities.map((activity, index) => (
                   <TaskEntry key={index} item={activity} />
                 ))}

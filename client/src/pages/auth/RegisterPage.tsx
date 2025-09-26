@@ -1,13 +1,13 @@
-import { CardBody, CardHeader } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
-import Input from "../components/ui/Input";
+import { CardBody, CardHeader } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { useForm } from "react-hook-form";
 import {
   registerSchema,
   type RegisterFormValues,
-} from "../validates/auth.validate";
+} from "../../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Select from "../components/ui/Select";
+import Select from "../../components/ui/Select";
 
 export default function RegisterForm() {
   const {

@@ -1,9 +1,10 @@
 import { lazy } from "react";
-import type { RouteObject } from "react-router-dom";
+import { Navigate, type RouteObject } from "react-router-dom";
+import WorkspaceDetailPage from "../pages/user/WorkspaceDetailPage";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
-const OnboardingPage = lazy(() => import("../pages/OnboardingPage"));
-const DashboardPage = lazy(() => import("../pages/DashboardPage"));
+const OnboardingPage = lazy(() => import("../pages/auth/OnboardingPage"));
+const DashboardPage = lazy(() => import("../pages/user/DashboardPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ManageDashboardPage = lazy(() => import("../pages/manage/DashboardPage"));
 
@@ -21,8 +22,21 @@ export const routes: RouteObject[] = [
     element: <OnboardingPage />,
   },
   {
-    path: "/boards",
-    element: <DashboardPage />,
+    path: ":userName",
+    children: [
+      {
+        index: true,
+        element: <Navigate to="boards" replace />,
+      },
+      {
+        path: "boards",
+        element: <DashboardPage />,
+      },
+      {
+        path: "boards/:workspaceId",
+        element: <WorkspaceDetailPage />,
+      },
+    ],
   },
   {
     path: "*",

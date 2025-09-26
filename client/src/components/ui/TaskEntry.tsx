@@ -71,7 +71,7 @@ export default function TaskEntry({ item }: { item: TaskEntryProps }) {
 
         <span
           className={`text-sm font-medium ${
-            days < 0 ? "text-red-600" : "text-gray-700"
+            days < 0 ? "text-red-600" : "text-primary"
           }`}
         >
           {deadlineText}

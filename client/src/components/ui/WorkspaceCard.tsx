@@ -1,10 +1,12 @@
 import React from "react";
 import { FaCheckCircle, FaFlag, FaTasks, FaUserCheck } from "react-icons/fa";
+import useRouting from "../../hooks/useRouting";
 
 interface Workspace {
   id: string;
   name: string;
   role: string;
+  description: string;
   milestones: number;
   totalTasks: number;
   taskAssigned: number;
@@ -13,10 +15,12 @@ interface Workspace {
 }
 
 const WorkspaceCard = React.memo(({ workspace }: { workspace: Workspace }) => {
+  const { goWorkspaceDetail } = useRouting();
   return (
     <div
       className="bg-[var(--color-card-bg)] rounded-2xl shadow-lg border border-[var(--color-card-border)] 
                 hover:shadow-2xl transition-all duration-300 p-6 flex flex-col gap-6 group"
+      onClick={() => goWorkspaceDetail(workspace.id, workspace)}
     >
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-4 min-w-0">
