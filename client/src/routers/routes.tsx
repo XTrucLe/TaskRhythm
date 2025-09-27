@@ -46,7 +46,7 @@ export const routes: RouteObject[] = [
     path: "/manage",
     children: [
       {
-        path: "/manage/dashboard",
+        path: "dashboard",
         element: <ManageDashboardPage />,
       },
     ],
