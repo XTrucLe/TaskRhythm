@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:render": "tsc -b && vite build && echo 'redirects: \\n  - source: /* \\n    destination: /index.html \\n    type: rewrite' > dist/render.yaml"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
