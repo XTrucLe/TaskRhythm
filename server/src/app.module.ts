@@ -5,6 +5,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { UserModule } from "./modules/user/user.module";
 import { WorkspaceModule } from "./modules/workspace/workspace.module";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
+import { MilestoneModule } from "./modules/milestone/milestone.module";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LoggerMiddleware } from "./common/middleware/logger.middleware";
     AuthModule,
     UserModule,
     WorkspaceModule,
+    MilestoneModule,
   ],
   controllers: [],
   providers: [],

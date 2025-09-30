@@ -10,6 +10,8 @@ import { WorkspaceMemberService } from "./services/workspace-member.service";
 import { WorkspaceService } from "./services/workspace.service";
 import { WorkspaceInviteService } from "./services/workspace-invite.service";
 import { UserModule } from "../user/user.module";
+import { WorkspaceMemberMapper } from "./mappers/workspace-member.mapper";
+import { WorkspaceInviteMapper } from "./mappers/workspace-invite.mapper";
 
 @Module({
   imports: [
@@ -21,6 +23,13 @@ import { UserModule } from "../user/user.module";
     WorkspaceMemberController,
     WorkspaceInviteController,
   ],
-  providers: [WorkspaceService, WorkspaceMemberService, WorkspaceInviteService],
+  providers: [
+    WorkspaceService,
+    WorkspaceMemberService,
+    WorkspaceInviteService,
+    WorkspaceMemberMapper,
+    WorkspaceInviteMapper,
+  ],
+  exports: [WorkspaceService, WorkspaceMemberService, WorkspaceInviteService],
 })
 export class WorkspaceModule {}
