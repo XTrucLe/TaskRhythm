@@ -31,7 +31,7 @@ export const routes: RouteObject[] = [
     ],
   },
   {
-    path: "/userName",
+    path: "/:userName",
     children: [
       {
         index: true,
