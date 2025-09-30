@@ -22,7 +22,16 @@ export const routes: RouteObject[] = [
     element: <OnboardingPage />,
   },
   {
-    path: ":userName",
+    path: "/manage",
+    children: [
+      {
+        path: "dashboard",
+        element: <ManageDashboardPage />,
+      },
+    ],
+  },
+  {
+    path: "/userName",
     children: [
       {
         index: true,
@@ -41,14 +50,5 @@ export const routes: RouteObject[] = [
   {
     path: "*",
     element: <NotFoundPage />,
-  },
-  {
-    path: "/manage",
-    children: [
-      {
-        path: "dashboard",
-        element: <ManageDashboardPage />,
-      },
-    ],
   },
 ];
