@@ -24,7 +24,7 @@ export default function SidingTabs({
 
   const handleClick = (index: number) => {
     if (onChange) onChange(index);
-    else setInternalIndex(index);
+    setInternalIndex(index);
   };
 
   return (
@@ -36,7 +36,11 @@ export default function SidingTabs({
             key={item.name}
             onClick={() => handleClick(index)}
             className={`relative flex-1 justify-center z-10 flex items-center gap-2 px-4 py-3 font-medium transition-colors
-              ${isActive ? "text-white" : "text-gray-600 hover:text-gray-800"}
+              ${
+                isActive
+                  ? "text-[var(--color-primary-dark)]"
+                  : "text-gray-600 hover:text-gray-800"
+              }
             `}
           >
             {item.icon && <span className="flex-shrink-0">{item.icon}</span>}

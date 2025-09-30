@@ -12,7 +12,7 @@ interface HeaderProps {
 function Header({ onSearch }: HeaderProps) {
   return (
     <header
-      className="flex justify-between items-center px-6 shadow-md sticky top-0 z-50 select-none"
+      className="flex justify-between items-center px-6 shadow-md sticky top-0 z-50 select-none h-16 p-4"
       style={{ backgroundColor: "var(--color-surface)" }}
     >
       <Logo className="cursor-pointer" />
