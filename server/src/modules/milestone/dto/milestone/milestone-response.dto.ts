@@ -1,5 +1,4 @@
 import { MilestoneStatus } from "../../constants/milestone.constant";
-import { SectionResponseDto } from "../section/section-response.dto";
 
 export class MilestoneResponseDto {
   id!: string;
@@ -10,7 +9,6 @@ export class MilestoneResponseDto {
   dueDate?: string;
   status!: MilestoneStatus;
   order!: number;
-  sections?: SectionResponseDto[];
   createdAt!: string;
   updatedAt!: string;
 }

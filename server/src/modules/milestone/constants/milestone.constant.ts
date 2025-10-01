@@ -1,5 +1,6 @@
 export enum MilestoneStatus {
-  ACTIVE = "active",
+  PLANNED = "planned",
+  ONGOING = "ongoing",
   COMPLETED = "completed",
   ARCHIVED = "archived",
 }

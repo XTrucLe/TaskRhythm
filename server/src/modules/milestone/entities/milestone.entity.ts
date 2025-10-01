@@ -8,7 +8,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Section } from "./section.entity";
 import { MilestoneHistory } from "./milestone-history.entity";
 import { MilestoneStatus } from "../constants/milestone.constant";
 
@@ -37,14 +36,11 @@ export class Milestone {
   @Column({ type: "date", nullable: true })
   dueDate?: Date;
 
-  @Column({ default: "active" })
+  @Column({ default: MilestoneStatus.PLANNED })
   status!: MilestoneStatus;
 
   @Column({ type: "int", default: 0 })
   order!: number;
-
-  @OneToMany(() => Section, (section) => section.milestone, { cascade: true })
-  sections!: Section[];
 
   @OneToMany(() => MilestoneHistory, (history) => history.milestone, {
     cascade: true,

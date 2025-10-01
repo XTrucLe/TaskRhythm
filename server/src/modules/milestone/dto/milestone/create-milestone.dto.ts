@@ -9,9 +9,6 @@ import { MilestoneStatus } from "../../constants/milestone.constant";
 
 export class CreateMilestoneDto {
   @IsString()
-  workspaceId!: string;
-
-  @IsString()
   name!: string;
 
   @IsOptional()
