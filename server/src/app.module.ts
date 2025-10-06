@@ -24,6 +24,10 @@ import { TaskModule } from "./modules/task/task.module";
         database: configService.get("DB_DATABASE"),
         autoLoadEntities: true,
         synchronize: true,
+        ssl:
+          process.env.NODE_ENV === "production"
+            ? { rejectUnauthorized: false }
+            : false,
       }),
       inject: [ConfigService],
     }),
