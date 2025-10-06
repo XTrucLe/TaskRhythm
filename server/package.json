@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nest start --watch",
-    "start:dev": "nest start --watch"
+    "start:dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js"
   },
   "author": "",
   "license": "ISC",
