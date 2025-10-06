@@ -6,11 +6,17 @@ import { TaskController } from "./controllers/task.controller";
 import { UserModule } from "../user/user.module";
 import { WorkspaceModule } from "../workspace/workspace.module";
 import { TaskMapper } from "./mapppers/task.mapper";
+import { TaskUtilsService } from "./services/task-utils.service";
+import { TaskDependency } from "./entities/task-dependency.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task]), WorkspaceModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Task, TaskDependency]),
+    WorkspaceModule,
+    UserModule,
+  ],
   controllers: [TaskController],
-  providers: [TaskService, TaskMapper],
-  exports: [TypeOrmModule],
+  providers: [TaskService, TaskMapper, TaskUtilsService],
+  exports: [TypeOrmModule, TaskService],
 })
 export class TaskModule {}

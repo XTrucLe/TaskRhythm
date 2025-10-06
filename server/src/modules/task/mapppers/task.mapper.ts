@@ -1,6 +1,9 @@
 import { plainToInstance } from "class-transformer";
 import { Task } from "../entities/task.entity";
-import { TaskResponseDto } from "../dto/task-response.dto";
+import {
+  TaskResponseDto,
+  TaskResponseWithChildDto,
+} from "../dto/task-response.dto";
 
 export class TaskMapper {
   toDto(entity: Task): TaskResponseDto {
@@ -9,5 +12,15 @@ export class TaskMapper {
 
   toDtos(entities: Task[]): TaskResponseDto[] {
     return entities.map((entity) => this.toDto(entity));
+  }
+
+  toDtoWithChildren(entity: Task): TaskResponseWithChildDto {
+    return plainToInstance(TaskResponseWithChildDto, entity, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  toDtosWithChildren(entities: Task[]): TaskResponseWithChildDto[] {
+    return entities.map((entity) => this.toDtoWithChildren(entity));
   }
 }

@@ -1,16 +1,23 @@
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
 } from "typeorm";
 import { TaskPriority, TaskStatus } from "../constants/task.constant";
 import { Workspace } from "src/modules/workspace/entities/workspace.entity";
+import { TaskDependency } from "./task-dependency.entity";
 
 @Entity("tasks")
+@Unique(["workspaceId", "title"])
+@Check(`"level" >= 0 AND "level" < 5`)
+@Check(`"progress" >= 0 AND "progress" <= 100`)
 export class Task {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
@@ -29,11 +36,16 @@ export class Task {
   @Column({ nullable: true })
   description!: string;
 
+  @Index()
   @Column({ type: "enum", enum: TaskStatus, default: TaskStatus.TODO })
   status!: TaskStatus;
 
   @Column({ type: "enum", enum: TaskPriority, default: TaskPriority.LOW })
   priority!: TaskPriority;
+
+  @Index()
+  @Column({ default: 0 })
+  level!: number;
 
   @ManyToOne(() => Task, (task) => task.sub_tasks, {
     nullable: true,
@@ -51,17 +63,33 @@ export class Task {
   @Column()
   creator_id!: string;
 
-  @Column({ default: 0, nullable: true })
+  @Column({ type: "boolean", default: false })
+  isBlocked?: boolean;
+
+  @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
   progress?: number;
 
-  @Column({ type: "timestamp", nullable: true })
-  start_date?: Date;
+  @OneToMany(() => TaskDependency, (dependencies) => dependencies.task)
+  dependencies!: TaskDependency[];
 
+  @Column({ type: "timestamp", nullable: true })
+  start_planned?: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  start_at?: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  assign_at?: Date;
+
+  @Index()
   @Column({ type: "timestamp", nullable: true })
   due_date?: Date;
 
   @Column({ type: "timestamp", nullable: true })
   completed_at?: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  cancelled_at?: Date;
 
   @CreateDateColumn()
   created_at!: Date;

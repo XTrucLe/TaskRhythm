@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum } from "class-validator";
+import { IsString, IsOptional, IsEnum, IsUUID } from "class-validator";
 import { TaskPriority, TaskStatus } from "../constants/task.constant";
 
 export class CreateTaskDto {
@@ -17,8 +17,8 @@ export class CreateTaskDto {
   @IsEnum(TaskPriority)
   priority?: TaskPriority;
 
-  @IsString()
   @IsOptional()
+  @IsUUID()
   parent_task_id?: string;
 
   @IsOptional()
