@@ -8,6 +8,8 @@ import {
 } from "../../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/authService";
+import useRouting from "../../hooks/useRouting";
 
 function DividerWithText({ text }: { text: string }) {
   return (
@@ -31,10 +33,12 @@ export default function LoginForm() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
+  const { goDashboard } = useRouting();
 
   const onSubmit = (data: LoginFormValues) => {
-    console.log("Login data:", data);
-    // call API login ở đây
+    authService.login(data).then(() => {
+      goDashboard();
+    });
   };
 
   return (

@@ -1,49 +1,64 @@
 import { lazy } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
-import WorkspaceDetailPage from "../pages/user/WorkspaceDetailPage";
+import PrivateRoute from "./wrappers/PrivateRoute";
+import PublicRoute from "./wrappers/PublicRoute";
 
 const LandingPage = lazy(() => import("../pages/LandingPage"));
 const OnboardingPage = lazy(() => import("../pages/auth/OnboardingPage"));
 const DashboardPage = lazy(() => import("../pages/user/DashboardPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 const ManageDashboardPage = lazy(() => import("../pages/manage/DashboardPage"));
+const WorkspaceDetailPage = lazy(
+  () => import("../pages/user/WorkspaceDetailPage")
+);
 
 export const routes: RouteObject[] = [
   {
-    path: "/",
-    element: <LandingPage />,
-  },
-  {
-    path: "/login",
-    element: <OnboardingPage />,
-  },
-  {
-    path: "/register",
-    element: <OnboardingPage />,
-  },
-  {
-    path: "/manage",
+    element: <PublicRoute />,
     children: [
       {
-        path: "dashboard",
-        element: <ManageDashboardPage />,
+        path: "/",
+        element: <LandingPage />,
+      },
+      {
+        path: "/login",
+        element: <OnboardingPage />,
+      },
+      {
+        path: "/register",
+        element: <OnboardingPage />,
       },
     ],
   },
+
   {
-    path: "/:userName",
+    element: <PrivateRoute />,
     children: [
       {
-        index: true,
-        element: <Navigate to="boards" replace />,
+        path: "/manage",
+        children: [
+          {
+            path: "dashboard",
+            element: <ManageDashboardPage />,
+          },
+        ],
       },
       {
-        path: "boards",
-        element: <DashboardPage />,
-      },
-      {
-        path: "boards/:workspaceId",
-        element: <WorkspaceDetailPage />,
+        path: "/",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="boards" replace />,
+          },
+          {
+            path: "boards",
+            element: <DashboardPage />,
+          },
+          {
+            path: "boards/:workspaceId",
+            element: <WorkspaceDetailPage />,
+          },
+        ],
       },
     ],
   },
