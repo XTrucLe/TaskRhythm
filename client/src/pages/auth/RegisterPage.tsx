@@ -28,16 +28,16 @@ export default function RegisterForm() {
     <div className="space-y-8 my-3">
       {/* Header */}
       <CardHeader className="text-center space-y-2">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
           Create Account
-        </h2>
+        </h1>
         <p className="text-[var(--color-text-muted)] text-sm">
           Join us and start your journey
         </p>
       </CardHeader>
 
       {/* Body */}
-      <CardBody className="space-y-2">
+      <CardBody>
         {/* Full Name + Gender */}
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 w-full">
@@ -128,10 +128,10 @@ export default function RegisterForm() {
               </a>
             </label>
           </div>
-          {errors.terms && (
-            <p className="text-sm text-[var(--color-danger)]">
-              {errors.terms.message}
-            </p>
+          {errors.terms ? (
+            <p className="text-sm text-red-500">{errors.terms.message}</p>
+          ) : (
+            <span>&nbsp;</span>
           )}
         </div>
 

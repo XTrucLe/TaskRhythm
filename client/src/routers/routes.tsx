@@ -44,7 +44,7 @@ export const routes: RouteObject[] = [
         ],
       },
       {
-        path: "/",
+        path: "/boards",
         children: [
           {
             index: true,

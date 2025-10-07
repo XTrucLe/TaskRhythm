@@ -56,7 +56,7 @@ const GreetingHeader = React.memo(({ currentTime }: GreetingHeaderProps) => {
   return (
     <div className="flex w-full justify-between items-center mb-8 mt-3">
       <div>
-        <h2 className="text-3xl font-bold">Welcome back!</h2>
+        <h1 className="text-4xl font-bold">Welcome back!</h1>
         <p className="text-gray-500 ml-1">
           {currentTime.toLocaleDateString("en-US", {
             weekday: "long",

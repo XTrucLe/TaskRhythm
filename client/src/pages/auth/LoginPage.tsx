@@ -7,7 +7,6 @@ import {
   type LoginFormValues,
 } from "../../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/authService";
 import useRouting from "../../hooks/useRouting";
 
@@ -24,8 +23,6 @@ function DividerWithText({ text }: { text: string }) {
 }
 
 export default function LoginForm() {
-  const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -42,11 +39,11 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-sm space-y-6">
+    <div className="w-full max-w-md space-y-6">
       <CardHeader className="text-center space-y-2">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
           Welcome Back
-        </h2>
+        </h1>
         <p className="text-[var(--color-text-muted)]">Sign in to continue</p>
       </CardHeader>
 
@@ -81,17 +78,6 @@ export default function LoginForm() {
               GitHub
             </Button>
           </div>
-
-          <p className="text-center text-sm text-[var(--color-text-muted)]">
-            Don’t have an account?{" "}
-            <button
-              type="button"
-              onClick={() => navigate("/register")}
-              className="text-[var(--color-primary)] hover:underline"
-            >
-              Register
-            </button>
-          </p>
         </form>
       </CardBody>
     </div>

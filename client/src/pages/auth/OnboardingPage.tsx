@@ -88,10 +88,19 @@ function SideContent({
 export default function OnboardingPage() {
   const [isLogin, setIsLogin] = useState(true);
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
   useEffect(() => {
     setIsLogin(location.pathname === "/login");
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 920);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -100,46 +109,77 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-300 via-pink-300 to-indigo-300 overflow-hidden px-4">
-      <div className="relative w-full max-w-5xl h-[720px] bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden flex">
-        {/* form */}
-        <div className="relative flex-1 h-full flex items-center justify-center w-full">
-          <FormWrapper isActive={isLogin} direction="left">
-            <LoginForm />
-          </FormWrapper>
-          <FormWrapper isActive={!isLogin} direction="right">
-            <RegisterForm />
-          </FormWrapper>
+      {!isMobile ? (
+        <div className="relative w-full max-w-5xl h-[720px] bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden flex">
+          {/* form */}
+          <div className="relative flex-1 h-full flex items-center justify-center w-full">
+            <FormWrapper isActive={isLogin} direction="left">
+              <LoginForm />
+            </FormWrapper>
+            <FormWrapper isActive={!isLogin} direction="right">
+              <RegisterForm />
+            </FormWrapper>
+          </div>
+
+          {/* background shape */}
+          <motion.div
+            className="absolute -top-2/5 -right-1/3 w-[150%] h-[101%] bg-purple-500 origin-bottom shadow-xl"
+            initial={{ rotate: 75 }}
+            animate={{
+              rotate: isLogin ? 75 : -75,
+              translateX: isLogin ? 0 : "-15%",
+            }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+          />
+
+          {/* side content */}
+          <SideContent
+            show={isLogin}
+            position="right"
+            title="New here?"
+            description="Tạo tài khoản và khám phá những công cụ giúp bạn học tập và cộng tác hiệu quả hơn."
+            buttonText="Sign Up"
+            onClick={toggleForm}
+          />
+          <SideContent
+            show={!isLogin}
+            position="left"
+            title="Already have an account?"
+            description="Đăng nhập để tiếp tục hành trình học tập và quản lý công việc của bạn."
+            buttonText="Sign In"
+            onClick={toggleForm}
+          />
         </div>
-
-        {/* background shape */}
-        <motion.div
-          className="absolute -top-2/5 -right-1/3 w-[150%] h-[101%] bg-purple-500 origin-bottom shadow-xl"
-          initial={{ rotate: 75 }}
-          animate={{
-            rotate: isLogin ? 75 : -75,
-            translateX: isLogin ? 0 : "-15%",
-          }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-        />
-
-        {/* side content */}
-        <SideContent
-          show={isLogin}
-          position="right"
-          title="New here?"
-          description="Tạo tài khoản và khám phá những công cụ giúp bạn học tập và cộng tác hiệu quả hơn."
-          buttonText="Sign Up"
-          onClick={toggleForm}
-        />
-        <SideContent
-          show={!isLogin}
-          position="left"
-          title="Already have an account?"
-          description="Đăng nhập để tiếp tục hành trình học tập và quản lý công việc của bạn."
-          buttonText="Sign In"
-          onClick={toggleForm}
-        />
-      </div>
+      ) : (
+        <div className="w-full max-w-md  bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden p-6 py-8">
+          {isLogin ? <LoginForm /> : <RegisterForm />}
+          <div className="mt-4 text-center">
+            {isLogin ? (
+              <p className="text-center text-sm text-[var(--color-text-muted)]">
+                Don’t have an account?{" "}
+                <button
+                  type="button"
+                  onClick={toggleForm}
+                  className="text-[var(--color-primary)] font-semibold hover:underline"
+                >
+                  Register
+                </button>
+              </p>
+            ) : (
+              <p className="text-center text-sm text-[var(--color-text-muted)]">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={toggleForm}
+                  className="text-[var(--color-primary)] font-semibold hover:underline"
+                >
+                  Login
+                </button>
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
