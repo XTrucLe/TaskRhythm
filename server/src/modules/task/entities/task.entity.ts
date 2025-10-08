@@ -13,22 +13,33 @@ import {
 import { TaskPriority, TaskStatus } from "../constants/task.constant";
 import { Workspace } from "src/modules/workspace/entities/workspace.entity";
 import { TaskDependency } from "./task-dependency.entity";
+import { Project } from "src/modules/project/entities/project.entity";
 
 @Entity("tasks")
-@Unique(["workspaceId", "title"])
-@Check(`"level" >= 0 AND "level" < 5`)
+@Unique(["workspace_id", "title"])
+@Check(`"level" >= 0 AND "level" < 3`)
 @Check(`"progress" >= 0 AND "progress" <= 100`)
 export class Task {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
-  workspaceId!: string;
+  workspace_id!: string;
 
   @ManyToOne(() => Workspace, (workspace) => workspace.tasks, {
     onDelete: "CASCADE",
   })
   workspace!: Workspace;
+
+  @Column({ nullable: true })
+  @Index()
+  project_id?: string;
+
+  @ManyToOne(() => Project, (project) => project.tasks, {
+    onDelete: "CASCADE",
+  })
+  @JoinColumn({ name: "project_id" })
+  project!: Project;
 
   @Column()
   title!: string;

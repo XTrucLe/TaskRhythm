@@ -11,15 +11,12 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:5173',
-    ],
+    origin: ["http://localhost:3000", "http://localhost:5173"],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
-  
+
   const config = new DocumentBuilder()
     .setTitle("TaskRhythm API")
     .setDescription("API documentation for TaskRhythm")

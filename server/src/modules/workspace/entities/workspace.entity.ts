@@ -13,6 +13,7 @@ import { WorkspaceStatus } from "../constants/workspace-status.constant";
 import { WorkspaceType } from "../constants/workspace-type.constant";
 import { WorkspaceInvite } from "./workspace-invite.entity";
 import { Task } from "src/modules/task/entities/task.entity";
+import { Project } from "src/modules/project/entities/project.entity";
 
 @Entity("workspaces")
 @Index(["ownerId", "name"], { unique: true })
@@ -79,4 +80,7 @@ export class Workspace {
 
   @OneToMany(() => Task, (task) => task.workspace)
   tasks!: Task[];
+
+  @OneToMany(() => Project, (workspace) => workspace.workspace)
+  projects!: Project[];
 }

@@ -15,9 +15,9 @@ export class TaskResponseDto {
   @Expose() start_date?: Date;
   @Expose() due_date?: Date;
   @Expose() completed_at?: Date;
-  @Expose() createdAt!: Date;
-  @Expose() updatedAt!: Date;
-  @Expose() workspaceId!: string;
+  @Expose() created_at!: Date;
+  @Expose() updated_at!: Date;
+  @Expose() workspace_id!: string;
 }
 
 @Exclude()

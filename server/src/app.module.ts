@@ -6,6 +6,7 @@ import { UserModule } from "./modules/user/user.module";
 import { WorkspaceModule } from "./modules/workspace/workspace.module";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { TaskModule } from "./modules/task/task.module";
+import { ProjectModule } from "./modules/project/project.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TaskModule } from "./modules/task/task.module";
     AuthModule,
     UserModule,
     WorkspaceModule,
+    ProjectModule,
     TaskModule,
   ],
   controllers: [],

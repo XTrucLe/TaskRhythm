@@ -15,11 +15,11 @@ export class TaskUtilsService {
   ) {}
 
   async exists(
-    workspaceId: string,
+    workspace_id: string,
     criteria: { id?: string; title?: string }
   ): Promise<boolean> {
     return await this.taskRepository.exists({
-      where: { workspaceId, ...criteria },
+      where: { workspace_id, ...criteria },
     });
   }
 

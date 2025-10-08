@@ -25,20 +25,22 @@ export class TaskService {
   ) {}
 
   async create(
-    workspaceId: string,
+    workspace_id: string,
     currentUserId: string,
     dto: CreateTaskDto
   ): Promise<Task> {
-    await this.validateBeforeCreate(workspaceId, dto);
+    await this.validateBeforeCreate(workspace_id, dto);
 
-    const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
+    const workspace = await this.workspaceService.getWorkspaceById(
+      workspace_id
+    );
     const level = dto.parent_task_id
       ? (await this.taskUtils.getLevel(dto.parent_task_id)) + 1
       : 0;
 
     const task = this.taskRepository.create({
       ...dto,
-      workspaceId,
+      workspace_id,
       workspace,
       level,
       creator_id: currentUserId,
@@ -49,20 +51,22 @@ export class TaskService {
   }
 
   async createWithChildren(
-    workspaceId: string,
+    workspace_id: string,
     currentUserId: string,
     dto: CreateTaskDto & { sub_tasks?: CreateTaskDto[] }
   ): Promise<Task> {
-    await this.validateBeforeCreate(workspaceId, dto);
+    await this.validateBeforeCreate(workspace_id, dto);
 
-    const workspace = await this.workspaceService.getWorkspaceById(workspaceId);
+    const workspace = await this.workspaceService.getWorkspaceById(
+      workspace_id
+    );
     const level = dto.parent_task_id
       ? (await this.taskUtils.getLevel(dto.parent_task_id)) + 1
       : 0;
 
     const task = this.taskRepository.create({
       ...dto,
-      workspaceId,
+      workspace_id,
       workspace,
       level,
       creator_id: currentUserId,
@@ -74,7 +78,7 @@ export class TaskService {
     if (dto.sub_tasks?.length) {
       const subTasks = await Promise.all(
         dto.sub_tasks.map((child) =>
-          this.createWithChildren(workspaceId, currentUserId, {
+          this.createWithChildren(workspace_id, currentUserId, {
             ...child,
             parent_task_id: savedTask.id,
           })
@@ -87,19 +91,19 @@ export class TaskService {
   }
 
   async update(
-    workspaceId: string,
+    workspace_id: string,
     taskId: string,
     dto: UpdateTaskDto
   ): Promise<Task> {
-    const task = await this.findTaskById(workspaceId, taskId);
+    const task = await this.findTaskById(workspace_id, taskId);
 
     if (dto.title && dto.title !== task.title) {
-      await this.taskUtils.ensureNameUnique(workspaceId, dto.title);
+      await this.taskUtils.ensureNameUnique(workspace_id, dto.title);
     }
 
     if (dto.parent_task_id) {
       await this.taskUtils.ensureParentTaskExists(
-        workspaceId,
+        workspace_id,
         dto.parent_task_id
       );
     }
@@ -109,11 +113,11 @@ export class TaskService {
   }
 
   async updateStatus(
-    workspaceId: string,
+    workspace_id: string,
     taskId: string,
     status: TaskStatus
   ): Promise<Task> {
-    const task = await this.findTaskById(workspaceId, taskId);
+    const task = await this.findTaskById(workspace_id, taskId);
 
     if (task.sub_tasks?.length) {
       throw new ConflictException(
@@ -125,14 +129,14 @@ export class TaskService {
     return this.taskRepository.save(task);
   }
 
-  async delete(workspaceId: string, taskId: string): Promise<void> {
-    const task = await this.findTaskById(workspaceId, taskId);
+  async delete(workspace_id: string, taskId: string): Promise<void> {
+    const task = await this.findTaskById(workspace_id, taskId);
     await this.taskRepository.remove(task);
   }
 
-  async findTaskById(workspaceId: string, taskId: string): Promise<Task> {
+  async findTaskById(workspace_id: string, taskId: string): Promise<Task> {
     const task = await this.taskRepository.findOne({
-      where: { id: taskId, workspaceId },
+      where: { id: taskId, workspace_id },
       relations: ["sub_tasks"],
     });
 
@@ -143,15 +147,15 @@ export class TaskService {
   }
 
   async getTaskByParentId(
-    workspaceId: string,
+    workspace_id: string,
     parentTaskId: string
   ): Promise<Task[]> {
     return this.taskRepository.find({
-      where: { workspaceId, parent_task: { id: parentTaskId } },
+      where: { workspace_id, parent_task: { id: parentTaskId } },
     });
   }
 
-  async list(workspaceId: string, query: TaskQueryDto): Promise<Task[]> {
+  async list(workspace_id: string, query: TaskQueryDto): Promise<Task[]> {
     const {
       parent_task_id,
       page = 1,
@@ -161,7 +165,7 @@ export class TaskService {
       ...filters
     } = query;
 
-    const where: any = { workspaceId, ...filters };
+    const where: any = { workspace_id, ...filters };
 
     if (parent_task_id) {
       where.parent_task = { id: parent_task_id };
@@ -179,14 +183,14 @@ export class TaskService {
   // 🔹 INTERNAL UTILITIES
   // -----------------------------
   private async validateBeforeCreate(
-    workspaceId: string,
+    workspace_id: string,
     dto: CreateTaskDto
   ): Promise<void> {
-    await this.taskUtils.ensureNameUnique(workspaceId, dto.title);
+    await this.taskUtils.ensureNameUnique(workspace_id, dto.title);
 
     if (dto.parent_task_id) {
       await this.taskUtils.ensureParentTaskExists(
-        workspaceId,
+        workspace_id,
         dto.parent_task_id
       );
     }
