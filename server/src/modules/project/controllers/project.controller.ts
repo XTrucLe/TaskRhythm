@@ -30,7 +30,7 @@ export class ProjectController {
     @CurrentUser("id") currentUserId: string,
     @Body() dto: CreateProjectDto
   ): Promise<ProjectResponseWithStatsDto> {
-    const project = await this.projectService.create(
+    const project = await this.projectService.createProject(
       workspace_id,
       currentUserId,
       dto

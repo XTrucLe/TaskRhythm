@@ -15,6 +15,7 @@ import { WorkspaceRole } from "../constants/workspace-role.constant";
 import { DataSource } from "typeorm";
 import { PolicyService } from "./policy.service";
 import { WorkspaceAction } from "../constants/workspace_action.constant";
+import { ProjectService } from "src/modules/project/services/project.service";
 
 @Injectable()
 export class WorkspaceService {
@@ -23,6 +24,8 @@ export class WorkspaceService {
     private readonly workspaceRepository: Repository<Workspace>,
     @Inject(forwardRef(() => WorkspaceMemberService))
     private readonly workspaceMemberService: WorkspaceMemberService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService,
     private dataSource: DataSource
   ) {}
 
@@ -54,7 +57,7 @@ export class WorkspaceService {
         },
         manager
       );
-
+      await this.createDefaultProjects(save.id, currentUserId);
       return { ...save, totalMembers: 1 };
     });
   }
@@ -139,5 +142,11 @@ export class WorkspaceService {
   async getAllWorkspaces(): Promise<Workspace[]> {
     const workspaces = await this.workspaceRepository.find();
     return workspaces;
+  }
+
+  private async createDefaultProjects(workspace_id: string, userId: string) {
+    this.projectService.createProject(workspace_id, userId, {
+      name: "General",
+    });
   }
 }
