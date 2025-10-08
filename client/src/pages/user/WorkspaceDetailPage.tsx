@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import { Button } from "../../components/ui/Button";
 import { MdEdit } from "react-icons/md";
@@ -7,9 +7,7 @@ import { mockMilestones } from "../../mock/milestone";
 import MilestonesRow from "../../components/workspaces/MilestonesRow";
 
 export default function WorkspaceDetailPage() {
-  const { workspaceId } = useParams();
   const { data: workspaceInfo } = useLocation().state || {};
-  console.log(workspaceId, workspaceInfo);
 
   return (
     <div>
@@ -60,8 +58,8 @@ export default function WorkspaceDetailPage() {
 
           {/* Tab Content */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-4 px-2">
-            {mockMilestones.map((milestone) => (
-              <MilestonesRow milestone={milestone} />
+            {mockMilestones.map((milestone, index) => (
+              <MilestonesRow key={index} milestone={milestone} />
             ))}
           </section>
 

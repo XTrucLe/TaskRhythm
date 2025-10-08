@@ -44,7 +44,7 @@ export const routes: RouteObject[] = [
         ],
       },
       {
-        path: "/boards",
+        path: "boards",
         children: [
           {
             index: true,
@@ -55,7 +55,7 @@ export const routes: RouteObject[] = [
             element: <DashboardPage />,
           },
           {
-            path: "boards/:workspaceId",
+            path: ":workspaceId",
             element: <WorkspaceDetailPage />,
           },
         ],
