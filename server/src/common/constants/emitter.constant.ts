@@ -1,0 +1,17 @@
+export enum EmitterEvent {
+  TASK_CREATED = "task.created",
+  TASK_UPDATED = "task.updated",
+  TASK_DELETED = "task.deleted",
+  TASK_COMMENT_ADDED = "task.comment.added",
+  TASK_COMMENT_DELETED = "task.comment.deleted",
+  PROJECT_CREATED = "project.created",
+  PROJECT_UPDATED = "project.updated",
+  PROJECT_DELETED = "project.deleted",
+  USER_JOINED_WORKSPACE = "user.joined",
+  USER_LEFT_WORKSPACE = "user.left_workspace",
+  WORKSPACE_CREATED = "workspace.created",
+  WORKSPACE_UPDATED = "workspace.updated",
+  WORKSPACE_DELETED = "workspace.deleted",
+  NOTIFICATION_SENT = "notification.sent",
+  MESSAGE_SENT = "message.sent",
+}

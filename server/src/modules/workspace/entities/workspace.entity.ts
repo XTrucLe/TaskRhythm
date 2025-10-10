@@ -17,6 +17,7 @@ import { Project } from "src/modules/project/entities/project.entity";
 @Entity("workspaces")
 @Index(["ownerId", "name"], { unique: true })
 @Check(`max_members > 6`)
+@Check(`total_project >= 0`)
 export class Workspace {
   @PrimaryGeneratedColumn("uuid")
   id!: string;

@@ -1,4 +1,4 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Workspace } from "./entities/workspace.entity";
 import { WorkspaceMember } from "./entities/workspace-member.entity";
@@ -12,13 +12,12 @@ import { WorkspaceInviteService } from "./services/workspace-invite.service";
 import { UserModule } from "../user/user.module";
 import { WorkspaceMemberMapper } from "./mappers/workspace-member.mapper";
 import { WorkspaceInviteMapper } from "./mappers/workspace-invite.mapper";
-import { ProjectModule } from "../project/project.module";
+import { WorkspaceEventHandlerService } from "./services/workspace-even-handler.service";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Workspace, WorkspaceMember, WorkspaceInvite]),
     UserModule,
-    forwardRef(() => ProjectModule),
   ],
   controllers: [
     WorkspaceController,
@@ -31,6 +30,7 @@ import { ProjectModule } from "../project/project.module";
     WorkspaceInviteService,
     WorkspaceMemberMapper,
     WorkspaceInviteMapper,
+    WorkspaceEventHandlerService,
   ],
   exports: [WorkspaceService, WorkspaceMemberService, WorkspaceInviteService],
 })

@@ -10,17 +10,16 @@ import { Project } from "../entities/project.entity";
 import { CreateProjectDto } from "../dto/project/create-project.dto";
 import { UpdateProjectDto } from "../dto/project/update-project.dto";
 import { WorkspaceService } from "src/modules/workspace/services/workspace.service";
-import { ProjectStats } from "../entities/project_stats.entity";
+import { EmitterEvent } from "src/common/constants/emitter.constant";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
-    @InjectRepository(ProjectStats)
-    private readonly projectStatsRepository: Repository<ProjectStats>,
-    @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService
+    private readonly workspaceService: WorkspaceService,
+    private emitter: EventEmitter2
   ) {}
 
   async createProject(
@@ -35,7 +34,11 @@ export class ProjectService {
       workspaceId,
     });
     const newProject = await this.projectRepository.save(project);
-    await this.createProjectStats(newProject.id);
+    this.emitter.emit(EmitterEvent.PROJECT_CREATED, {
+      projectId: newProject.id,
+      creatorId,
+      workspaceId,
+    });
     return newProject;
   }
 
@@ -67,10 +70,5 @@ export class ProjectService {
       relations: ["stats"],
     });
     return projects;
-  }
-
-  async createProjectStats(projectId: string): Promise<ProjectStats> {
-    const stats = this.projectStatsRepository.create({ projectId });
-    return this.projectStatsRepository.save(stats);
   }
 }

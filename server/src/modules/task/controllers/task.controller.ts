@@ -21,7 +21,7 @@ import {
   TaskResponseWithChildDto,
 } from "../dto/task-response.dto";
 
-@Controller("workspaces/:workspaceId/tasks")
+@Controller("projects/:projectId/tasks")
 @UseGuards(AuthGuard("jwt"))
 export class TaskController {
   constructor(
@@ -31,22 +31,24 @@ export class TaskController {
 
   @Post()
   async create(
-    @Param("workspaceId") workspaceId: string,
+    // ✅ THAY ĐỔI 2: Lấy projectId từ URL, bỏ workspaceId
+    @Param("projectId") projectId: string,
     @CurrentUser("id") userId: string,
     @Body() dto: CreateTaskDto
   ): Promise<TaskResponseDto> {
-    const task = await this.taskService.create(workspaceId, userId, dto);
+    // Truyền projectId vào service
+    const task = await this.taskService.create(projectId, userId, dto);
     return this.taskMapper.toDto(task);
   }
 
   @Post("with-children")
   async createWithChildren(
-    @Param("workspaceId") workspaceId: string,
+    @Param("projectId") projectId: string,
     @CurrentUser("id") userId: string,
-    @Body() dto: CreateTaskDto & { sub_tasks?: CreateTaskDto[] }
+    @Body() dto: CreateTaskDto & { subTasks?: CreateTaskDto[] }
   ): Promise<TaskResponseWithChildDto> {
     const task = await this.taskService.createWithChildren(
-      workspaceId,
+      projectId,
       userId,
       dto
     );
@@ -55,37 +57,38 @@ export class TaskController {
 
   @Get()
   async list(
-    @Param("workspaceId") workspaceId: string,
+    @Param("projectId") projectId: string,
     @Query() query: TaskQueryDto
   ): Promise<TaskResponseDto[]> {
-    const tasks = await this.taskService.list(workspaceId, query);
+    const tasks = await this.taskService.list(projectId, query);
     return this.taskMapper.toDtos(tasks);
   }
 
   @Get(":taskId")
   async getById(
-    @Param("workspaceId") workspaceId: string,
+    @Param("projectId") projectId: string,
     @Param("taskId") taskId: string
   ): Promise<TaskResponseWithChildDto> {
-    const task = await this.taskService.findTaskById(workspaceId, taskId);
+    // Service của bạn đã nhận projectId, nên không cần sửa ở đây
+    const task = await this.taskService.findTaskById(projectId, taskId);
     return this.taskMapper.toDtoWithChildren(task);
   }
 
   @Patch(":taskId")
   async update(
-    @Param("workspaceId") workspaceId: string,
+    @Param("projectId") projectId: string,
     @Param("taskId") taskId: string,
     @Body() dto: UpdateTaskDto
   ): Promise<TaskResponseDto> {
-    const updated = await this.taskService.update(workspaceId, taskId, dto);
+    const updated = await this.taskService.update(projectId, taskId, dto);
     return this.taskMapper.toDto(updated);
   }
 
   @Delete(":taskId")
   async remove(
-    @Param("workspaceId") workspaceId: string,
+    @Param("projectId") projectId: string,
     @Param("taskId") taskId: string
   ): Promise<void> {
-    await this.taskService.delete(workspaceId, taskId);
+    await this.taskService.delete(projectId, taskId);
   }
 }

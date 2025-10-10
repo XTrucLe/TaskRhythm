@@ -8,6 +8,7 @@ import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { TaskModule } from "./modules/task/task.module";
 import { ProjectModule } from "./modules/project/project.module";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SnakeNamingStrategy } from "typeorm-naming-strategies";
       isGlobal: true,
       envFilePath: [".env"],
     }),
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

@@ -12,6 +12,8 @@ import { TaskUtilsService } from "./task-utils.service";
 import { TaskStatus } from "../constants/task.constant";
 import { TaskQueryDto } from "../dto/task-query.dto";
 import { ProjectService } from "src/modules/project/services/project.service";
+import { EmitterEvent } from "src/common/constants/emitter.constant";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class TaskService {
@@ -19,12 +21,10 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly taskUtils: TaskUtilsService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private emitter: EventEmitter2
   ) {}
 
-  // ----------------------------------------------------------------
-  // 🔹 CREATE TASK
-  // ----------------------------------------------------------------
   async create(
     projectId: string,
     currentUserId: string,
@@ -45,6 +45,13 @@ export class TaskService {
       creatorId: currentUserId,
       parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
     });
+
+    this.emitter.emit(EmitterEvent.TASK_CREATED, {
+      projectId,
+      creatorId: currentUserId,
+      parentTaskId: dto.parentTaskId ? task.parentTask?.id : undefined,
+    });
+
     return this.taskRepository.save(task);
   }
 
@@ -124,6 +131,7 @@ export class TaskService {
 
   async delete(projectId: string, taskId: string): Promise<void> {
     const task = await this.findTaskById(projectId, taskId);
+    this.emitter.emit(EmitterEvent.TASK_DELETED, { projectId });
     await this.taskRepository.remove(task);
   }
 

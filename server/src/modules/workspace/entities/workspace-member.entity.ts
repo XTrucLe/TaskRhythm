@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   Unique,
+  Check,
 } from "typeorm";
 import { User } from "src/modules/user/entities/user.entity";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
@@ -13,6 +14,8 @@ import { Workspace } from "src/modules/workspace/entities/workspace.entity";
 
 @Entity("workspace_member")
 @Unique(["workspace", "user"])
+@Check(`assigned_tasks >= 0`)
+@Check(`completed_tasks >= 0`)
 export class WorkspaceMember {
   @PrimaryGeneratedColumn("uuid")
   id!: string;

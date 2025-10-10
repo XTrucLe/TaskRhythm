@@ -15,7 +15,8 @@ import { WorkspaceRole } from "../constants/workspace-role.constant";
 import { DataSource } from "typeorm";
 import { PolicyService } from "./policy.service";
 import { WorkspaceAction } from "../constants/workspace_action.constant";
-import { ProjectService } from "src/modules/project/services/project.service";
+import { EmitterEvent } from "src/common/constants/emitter.constant";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class WorkspaceService {
@@ -24,9 +25,8 @@ export class WorkspaceService {
     private readonly workspaceRepository: Repository<Workspace>,
     @Inject(forwardRef(() => WorkspaceMemberService))
     private readonly workspaceMemberService: WorkspaceMemberService,
-    @Inject(forwardRef(() => ProjectService))
-    private readonly projectService: ProjectService,
-    private dataSource: DataSource
+    private dataSource: DataSource,
+    private emitter: EventEmitter2
   ) {}
 
   async createWorkspace(
@@ -47,6 +47,7 @@ export class WorkspaceService {
       const save = await this.workspaceRepository.save({
         ...workspace,
         ownerId: currentUserId,
+        totalMembers: 1,
       });
 
       await this.workspaceMemberService.addMember(
@@ -57,8 +58,11 @@ export class WorkspaceService {
         },
         manager
       );
-      await this.createDefaultProjects(save.id, currentUserId);
-      return { ...save, totalMembers: 1 };
+      this.emitter.emit(EmitterEvent.WORKSPACE_CREATED, {
+        workspaceId: save.id,
+        ownerId: currentUserId,
+      });
+      return save;
     });
   }
 
@@ -130,6 +134,22 @@ export class WorkspaceService {
     await this.workspaceRepository.remove(workspace);
   }
 
+  async incrementWorkspaceStats(
+    workspaceId: string,
+    field: "totalMembers" | "totalProject",
+    increment: number
+  ): Promise<void> {
+    const updateField = field.replace(/([A-Z])/g, "_$1").toLowerCase();
+    await this.workspaceRepository
+      .createQueryBuilder()
+      .update(Workspace)
+      .set({
+        [field]: () => `"${updateField}" + ${increment}`,
+      })
+      .where("id = :workspaceId", { workspaceId })
+      .execute();
+  }
+
   async getWorkspaceById(id: string): Promise<Workspace> {
     const workspace = await this.workspaceRepository.findOne({
       where: { id },
@@ -139,14 +159,9 @@ export class WorkspaceService {
     }
     return workspace;
   }
+
   async getAllWorkspaces(): Promise<Workspace[]> {
     const workspaces = await this.workspaceRepository.find();
     return workspaces;
-  }
-
-  private async createDefaultProjects(workspace_id: string, userId: string) {
-    this.projectService.createProject(workspace_id, userId, {
-      name: "General",
-    });
   }
 }
