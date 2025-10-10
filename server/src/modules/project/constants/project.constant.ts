@@ -1,0 +1,9 @@
+export enum ProjectStatus {
+  PLANNING = "PLANNING",
+  ON_TRACK = "ON_TRACK",
+  AT_RISK = "AT_RISK",
+  OFF_TRACK = "OFF_TRACK",
+  ON_HOLD = "ON_HOLD",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}

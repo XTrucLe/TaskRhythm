@@ -10,13 +10,13 @@ import {
 import { Project } from "./project.entity";
 
 @Entity("project_stats")
-@Index(["project_id"], { unique: true })
+@Index(["projectId"], { unique: true })
 export class ProjectStats {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
-  project_id!: string;
+  projectId!: string;
 
   @OneToOne(() => Project, (project) => project.stats, {
     onDelete: "CASCADE",
@@ -25,29 +25,29 @@ export class ProjectStats {
   project!: Project;
 
   @Column({ type: "int", default: 0 })
-  total_tasks!: number;
+  totalTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  completed_tasks!: number;
+  completedTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  pending_tasks!: number;
+  pendingTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  in_progress_tasks!: number;
+  inProgressTasks!: number;
 
   @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
-  progress_rate!: number;
+  progressRate!: number;
 
   @Column({ type: "int", default: 0 })
-  high_priority_tasks!: number;
+  highPriorityTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  medium_priority_tasks!: number;
+  mediumPriorityTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  low_priority_tasks!: number;
+  lowPriorityTasks!: number;
 
   @UpdateDateColumn()
-  updated_at!: Date;
+  updatedAt!: Date;
 }

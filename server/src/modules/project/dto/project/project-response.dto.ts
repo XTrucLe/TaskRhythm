@@ -6,10 +6,10 @@ export class ProjectResponseDto {
   @Expose() id!: string;
   @Expose() name!: string;
   @Expose() description?: string;
-  @Expose() workspace_id!: string;
-  @Expose() creator_id!: string;
-  @Expose() created_at!: Date;
-  @Expose() updated_at!: Date;
+  @Expose() workspaceId!: string;
+  @Expose() creatorId!: string;
+  @Expose() createdAt!: Date;
+  @Expose() updatedAt!: Date;
 }
 
 @Exclude()

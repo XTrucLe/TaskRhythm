@@ -19,14 +19,14 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsUUID()
-  parent_task_id?: string;
+  parentTaskId?: string;
 
   @IsOptional()
   progress?: number;
 
   @IsOptional()
-  start_date?: Date;
+  startDate?: Date;
 
   @IsOptional()
-  due_date?: Date;
+  dueDate?: Date;
 }

@@ -7,6 +7,7 @@ import { WorkspaceModule } from "./modules/workspace/workspace.module";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { TaskModule } from "./modules/task/task.module";
 import { ProjectModule } from "./modules/project/project.module";
+import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ProjectModule } from "./modules/project/project.module";
         database: configService.get("DB_DATABASE"),
         autoLoadEntities: true,
         synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(),
         ssl:
           process.env.NODE_ENV === "production"
             ? { rejectUnauthorized: false }

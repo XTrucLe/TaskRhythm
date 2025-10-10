@@ -12,12 +12,11 @@ import { WorkspaceMember } from "./workspace-member.entity";
 import { WorkspaceStatus } from "../constants/workspace-status.constant";
 import { WorkspaceType } from "../constants/workspace-type.constant";
 import { WorkspaceInvite } from "./workspace-invite.entity";
-import { Task } from "src/modules/task/entities/task.entity";
 import { Project } from "src/modules/project/entities/project.entity";
 
 @Entity("workspaces")
 @Index(["ownerId", "name"], { unique: true })
-@Check(`"maxMembers" > 6`)
+@Check(`max_members > 6`)
 export class Workspace {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
@@ -32,7 +31,7 @@ export class Workspace {
   })
   type!: WorkspaceType;
 
-  @Column({ default: 10 })
+  @Column({ type: "int", default: 10 })
   maxMembers!: number;
 
   @Column({
@@ -64,10 +63,7 @@ export class Workspace {
   totalMembers!: number;
 
   @Column({ default: 0 })
-  totalModules!: number;
-
-  @Column({ default: 0 })
-  totalTasks!: number;
+  totalProject!: number;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -77,9 +73,6 @@ export class Workspace {
 
   @OneToMany(() => WorkspaceInvite, (invite) => invite.workspace)
   invites!: WorkspaceInvite[];
-
-  @OneToMany(() => Task, (task) => task.workspace)
-  tasks!: Task[];
 
   @OneToMany(() => Project, (workspace) => workspace.workspace)
   projects!: Project[];

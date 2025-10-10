@@ -14,8 +14,7 @@ export class WorkspaceResponseDto {
   @Expose() settings?: Record<string, any>;
   @Expose() ownerId!: string;
   @Expose() totalMembers!: number;
-  @Expose() totalModules!: number;
-  @Expose() totalTasks!: number;
+  @Expose() totalProject!: number;
   @Expose() createdAt!: Date;
   @Expose() updatedAt!: Date;
 }

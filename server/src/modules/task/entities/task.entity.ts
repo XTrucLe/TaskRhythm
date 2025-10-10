@@ -11,12 +11,11 @@ import {
   Unique,
 } from "typeorm";
 import { TaskPriority, TaskStatus } from "../constants/task.constant";
-import { Workspace } from "src/modules/workspace/entities/workspace.entity";
 import { TaskDependency } from "./task-dependency.entity";
 import { Project } from "src/modules/project/entities/project.entity";
 
 @Entity("tasks")
-@Unique(["workspace_id", "title"])
+@Unique(["projectId", "title"])
 @Check(`"level" >= 0 AND "level" < 3`)
 @Check(`"progress" >= 0 AND "progress" <= 100`)
 export class Task {
@@ -24,16 +23,8 @@ export class Task {
   id!: string;
 
   @Column()
-  workspace_id!: string;
-
-  @ManyToOne(() => Workspace, (workspace) => workspace.tasks, {
-    onDelete: "CASCADE",
-  })
-  workspace!: Workspace;
-
-  @Column({ nullable: true })
   @Index()
-  project_id?: string;
+  projectId?: string;
 
   @ManyToOne(() => Project, (project) => project.tasks, {
     onDelete: "CASCADE",
@@ -58,21 +49,21 @@ export class Task {
   @Column({ default: 0 })
   level!: number;
 
-  @ManyToOne(() => Task, (task) => task.sub_tasks, {
+  @ManyToOne(() => Task, (task) => task.subTasks, {
     nullable: true,
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "parent_task_id" })
-  parent_task?: Task;
+  parentTask?: Task;
 
-  @OneToMany(() => Task, (task) => task.parent_task)
-  sub_tasks?: Task[];
+  @OneToMany(() => Task, (task) => task.parentTask)
+  subTasks?: Task[];
 
   @Column({ nullable: true })
-  assign_id?: string;
+  assignId?: string;
 
   @Column()
-  creator_id!: string;
+  creatorId!: string;
 
   @Column({ type: "boolean", default: false })
   isBlocked?: boolean;
@@ -84,24 +75,24 @@ export class Task {
   dependencies!: TaskDependency[];
 
   @Column({ type: "timestamp", nullable: true })
-  start_planned?: Date;
+  startPlanned?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  start_at?: Date;
+  startAt?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  assign_at?: Date;
+  assignAt?: Date;
 
   @Index()
   @Column({ type: "timestamp", nullable: true })
-  due_date?: Date;
+  dueDate?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  completed_at?: Date;
+  completedAt?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  cancelled_at?: Date;
+  cancelledAt?: Date;
 
   @CreateDateColumn()
-  created_at!: Date;
+  createdAt!: Date;
 }

@@ -15,43 +15,43 @@ export class TaskUtilsService {
   ) {}
 
   async exists(
-    workspace_id: string,
+    projectId: string,
     criteria: { id?: string; title?: string }
   ): Promise<boolean> {
     return await this.taskRepository.exists({
-      where: { workspace_id, ...criteria },
+      where: { projectId, ...criteria },
     });
   }
 
   async ensureExists(
-    workspaceId: string,
+    projectId: string,
     criteria: { id?: string; title?: string },
     entityName = "Task"
   ): Promise<void> {
-    const exists = await this.exists(workspaceId, criteria);
+    const exists = await this.exists(projectId, criteria);
     if (!exists) {
       throw new NotFoundException(
         `${entityName} with criteria ${JSON.stringify(
           criteria
-        )} does not exist in workspace ${workspaceId}`
+        )} does not exist in project ${projectId}`
       );
     }
   }
 
-  async ensureNameUnique(workspaceId: string, title: string): Promise<void> {
-    const exists = await this.exists(workspaceId, { title });
+  async ensureNameUnique(projectId: string, title: string): Promise<void> {
+    const exists = await this.exists(projectId, { title });
     if (exists) {
       throw new ConflictException(
-        `Task with title "${title}" already exists in workspace ${workspaceId}`
+        `Task with title "${title}" already exists in project ${projectId}`
       );
     }
   }
 
   async ensureParentTaskExists(
-    workspaceId: string,
+    projectId: string,
     parentTaskId: string
   ): Promise<void> {
-    await this.ensureExists(workspaceId, { id: parentTaskId }, "Parent Task");
+    await this.ensureExists(projectId, { id: parentTaskId }, "Parent Task");
   }
 
   async getLevel(taskId: string): Promise<number> {
@@ -66,9 +66,9 @@ export class TaskUtilsService {
     }
 
     const level = Number(result.level);
-    if (level === 4) {
+    if (level >= 3) {
       throw new ConflictException(
-        "Cannot create sub-task. Maximum depth of 4 levels reached."
+        "Cannot create sub-task. Maximum depth of 3 levels reached."
       );
     }
 

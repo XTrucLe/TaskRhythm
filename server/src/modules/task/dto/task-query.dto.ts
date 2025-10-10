@@ -23,11 +23,11 @@ export class TaskQueryDto {
 
   @IsOptional()
   @IsString()
-  assign_id?: string;
+  assignId?: string;
 
   @IsOptional()
   @IsString()
-  parent_task_id?: string;
+  parentTaskId?: string;
 
   @IsOptional()
   @Type(() => Date)

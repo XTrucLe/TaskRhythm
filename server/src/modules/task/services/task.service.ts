@@ -8,11 +8,10 @@ import { Repository } from "typeorm";
 import { CreateTaskDto } from "../dto/create-task.dto";
 import { UpdateTaskDto } from "../dto/update-task.dto";
 import { Task } from "../entities/task.entity";
-import { WorkspaceService } from "src/modules/workspace/services/workspace.service";
-import { UserService } from "src/modules/user/services/user.service";
 import { TaskUtilsService } from "./task-utils.service";
 import { TaskStatus } from "../constants/task.constant";
 import { TaskQueryDto } from "../dto/task-query.dto";
+import { ProjectService } from "src/modules/project/services/project.service";
 
 @Injectable()
 export class TaskService {
@@ -20,92 +19,86 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly taskUtils: TaskUtilsService,
-    private readonly workspaceService: WorkspaceService,
-    private readonly userService: UserService
+    private readonly projectService: ProjectService
   ) {}
 
+  // ----------------------------------------------------------------
+  // 🔹 CREATE TASK
+  // ----------------------------------------------------------------
   async create(
-    workspace_id: string,
+    projectId: string,
     currentUserId: string,
     dto: CreateTaskDto
   ): Promise<Task> {
-    await this.validateBeforeCreate(workspace_id, dto);
+    await this.validateBeforeCreate(projectId, dto);
 
-    const workspace = await this.workspaceService.getWorkspaceById(
-      workspace_id
-    );
-    const level = dto.parent_task_id
-      ? (await this.taskUtils.getLevel(dto.parent_task_id)) + 1
+    const project = await this.projectService.getProjectById(projectId);
+    const level = dto.parentTaskId
+      ? (await this.taskUtils.getLevel(dto.parentTaskId)) + 1
       : 0;
 
     const task = this.taskRepository.create({
       ...dto,
-      workspace_id,
-      workspace,
+      projectId,
+      project,
       level,
-      creator_id: currentUserId,
-      parent_task: dto.parent_task_id ? { id: dto.parent_task_id } : undefined,
+      creatorId: currentUserId,
+      parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
     });
-
     return this.taskRepository.save(task);
   }
 
   async createWithChildren(
-    workspace_id: string,
+    projectId: string,
     currentUserId: string,
-    dto: CreateTaskDto & { sub_tasks?: CreateTaskDto[] }
+    dto: CreateTaskDto & { subTasks?: CreateTaskDto[] }
   ): Promise<Task> {
-    await this.validateBeforeCreate(workspace_id, dto);
+    await this.validateBeforeCreate(projectId, dto);
 
-    const workspace = await this.workspaceService.getWorkspaceById(
-      workspace_id
-    );
-    const level = dto.parent_task_id
-      ? (await this.taskUtils.getLevel(dto.parent_task_id)) + 1
+    const project = await this.projectService.getProjectById(projectId);
+    const level = dto.parentTaskId
+      ? (await this.taskUtils.getLevel(dto.parentTaskId)) + 1
       : 0;
 
     const task = this.taskRepository.create({
       ...dto,
-      workspace_id,
-      workspace,
+      projectId,
+      project,
       level,
-      creator_id: currentUserId,
-      parent_task: dto.parent_task_id ? { id: dto.parent_task_id } : undefined,
+      creatorId: currentUserId,
+      parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
     });
 
     const savedTask = await this.taskRepository.save(task);
 
-    if (dto.sub_tasks?.length) {
+    if (dto.subTasks?.length) {
       const subTasks = await Promise.all(
-        dto.sub_tasks.map((child) =>
-          this.createWithChildren(workspace_id, currentUserId, {
+        dto.subTasks.map((child) =>
+          this.createWithChildren(projectId, currentUserId, {
             ...child,
-            parent_task_id: savedTask.id,
+            parentTaskId: savedTask.id,
           })
         )
       );
-      savedTask.sub_tasks = subTasks;
+      savedTask.subTasks = subTasks;
     }
 
     return savedTask;
   }
 
   async update(
-    workspace_id: string,
+    projectId: string,
     taskId: string,
     dto: UpdateTaskDto
   ): Promise<Task> {
-    const task = await this.findTaskById(workspace_id, taskId);
+    const task = await this.findTaskById(projectId, taskId);
 
     if (dto.title && dto.title !== task.title) {
-      await this.taskUtils.ensureNameUnique(workspace_id, dto.title);
+      await this.taskUtils.ensureNameUnique(projectId, dto.title);
     }
 
-    if (dto.parent_task_id) {
-      await this.taskUtils.ensureParentTaskExists(
-        workspace_id,
-        dto.parent_task_id
-      );
+    if (dto.parentTaskId) {
+      await this.taskUtils.ensureParentTaskExists(projectId, dto.parentTaskId);
     }
 
     Object.assign(task, dto);
@@ -113,13 +106,13 @@ export class TaskService {
   }
 
   async updateStatus(
-    workspace_id: string,
+    projectId: string,
     taskId: string,
     status: TaskStatus
   ): Promise<Task> {
-    const task = await this.findTaskById(workspace_id, taskId);
+    const task = await this.findTaskById(projectId, taskId);
 
-    if (task.sub_tasks?.length) {
+    if (task.subTasks?.length) {
       throw new ConflictException(
         "Cannot update status of a task with sub-tasks. Update sub-tasks first."
       );
@@ -129,15 +122,15 @@ export class TaskService {
     return this.taskRepository.save(task);
   }
 
-  async delete(workspace_id: string, taskId: string): Promise<void> {
-    const task = await this.findTaskById(workspace_id, taskId);
+  async delete(projectId: string, taskId: string): Promise<void> {
+    const task = await this.findTaskById(projectId, taskId);
     await this.taskRepository.remove(task);
   }
 
-  async findTaskById(workspace_id: string, taskId: string): Promise<Task> {
+  async findTaskById(projectId: string, taskId: string): Promise<Task> {
     const task = await this.taskRepository.findOne({
-      where: { id: taskId, workspace_id },
-      relations: ["sub_tasks"],
+      where: { id: taskId, projectId },
+      relations: ["subTasks"],
     });
 
     if (!task) {
@@ -147,28 +140,28 @@ export class TaskService {
   }
 
   async getTaskByParentId(
-    workspace_id: string,
+    projectId: string,
     parentTaskId: string
   ): Promise<Task[]> {
     return this.taskRepository.find({
-      where: { workspace_id, parent_task: { id: parentTaskId } },
+      where: { projectId, parentTask: { id: parentTaskId } },
     });
   }
 
-  async list(workspace_id: string, query: TaskQueryDto): Promise<Task[]> {
+  async list(projectId: string, query: TaskQueryDto): Promise<Task[]> {
     const {
-      parent_task_id,
+      parentTaskId,
       page = 1,
       limit = 20,
-      sortBy = "created_at",
+      sortBy = "createdAt",
       sortOrder = "ASC",
       ...filters
     } = query;
 
-    const where: any = { workspace_id, ...filters };
+    const where: any = { projectId, ...filters };
 
-    if (parent_task_id) {
-      where.parent_task = { id: parent_task_id };
+    if (parentTaskId) {
+      where.parentTask = { id: parentTaskId };
     }
 
     return this.taskRepository.find({
@@ -179,20 +172,14 @@ export class TaskService {
     });
   }
 
-  // -----------------------------
-  // 🔹 INTERNAL UTILITIES
-  // -----------------------------
   private async validateBeforeCreate(
-    workspace_id: string,
+    projectId: string,
     dto: CreateTaskDto
   ): Promise<void> {
-    await this.taskUtils.ensureNameUnique(workspace_id, dto.title);
+    await this.taskUtils.ensureNameUnique(projectId, dto.title);
 
-    if (dto.parent_task_id) {
-      await this.taskUtils.ensureParentTaskExists(
-        workspace_id,
-        dto.parent_task_id
-      );
+    if (dto.parentTaskId) {
+      await this.taskUtils.ensureParentTaskExists(projectId, dto.parentTaskId);
     }
   }
 }

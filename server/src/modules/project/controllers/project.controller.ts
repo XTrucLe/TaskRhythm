@@ -44,11 +44,7 @@ export class ProjectController {
     @Param("project_id") project_id: string,
     @Body() dto: UpdateProjectDto
   ): Promise<ProjectResponseWithStatsDto> {
-    const project = await this.projectService.update(
-      workspace_id,
-      project_id,
-      dto
-    );
+    const project = await this.projectService.update(project_id, dto);
     return this.projectMapper.toDtoWithStats(project);
   }
 
@@ -62,13 +58,9 @@ export class ProjectController {
 
   @Get(":project_id")
   async getProjectById(
-    @Param("workspace_id") workspace_id: string,
     @Param("project_id") project_id: string
   ): Promise<ProjectResponseWithStatsDto> {
-    const project = await this.projectService.getProjectById(
-      workspace_id,
-      project_id
-    );
+    const project = await this.projectService.getProjectById(project_id);
     return this.projectMapper.toDtoWithStats(project);
   }
 }

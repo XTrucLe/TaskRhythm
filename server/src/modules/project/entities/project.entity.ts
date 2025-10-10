@@ -13,17 +13,17 @@ import {
 import { Workspace } from "src/modules/workspace/entities/workspace.entity";
 import { Task } from "src/modules/task/entities/task.entity";
 import { ProjectStats } from "./project_stats.entity";
-import { WorkspaceMember } from "src/modules/workspace/entities/workspace-member.entity";
 import { User } from "src/modules/user/entities/user.entity";
+import { ProjectStatus } from "../constants/project.constant";
 
 @Entity("projects")
-@Unique(["workspace_id", "name"])
+@Unique(["workspaceId", "name"])
 export class Project {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column()
-  workspace_id!: string;
+  workspaceId!: string;
 
   @ManyToOne(() => Workspace, (workspace) => workspace.projects, {
     onDelete: "CASCADE",
@@ -32,17 +32,28 @@ export class Project {
   workspace!: Workspace;
 
   @Column()
-  creator_id!: string;
+  creatorId!: string;
 
   @ManyToOne(() => User, { onDelete: "SET NULL" })
   @JoinColumn({ name: "creator_id" })
   creator!: User;
+
+  @ManyToOne(() => User, { onDelete: "SET NULL" })
+  @JoinColumn({ name: "project_lead_id" })
+  projectLead!: User;
 
   @Column()
   name!: string;
 
   @Column({ nullable: true })
   description?: string;
+
+  @Column({
+    type: "enum",
+    enum: ProjectStatus,
+    default: ProjectStatus.PLANNING,
+  })
+  status!: ProjectStatus;
 
   @OneToMany(() => Task, (task) => task.project)
   tasks!: Task[];
@@ -52,9 +63,15 @@ export class Project {
   })
   stats!: ProjectStats;
 
+  @Column({ type: "date", nullable: true })
+  startDate?: string;
+
+  @Column({ type: "date", nullable: true })
+  endDate?: string;
+
   @CreateDateColumn()
-  created_at!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updated_at!: Date;
+  updatedAt!: Date;
 }

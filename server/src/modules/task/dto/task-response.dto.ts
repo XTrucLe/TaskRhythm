@@ -7,22 +7,22 @@ export class TaskResponseDto {
   @Expose() description?: string;
   @Expose() status!: string;
   @Expose() priority!: string;
-  @Expose() parent_task_id?: string;
-  @Expose() creator_id!: string;
+  @Expose() parentTaskId?: string;
+  @Expose() creatorId!: string;
   @Expose() level!: number;
-  @Expose() assign_id?: string;
+  @Expose() isBlocked?: boolean;
+  @Expose() assignId?: string;
   @Expose() progress?: number;
-  @Expose() start_date?: Date;
-  @Expose() due_date?: Date;
-  @Expose() completed_at?: Date;
-  @Expose() created_at!: Date;
-  @Expose() updated_at!: Date;
-  @Expose() workspace_id!: string;
+  @Expose() startDate?: Date;
+  @Expose() dueDate?: Date;
+  @Expose() completedAt?: Date;
+  @Expose() createdAt!: Date;
+  @Expose() updatedAt!: Date;
 }
 
 @Exclude()
 export class TaskResponseWithChildDto extends TaskResponseDto {
   @Expose()
   @Type(() => TaskResponseDto)
-  sub_tasks?: TaskResponseDto[];
+  subTasks?: TaskResponseDto[];
 }

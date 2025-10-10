@@ -24,62 +24,53 @@ export class ProjectService {
   ) {}
 
   async createProject(
-    workspace_id: string,
-    creator_id: string,
+    workspaceId: string,
+    creatorId: string,
     dto: CreateProjectDto
   ): Promise<Project> {
-    this.workspaceService.getWorkspaceById(workspace_id);
+    this.workspaceService.getWorkspaceById(workspaceId);
     const project = this.projectRepository.create({
       ...dto,
-      creator_id,
-      workspace_id,
+      creatorId,
+      workspaceId,
     });
     const newProject = await this.projectRepository.save(project);
     await this.createProjectStats(newProject.id);
     return newProject;
   }
 
-  async update(
-    workspace_id: string,
-    project_id: string,
-    dto: UpdateProjectDto
-  ): Promise<Project> {
-    const project = await this.getProjectById(workspace_id, project_id);
+  async update(projectId: string, dto: UpdateProjectDto): Promise<Project> {
+    const project = await this.getProjectById(projectId);
     Object.assign(project, dto);
     return this.projectRepository.save(project);
   }
 
-  async delete(workspace_id: string, project_id: string): Promise<void> {
-    const project = await this.getProjectById(workspace_id, project_id);
+  async delete(workspaceId: string, projectId: string): Promise<void> {
+    const project = await this.getProjectById(projectId);
     await this.projectRepository.remove(project);
   }
 
-  async getProjectById(
-    workspace_id: string,
-    project_id: string
-  ): Promise<Project> {
+  async getProjectById(projectId: string): Promise<Project> {
     const project = await this.projectRepository.findOne({
-      where: { id: project_id, workspace_id },
+      where: { id: projectId },
       relations: ["stats"],
     });
     if (!project) {
-      throw new NotFoundException(
-        `Project with ID ${project_id} not found in workspace ${workspace_id}`
-      );
+      throw new NotFoundException(`Project with ID ${projectId} not found`);
     }
     return project;
   }
 
-  async getProjectInWorkspace(workspace_id: string): Promise<Project[]> {
+  async getProjectInWorkspace(workspaceId: string): Promise<Project[]> {
     const projects = await this.projectRepository.find({
-      where: { workspace_id },
+      where: { workspaceId },
       relations: ["stats"],
     });
     return projects;
   }
 
-  async createProjectStats(project_id: string): Promise<ProjectStats> {
-    const stats = this.projectStatsRepository.create({ project_id });
+  async createProjectStats(projectId: string): Promise<ProjectStats> {
+    const stats = this.projectStatsRepository.create({ projectId });
     return this.projectStatsRepository.save(stats);
   }
 }

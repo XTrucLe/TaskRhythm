@@ -36,6 +36,9 @@ export class WorkspaceMember {
   })
   role!: WorkspaceRole;
 
+  @Column({ default: "Member" })
+  jobTitle!: string;
+
   @CreateDateColumn()
   joinedAt!: Date;
 
