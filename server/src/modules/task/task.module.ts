@@ -12,6 +12,9 @@ import { TaskDependencyService } from "./services/task-dependency.service";
 import { TaskCommentService } from "./services/task-comment.service";
 import { TaskCommentMapper } from "./mappers/task-comment.mapper";
 import { TaskQueryService } from "./services/task-query.service";
+import { TaskCommentController } from "./controllers/task-comment.controller";
+import { TaskEventHandlerService } from "./services/task-event-handler.service";
+import { TaskDependencyController } from "./controllers/task-dependency.controller";
 
 @Module({
   imports: [
@@ -19,21 +22,25 @@ import { TaskQueryService } from "./services/task-query.service";
     UserModule,
     ProjectModule,
   ],
-  controllers: [TaskController],
+  controllers: [
+    TaskController,
+    TaskCommentController,
+    TaskDependencyController,
+  ],
   providers: [
     TaskService,
     TaskQueryService,
-    TaskMapper,
     TaskDependencyService,
     TaskCommentService,
     TaskCommentMapper,
+    TaskMapper,
+    TaskEventHandlerService,
   ],
   exports: [
     TypeOrmModule,
     TaskService,
     TaskDependencyService,
     TaskCommentService,
-    TaskCommentMapper,
   ],
 })
 export class TaskModule {}

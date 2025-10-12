@@ -122,12 +122,17 @@ export class TaskService {
     status: TaskStatus
   ): Promise<Task> {
     const task = await this.taskQuery.getTaskById(projectId, taskId);
-    if (task.subTasks?.length) {
-      throw new ConflictException(
-        "Cannot update status of a task with sub-tasks"
-      );
+    if (task.isMilestone) {
+      throw new ConflictException("Cannot update status of a milestone task");
     }
+    await this.taskDependency.handleTaskStatusUpdate(projectId, taskId, status);
+
     task.status = status;
+    this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
+      projectId,
+      taskId,
+      status,
+    });
     return this.taskRepository.save(task);
   }
 
@@ -146,6 +151,8 @@ export class TaskService {
     task.isBlocked = action === "block";
     return this.taskRepository.save(task);
   }
+
+  // --- PRIVATE HELPERS --- //
 
   private async ensureCreatable(
     projectId: string,

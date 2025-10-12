@@ -6,6 +6,7 @@ export enum EmitterEvent {
   TASK_COMMENT_DELETED = "task.comment.deleted",
   TASK_DEPENDENCY_ADDED = "task.dependency.added",
   TASK_DEPENDENCY_REMOVED = "task.dependency.removed",
+  TASK_UNLOCKED = "task.unblocked",
   TASK_STATUS_UPDATED = "task.status.updated",
   TASK_ASSIGNEE_CHANGED = "task.assignee.changed",
   TASK_PRIORITY_CHANGED = "task.priority.changed",

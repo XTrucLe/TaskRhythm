@@ -9,12 +9,15 @@ import { EntityManager, Repository } from "typeorm";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
 import { TaskDependency } from "../entities/task-dependency.entity";
-import { TaskQueryService } from "./task-query.service";
 import {
   CreateDependencyDto,
   CreateTaskDependencyDto,
 } from "../dto/task-dependence/create-task-dependency.dto";
-import { TaskDependencyType, TaskDirection } from "../constants/task.constant";
+import {
+  TaskDependencyType,
+  TaskDirection,
+  TaskStatus,
+} from "../constants/task.constant";
 import { EmitterEvent } from "src/common/constants/emitter.constant";
 
 @Injectable()
@@ -22,7 +25,6 @@ export class TaskDependencyService {
   constructor(
     @InjectRepository(TaskDependency)
     private readonly dependencyRepo: Repository<TaskDependency>,
-    private readonly taskQuery: TaskQueryService,
     private readonly emitter: EventEmitter2
   ) {}
 
@@ -95,6 +97,67 @@ export class TaskDependencyService {
     });
   }
 
+  // -- HANDLE STATUS UPDATE DUE TO DEPENDENCY -- //
+
+  async handleTaskStatusUpdate(
+    projectId: string,
+    taskId: string,
+    status: TaskStatus
+  ): Promise<void> {
+    const dependencies = await this.getDependenciesByTaskId(taskId);
+
+    if (dependencies.length === 0) return;
+
+    const isDependent = dependencies.some(
+      (dep) => dep.dependsOnTask.id === taskId
+    );
+
+    if (!isDependent) return;
+
+    await Promise.all(
+      dependencies.map((dep) =>
+        this.handler(projectId, status, dep).catch((err) =>
+          console.error(
+            `Failed to handle dependency for task ${taskId} due to: ${err.message}`
+          )
+        )
+      )
+    );
+  }
+
+  async handler(
+    projectId: string,
+    newStatus: TaskStatus,
+    dependencies: TaskDependency
+  ): Promise<void> {
+    const unlockCondition = {
+      [TaskDependencyType.FINISH_TO_START]: [
+        TaskStatus.DONE,
+        TaskStatus.DONE_LATE,
+      ].includes(newStatus),
+      [TaskDependencyType.START_TO_START]: ![
+        TaskStatus.TODO,
+        TaskStatus.COMMING_SOON,
+      ].includes(newStatus),
+      [TaskDependencyType.FINISH_TO_FINISH]: [
+        TaskStatus.DONE,
+        TaskStatus.DONE_LATE,
+      ].includes(newStatus),
+      [TaskDependencyType.START_TO_FINISH]: ![
+        TaskStatus.TODO,
+        TaskStatus.COMMING_SOON,
+      ].includes(newStatus),
+    };
+
+    const shouldUnlock = unlockCondition[dependencies.type];
+
+    if (!shouldUnlock) return;
+    this.emitter.emit(EmitterEvent.TASK_UNLOCKED, {
+      projectId,
+      taskId: dependencies.task.id,
+    });
+  }
+
   // --- PRIVATE HELPERS --- //
 
   private async ensureDependencyNotExists(
@@ -110,6 +173,17 @@ export class TaskDependencyService {
     if (exists) {
       throw new ConflictException("Dependency already exists");
     }
+  }
+
+  private async getDependenciesByTaskId(
+    taskId: string,
+    manager?: EntityManager
+  ): Promise<TaskDependency[]> {
+    const repo = this.getRepo(manager);
+    return repo.find({
+      where: { task: { id: taskId } },
+      relations: ["dependsOnTask"],
+    });
   }
 
   private getRepo(manager?: EntityManager): Repository<TaskDependency> {

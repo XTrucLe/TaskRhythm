@@ -11,10 +11,14 @@ export class TaskQueryService {
     private readonly taskRepository: Repository<Task>
   ) {}
 
-  async getTaskById(projectId: string, taskId: string): Promise<Task> {
+  async getTaskById(
+    projectId: string,
+    taskId: string,
+    relations?: string[]
+  ): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId, project: { id: projectId } },
-      relations: ["subTasks", "assignee", "creator"],
+      relations: relations || ["subTasks", "assignee", "creator"],
     });
 
     if (!task) {

@@ -19,4 +19,25 @@ export class TaskEventHandlerService {
     const { projectId, taskId } = payload;
     this.taskService.toggleBlock(projectId, taskId, "unblock");
   }
+
+  @OnEvent(EmitterEvent.TASK_UNLOCKED)
+  async handleTaskUnlockedEvent(payload: {
+    projectId: string;
+    taskId: string;
+  }) {
+    const { projectId, taskId } = payload;
+    this.taskService.toggleBlock(projectId, taskId, "unblock");
+  }
+
+  @OnEvent(EmitterEvent.TASK_STATUS_UPDATED)
+  async handleTaskStatusUpdatedEvent(payload: {
+    projectId: string;
+    taskId: string;
+    status: string;
+  }) {
+    const { projectId, taskId, status } = payload;
+    if (status === "completed") {
+      this.taskService.toggleBlock(projectId, taskId, "unblock");
+    }
+  }
 }
