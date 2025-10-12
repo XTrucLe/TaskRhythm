@@ -13,6 +13,8 @@ import {
 import { TaskPriority, TaskStatus } from "../constants/task.constant";
 import { TaskDependency } from "./task-dependency.entity";
 import { Project } from "src/modules/project/entities/project.entity";
+import { User } from "src/modules/user/entities/user.entity";
+import { TaskComment } from "./task-comment.entity";
 
 @Entity("tasks")
 @Unique(["projectId", "title"])
@@ -31,6 +33,14 @@ export class Task {
   })
   @JoinColumn({ name: "project_id" })
   project!: Project;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: "assignee_id" })
+  assignee?: User;
+
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: "creator_id" })
+  creator!: User;
 
   @Column()
   title!: string;
@@ -59,29 +69,29 @@ export class Task {
   @OneToMany(() => Task, (task) => task.parentTask)
   subTasks?: Task[];
 
-  @Column({ nullable: true })
-  assignId?: string;
-
-  @Column()
-  creatorId!: string;
-
-  @Column({ type: "boolean", default: false })
-  isBlocked?: boolean;
-
-  @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
-  progress?: number;
-
   @OneToMany(() => TaskDependency, (dependencies) => dependencies.task)
   dependencies!: TaskDependency[];
 
+  @OneToMany(() => TaskComment, (comment) => comment.task)
+  comments!: TaskComment[];
+
+  @Column({ type: "boolean", default: false })
+  isMilestone!: boolean;
+
+  @Column({ type: "boolean", default: false })
+  isBlocked!: boolean;
+
+  @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
+  progress!: number;
+
   @Column({ type: "timestamp", nullable: true })
-  startPlanned?: Date;
+  plannedStartAt?: Date;
 
   @Column({ type: "timestamp", nullable: true })
   startAt?: Date;
 
   @Column({ type: "timestamp", nullable: true })
-  assignAt?: Date;
+  assignedAt?: Date;
 
   @Index()
   @Column({ type: "timestamp", nullable: true })

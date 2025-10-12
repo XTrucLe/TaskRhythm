@@ -19,3 +19,9 @@ export class TaskDeletedEvent {
   deleterId!: string;
   parentTaskId?: string;
 }
+
+export class TaskDependencyAddedEvent {
+  projectId!: string;
+  taskId!: string;
+  dependsOnTaskId!: string;
+}

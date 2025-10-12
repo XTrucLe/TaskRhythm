@@ -5,92 +5,105 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { CreateTaskDto } from "../dto/create-task.dto";
-import { UpdateTaskDto } from "../dto/update-task.dto";
 import { Task } from "../entities/task.entity";
-import { TaskUtilsService } from "./task-utils.service";
+import {
+  CreateTaskDto,
+  CreateTaskWithSubTasksDto,
+} from "../dto/task/create-task.dto";
+import { UpdateTaskDto } from "../dto/task/update-task.dto";
 import { TaskStatus } from "../constants/task.constant";
-import { TaskQueryDto } from "../dto/task-query.dto";
+import { TaskQueryService } from "./task-query.service";
 import { ProjectService } from "src/modules/project/services/project.service";
-import { EmitterEvent } from "src/common/constants/emitter.constant";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { EmitterEvent } from "src/common/constants/emitter.constant";
+import { TaskDependencyService } from "./task-dependency.service";
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
-    private readonly taskUtils: TaskUtilsService,
+    private readonly taskQuery: TaskQueryService,
+    private readonly taskDependency: TaskDependencyService,
     private readonly projectService: ProjectService,
-    private emitter: EventEmitter2
+    private readonly emitter: EventEmitter2
   ) {}
 
-  async create(
+  async createTask(
     projectId: string,
     currentUserId: string,
-    dto: CreateTaskDto
+    createDto: CreateTaskDto
   ): Promise<Task> {
-    await this.validateBeforeCreate(projectId, dto);
+    await this.ensureCreatable(projectId, createDto);
+
+    const { dependencies, ...dto } = createDto;
 
     const project = await this.projectService.getProjectById(projectId);
-    const level = dto.parentTaskId
-      ? (await this.taskUtils.getLevel(dto.parentTaskId)) + 1
-      : 0;
+    const level = await this.computeLevel(projectId, dto.parentTaskId);
 
     const task = this.taskRepository.create({
       ...dto,
-      projectId,
       project,
-      level,
-      creatorId: currentUserId,
+      projectId,
+      creator: { id: currentUserId },
       parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
+      level,
     });
+
+    const saved = await this.taskRepository.save(task);
 
     this.emitter.emit(EmitterEvent.TASK_CREATED, {
       projectId,
-      creatorId: currentUserId,
-      parentTaskId: dto.parentTaskId ? task.parentTask?.id : undefined,
+      taskId: saved.id,
     });
 
-    return this.taskRepository.save(task);
-  }
-
-  async createWithChildren(
-    projectId: string,
-    currentUserId: string,
-    dto: CreateTaskDto & { subTasks?: CreateTaskDto[] }
-  ): Promise<Task> {
-    await this.validateBeforeCreate(projectId, dto);
-
-    const project = await this.projectService.getProjectById(projectId);
-    const level = dto.parentTaskId
-      ? (await this.taskUtils.getLevel(dto.parentTaskId)) + 1
-      : 0;
-
-    const task = this.taskRepository.create({
-      ...dto,
-      projectId,
-      project,
-      level,
-      creatorId: currentUserId,
-      parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
-    });
-
-    const savedTask = await this.taskRepository.save(task);
-
-    if (dto.subTasks?.length) {
-      const subTasks = await Promise.all(
-        dto.subTasks.map((child) =>
-          this.createWithChildren(projectId, currentUserId, {
-            ...child,
-            parentTaskId: savedTask.id,
-          })
-        )
+    if (dependencies) {
+      await this.taskDependency.addDependency(
+        projectId,
+        saved.id,
+        dependencies,
+        this.taskRepository.manager
       );
-      savedTask.subTasks = subTasks;
     }
 
-    return savedTask;
+    return saved;
+  }
+
+  async createMilestone(
+    projectId: string,
+    currentUserId: string,
+    dto: CreateTaskWithSubTasksDto
+  ): Promise<Task> {
+    const milestone = await this.createTask(projectId, currentUserId, {
+      title: dto.title,
+      description: dto.description,
+      dueDate: dto.dueDate,
+      isMilestone: true,
+    });
+
+    if (dto.subTasks?.length) {
+      for (const subDto of dto.subTasks) {
+        await this.createTask(projectId, currentUserId, {
+          ...subDto,
+          parentTaskId: milestone.id,
+        });
+      }
+    }
+
+    return milestone;
+  }
+
+  async createSubtask(
+    projectId: string,
+    currentUserId: string,
+    parentId: string,
+    dto: CreateTaskDto
+  ): Promise<Task> {
+    await this.taskQuery.getTaskById(projectId, parentId);
+    return this.createTask(projectId, currentUserId, {
+      ...dto,
+      parentTaskId: parentId,
+    });
   }
 
   async update(
@@ -98,16 +111,7 @@ export class TaskService {
     taskId: string,
     dto: UpdateTaskDto
   ): Promise<Task> {
-    const task = await this.findTaskById(projectId, taskId);
-
-    if (dto.title && dto.title !== task.title) {
-      await this.taskUtils.ensureNameUnique(projectId, dto.title);
-    }
-
-    if (dto.parentTaskId) {
-      await this.taskUtils.ensureParentTaskExists(projectId, dto.parentTaskId);
-    }
-
+    const task = await this.taskQuery.getTaskById(projectId, taskId);
     Object.assign(task, dto);
     return this.taskRepository.save(task);
   }
@@ -117,77 +121,61 @@ export class TaskService {
     taskId: string,
     status: TaskStatus
   ): Promise<Task> {
-    const task = await this.findTaskById(projectId, taskId);
-
+    const task = await this.taskQuery.getTaskById(projectId, taskId);
     if (task.subTasks?.length) {
       throw new ConflictException(
-        "Cannot update status of a task with sub-tasks. Update sub-tasks first."
+        "Cannot update status of a task with sub-tasks"
       );
     }
-
     task.status = status;
     return this.taskRepository.save(task);
   }
 
   async delete(projectId: string, taskId: string): Promise<void> {
-    const task = await this.findTaskById(projectId, taskId);
-    this.emitter.emit(EmitterEvent.TASK_DELETED, { projectId });
+    const task = await this.taskQuery.getTaskById(projectId, taskId);
     await this.taskRepository.remove(task);
+    this.emitter.emit(EmitterEvent.TASK_DELETED, { projectId, taskId });
   }
 
-  async findTaskById(projectId: string, taskId: string): Promise<Task> {
-    const task = await this.taskRepository.findOne({
-      where: { id: taskId, projectId },
-      relations: ["subTasks"],
-    });
-
-    if (!task) {
-      throw new NotFoundException(`Task with ID ${taskId} not found`);
-    }
-    return task;
-  }
-
-  async getTaskByParentId(
+  async toggleBlock(
     projectId: string,
-    parentTaskId: string
-  ): Promise<Task[]> {
-    return this.taskRepository.find({
-      where: { projectId, parentTask: { id: parentTaskId } },
-    });
+    taskId: string,
+    action: "block" | "unblock"
+  ): Promise<Task> {
+    const task = await this.taskQuery.getTaskById(projectId, taskId);
+    task.isBlocked = action === "block";
+    return this.taskRepository.save(task);
   }
 
-  async list(projectId: string, query: TaskQueryDto): Promise<Task[]> {
-    const {
-      parentTaskId,
-      page = 1,
-      limit = 20,
-      sortBy = "createdAt",
-      sortOrder = "ASC",
-      ...filters
-    } = query;
-
-    const where: any = { projectId, ...filters };
-
-    if (parentTaskId) {
-      where.parentTask = { id: parentTaskId };
-    }
-
-    return this.taskRepository.find({
-      where,
-      order: { [sortBy]: sortOrder },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-  }
-
-  private async validateBeforeCreate(
+  private async ensureCreatable(
     projectId: string,
     dto: CreateTaskDto
   ): Promise<void> {
-    await this.taskUtils.ensureNameUnique(projectId, dto.title);
+    const titleExists = await this.taskRepository.exists({
+      where: { projectId, title: dto.title },
+    });
+    if (titleExists)
+      throw new ConflictException("A task with this title already exists");
 
     if (dto.parentTaskId) {
-      await this.taskUtils.ensureParentTaskExists(projectId, dto.parentTaskId);
+      const parentExists = await this.taskRepository.exists({
+        where: { id: dto.parentTaskId, projectId },
+      });
+      if (!parentExists) throw new NotFoundException("Parent task not found");
     }
+  }
+
+  private async computeLevel(
+    projectId: string,
+    parentTaskId?: string
+  ): Promise<number> {
+    if (!parentTaskId) return 0;
+
+    const parent = await this.taskRepository.findOne({
+      where: { id: parentTaskId, projectId },
+      select: ["level"],
+    });
+
+    return parent ? parent.level + 1 : 0;
   }
 }

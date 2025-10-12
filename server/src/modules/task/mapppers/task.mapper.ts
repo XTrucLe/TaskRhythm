@@ -3,7 +3,7 @@ import { Task } from "../entities/task.entity";
 import {
   TaskResponseDto,
   TaskResponseWithChildDto,
-} from "../dto/task-response.dto";
+} from "../dto/task/task-response.dto";
 
 export class TaskMapper {
   toDto(entity: Task): TaskResponseDto {

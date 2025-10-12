@@ -6,7 +6,7 @@ import {
   IsNumber,
   IsDate,
 } from "class-validator";
-import { TaskPriority, TaskStatus } from "../constants/task.constant";
+import { TaskPriority, TaskStatus } from "../../constants/task.constant";
 
 export class TaskQueryDto {
   @IsOptional()

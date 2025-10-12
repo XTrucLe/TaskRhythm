@@ -33,4 +33,10 @@ export class ProjectEventHandlerService {
 
     await this.projectStatsService.incrementTaskCount(payload.projectId);
   }
+
+  @OnEvent(EmitterEvent.TASK_DELETED)
+  async handleTaskDeletedEvent(payload: { projectId: string }) {
+    if (!payload.projectId) return;
+    await this.projectStatsService.decrementTaskCount(payload.projectId);
+  }
 }

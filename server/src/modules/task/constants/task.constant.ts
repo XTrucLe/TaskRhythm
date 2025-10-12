@@ -20,3 +20,8 @@ export enum TaskDependencyType {
   FINISH_TO_FINISH = "finish_to_finish",
   START_TO_FINISH = "start_to_finish",
 }
+
+export enum TaskDirection {
+  BLOCKED = "blocked", // Task is blocked by another task
+  BLOCKED_BY = "blocked_by", // Task is blocking another task
+}
