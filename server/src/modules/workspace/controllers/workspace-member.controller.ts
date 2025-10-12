@@ -14,7 +14,7 @@ import { WorkspaceMemberService } from "../services/workspace-member.service";
 import { CreateWorkspaceMemberDto, WorkspaceMemberResponseDto } from "../dto";
 import { WorkspaceMemberMapper } from "../mappers/workspace-member.mapper";
 import { UpdateRoleDto } from "../dto/workspace-member/update-member-role.dto";
-import { CurrentUser } from "src/common/decoretors/current-user.decorator";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { WorkspaceRole } from "../constants/workspace-role.constant";
 

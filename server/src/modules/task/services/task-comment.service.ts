@@ -14,12 +14,12 @@ export class TaskCommentService {
   ) {}
 
   async createComment(
-    projectId: string,
     taskId: string,
+    userId: string,
     dto: CreateTaskCommentDto
   ): Promise<TaskComment> {
     const { content, parentCommentId } = dto;
-    const task = await this.taskQueryService.getTaskById(projectId, taskId);
+    const task = await this.taskQueryService.findById(taskId);
 
     let parentComment: TaskComment | null = null;
 
@@ -37,6 +37,7 @@ export class TaskCommentService {
     const comment = this.taskCommentRepository.create({
       content,
       task,
+      author: { id: userId },
       parentComment: parentComment || undefined,
     });
 

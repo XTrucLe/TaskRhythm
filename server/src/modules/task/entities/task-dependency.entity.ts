@@ -24,9 +24,6 @@ export class TaskDependency {
   @JoinColumn({ name: "dependsOnTaskId" })
   dependsOnTask!: Task;
 
-  @Column()
-  direction!: "outgoing" | "incoming";
-
   @Column({
     type: "enum",
     enum: TaskDependencyType,

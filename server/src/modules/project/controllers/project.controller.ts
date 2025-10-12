@@ -12,7 +12,7 @@ import { ProjectService } from "../services/project.service";
 import { CreateProjectDto } from "../dto/project/create-project.dto";
 import { UpdateProjectDto } from "../dto/project/update-project.dto";
 import { AuthGuard } from "@nestjs/passport";
-import { CurrentUser } from "src/common/decoretors/current-user.decorator";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { ProjectMapper } from "../mappers/project.mapper";
 import { ProjectResponseWithStatsDto } from "../dto/project/project-response.dto";
 

@@ -16,8 +16,8 @@ import {
   CreateTaskWithSubTasksDto,
 } from "../dto/task/create-task.dto";
 import { UpdateTaskDto } from "../dto/task/update-task.dto";
-import { CurrentUser } from "src/common/decoretors/current-user.decorator";
-import { TaskMapper } from "../mapppers/task.mapper";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { TaskMapper } from "../mappers/task.mapper";
 import { TaskQueryDto } from "../dto/task/task-query.dto";
 import {
   TaskResponseDto,

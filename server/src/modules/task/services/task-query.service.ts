@@ -25,6 +25,18 @@ export class TaskQueryService {
     return task;
   }
 
+  async findById(taskId: string): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ["subTasks", "assignee", "creator"],
+    });
+
+    if (!task) {
+      throw new NotFoundException(`Task with ID ${taskId} not found`);
+    }
+    return task;
+  }
+
   async list(projectId: string, query: TaskQueryDto): Promise<Task[]> {
     const {
       parentTaskId,

@@ -3,7 +3,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { UserService } from "./services/user.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserResponseDto } from "./dto/user-response.dto";
-import { CurrentUser } from "src/common/decoretors/current-user.decorator";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
 
 @Controller("user")
 @UseGuards(AuthGuard("jwt"))

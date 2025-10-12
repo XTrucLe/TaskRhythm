@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { WorkspaceInviteResponseDto } from "../dto";
 import { WorkspaceInviteService } from "../services/workspace-invite.service";
-import { CurrentUser } from "src/common/decoretors/current-user.decorator";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { AuthGuard } from "@nestjs/passport";
 import { WorkspaceInviteMapper } from "../mappers/workspace-invite.mapper";
 import { InviteStatus } from "../constants/invite-status.constant";
