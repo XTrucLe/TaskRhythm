@@ -1,0 +1,85 @@
+/* LINK STYLE */
+a {
+  box-sizing: border-box;
+  text-decoration: none;
+  color: var(--color-primary);
+  font-size: medium;
+  font-weight: 600;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* CARD STYLE */
+.card {
+  background-color: var(--color-surface);
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* INPUT STYLE*/
+.input-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0px;
+  position: relative;
+}
+
+.input-label {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-element {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: var(--color-surface-elevated);
+}
+
+.input-element:focus {
+  border-color: var(--color-border-default);
+  outline: none;
+  box-shadow: var(--shadow-md);
+}
+
+.input-error {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 3px rgba(217, 83, 79, 0.6);
+}
+
+.error-message {
+  color: var(--color-danger);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.success-message {
+  color: var(--color-success);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.eye-toggle {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+  color: #555;
+}
+
+.eye-toggle:hover {
+  color: #000;
+}

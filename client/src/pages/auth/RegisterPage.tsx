@@ -1,145 +1,107 @@
-import { CardBody, CardHeader } from "../../components/ui/Card";
-import { Button } from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
 import { useForm } from "react-hook-form";
+import { InputField } from "../../components/ui/InputField";
 import {
   registerSchema,
-  type RegisterFormValues,
+  type RegisterSchemas,
 } from "../../validates/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Select from "../../components/ui/Select";
+import { useEffect } from "react";
+import { FloatingInput } from "../../components/ui/FloatingInput";
 
-export default function RegisterForm() {
+export default function RegisterPage() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormValues>({
+  } = useForm<RegisterSchemas>({
     resolver: zodResolver(registerSchema),
   });
-
-  const onSubmit = (data: RegisterFormValues) => {
-    console.log("Register data:", data);
+  useEffect(() => {
     console.log(errors);
-    // call API register ở đây
+  }, [errors]);
+
+  const onSubmit = (data: RegisterSchemas) => {
+    console.log("Form Data:", data);
   };
 
   return (
-    <div className="space-y-8 my-3">
-      {/* Header */}
-      <CardHeader className="text-center space-y-2">
-        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] bg-clip-text text-transparent">
-          Create Account
-        </h1>
-        <p className="text-[var(--color-text-muted)] text-sm">
-          Join us and start your journey
-        </p>
-      </CardHeader>
-
-      {/* Body */}
-      <CardBody>
-        {/* Full Name + Gender */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 w-full">
-            <Input
-              label="Full Name"
-              {...register("fullName")}
-              type="text"
-              placeholder="John Doe"
-              error={errors.fullName?.message as string}
-            />
-          </div>
-          <Select
-            label="Gender"
-            {...register("gender")}
-            className="col-span-1"
-            error={errors.gender?.message}
-          >
-            <option value="" disabled hidden>
-              Select
-            </option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </Select>
+    <div className="min-h-screen flex items-center justify-center  px-3">
+      <div className="card w-full max-w-lg shadow-md rounded-2xl p-8 my-2">
+        <div className="text-center mb-4">
+          <h1 className="text-3xl font-bold text-center mb-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+            Register Account
+          </h1>
+          <p className="text-center mb-6 text-slate-400">
+            Create an account to get started
+          </p>
         </div>
 
-        {/* Email */}
-        <Input
-          label="Email"
-          {...register("email")}
-          type="email"
-          placeholder="you@example.com"
-          error={errors.email?.message}
-        />
-
-        {/* Phone + DOB */}
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Phone"
-            {...register("phoneNumber")}
-            type="tel"
-            placeholder="+84 123 456 789"
-            error={errors.phoneNumber?.message as string}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <InputField
+            label="Full Name"
+            placeholder="Enter your full name"
+            {...register("fullName")}
+            error={errors.fullName?.message}
           />
-          <Input
+
+          <InputField
+            label="Email"
+            placeholder="example@email.com"
+            type="email"
+            {...register("email")}
+            error={errors.email?.message}
+          />
+
+          <InputField
+            label="Phone Number"
+            placeholder="(+84) 123 456 789"
+            type="tel"
+            {...register("phoneNumber")}
+            error={errors.phoneNumber?.message}
+          />
+
+          <InputField
             label="Date of Birth"
-            {...register("dateOfBirth")}
             type="date"
+            {...register("dateOfBirth")}
             error={errors.dateOfBirth?.message}
           />
-        </div>
 
-        {/* Passwords */}
-        <Input
-          label="Password"
-          {...register("password")}
-          type="password"
-          placeholder="••••••••"
-          error={errors.password?.message}
-        />
-        <Input
-          label="Confirm Password"
-          {...register("confirmPassword")}
-          type="password"
-          placeholder="••••••••"
-          error={errors.confirmPassword?.message}
-        />
+          <InputField
+            label="Password"
+            placeholder="Enter your password"
+            type="password"
+            {...register("password")}
+            error={errors.password?.message}
+          />
 
-        {/* Terms */}
-        <div className="space-y-2">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              {...register("terms")}
-              id="terms"
-              className="h-4 w-4 text-[var(--color-primary)] focus:ring-[var(--color-primary)] border-[var(--color-text-muted)] rounded"
-            />
-            <label
-              htmlFor="terms"
-              className="ml-2 block text-sm text-[var(--color-text-primary)]"
-            >
-              I agree to the{" "}
-              <a
-                href="#"
-                className="text-[var(--color-primary)] hover:underline"
-              >
-                terms and conditions
-              </a>
-            </label>
-          </div>
-          {errors.terms ? (
-            <p className="text-sm text-red-500">{errors.terms.message}</p>
-          ) : (
-            <span>&nbsp;</span>
-          )}
-        </div>
+          <InputField
+            label="Confirm Password"
+            placeholder="Re-enter your password"
+            type="password"
+            {...register("confirmPassword")}
+            error={errors.confirmPassword?.message}
+          />
 
-        {/* Action */}
-        <Button onClick={handleSubmit(onSubmit)} className="w-full">
-          Sign Up
-        </Button>
-      </CardBody>
+          <FloatingInput
+            label="I agree to the Terms and Conditions"
+            type="checkbox"
+            {...register("terms")}
+            error={errors.terms?.message}
+          />
+
+          <button
+            type="submit"
+            className="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition"
+          >
+            Register
+          </button>
+        </form>
+
+        <p className="text-center text-gray-500 mt-4">
+          Already have an account? <a href="/login">Sign In</a>
+        </p>
+      </div>
     </div>
   );
 }

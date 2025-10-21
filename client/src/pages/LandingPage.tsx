@@ -1,4 +1,3 @@
-import Logo from "../components/ui/Logo";
 import { ThemeSwitch } from "../components/ui/ThemeSwitch";
 import useRouting from "../hooks/useRouting";
 
@@ -20,9 +19,7 @@ export default function LandingPage() {
         <h1
           className="text-2xl font-bold flex"
           style={{ color: "var(--color-primary)" }}
-        >
-          <Logo />
-        </h1>
+        ></h1>
         <nav className="hidden md:flex gap-8">
           <a href="#" style={{ color: "var(--color-text-secondary)" }}>
             Features
