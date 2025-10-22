@@ -1,0 +1,69 @@
+h1 {
+  font-size: 2rem; /* 36px */
+  line-height: 2.5rem; /* 40px */
+  font-weight: 700;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* TEXT STYLES COLORS */
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+.text-inverse {
+  color: var(--color-text-inverse);
+}
+
+.text-link:hover {
+  color: var(--color-primary-dark);
+}
+
+.text-error {
+  color: var(--color-danger);
+}

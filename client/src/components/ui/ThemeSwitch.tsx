@@ -4,7 +4,7 @@ export function ThemeSwitch() {
   const { theme, toggleTheme } = useTheme();
   const dark = theme === "dark";
   return (
-    <label className="relative inline-flex items-center cursor-pointer ">
+    <label className="relative inline-flex items-center cursor-pointer">
       {/* Hidden checkbox */}
       <input
         type="checkbox"
@@ -15,7 +15,7 @@ export function ThemeSwitch() {
 
       {/* Track */}
       <div
-        className={`w-22 h-10 rounded-full relative overflow-hidden transition-colors duration-500
+        className={`w-20 h-9 rounded-full relative overflow-hidden transition-colors duration-500
           ${
             dark ? "bg-[#0f2237]" : "bg-[#4BA3C3]"
           } shadow-[0_-1px_1px_rgba(0,0,0,0.25),0_1px_2px_rgba(255,255,255,0.94)]`}
@@ -76,9 +76,11 @@ export function ThemeSwitch() {
         )}
 
         <div
-          className={`absolute top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center rounded-full shadow-md
-    transition-transform duration-500
-    ${dark ? "translate-x-[2.8rem]" : "translate-x-0"} will-change-transform`}
+          className={`absolute top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full shadow-md
+              transition-transform duration-500
+              ${
+                dark ? "translate-x-[2.25rem]" : "-translate-x-[0.2rem]"
+              } will-change-transform`}
         >
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {/* 3 vòng ánh sáng */}
