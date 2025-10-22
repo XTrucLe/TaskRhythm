@@ -108,3 +108,39 @@ a:hover {
 .bg-overlay {
   background-color: var(--color-overlay);
 }
+
+/* OTHERS STYLE */
+.menu {
+  background-color: var(--color-surface-tertiary);
+  box-shadow: var(--shadow-lg);
+  border-radius: 4px;
+  padding: 8px 0;
+  z-index: 1000;
+}
+
+.menu-item {
+  padding: 10px 20px 10px 16px;
+  cursor: pointer;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.menu-item:hover,
+.menu-item:focus {
+  background-color: var(--color-neutral-300);
+  outline: none;
+}
+
+.menu-item.disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.menu-item-icon {
+  font-size: 18px;
+  color: var(--color-text-primary);
+}

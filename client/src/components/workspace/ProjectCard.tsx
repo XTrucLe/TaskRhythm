@@ -35,7 +35,7 @@ export default function ProjectCard({
   return (
     <div
       onClick={onClick}
-      className="backdrop-blur-sm rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border-gray-700/50 p-5 cursor-pointer"
+      className="backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 border-gray-700/50 p-5 cursor-pointer border-strong"
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-2">
@@ -50,7 +50,7 @@ export default function ProjectCard({
       {/* Description */}
       {description && (
         <p
-          className="text-sm line-clamp-2 mb-3 indent-1"
+          className="text-sm line-clamp-2 mb-4 indent-1"
           style={{
             lineHeight: "1.25rem",
             minHeight: "2.5rem",
@@ -61,7 +61,7 @@ export default function ProjectCard({
       )}
 
       {/* Dates */}
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-500 mb-3">
+      <div className="flex justify-between text-xs text-mute mb-2">
         <span className="flex items-center gap-1">
           <FaCalendarAlt size={12} /> {start_date || "--/--/----"}
         </span>
@@ -71,11 +71,11 @@ export default function ProjectCard({
       </div>
 
       {/* Progress bar */}
-      <div className="w-full bg-gray-200/10 dark:bg-gray-800/20 h-2 rounded-full overflow-hidden mb-3">
+      <div className="w-full bg-[var(--color-dark-overlay)] h-2 rounded-full overflow-hidden mb-1">
         <div
           className="h-full bg-primary rounded-full transition-all duration-500"
           style={{ width: `${progress_rate}%` }}
-        ></div>
+        />
       </div>
       <div className="text-xs text-right text-muted mb-3">
         {progress_rate.toFixed(0)}%

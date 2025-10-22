@@ -1,15 +1,19 @@
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../../components/layout/Header";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaGear, FaUserPlus, FaUsers, FaFolder } from "react-icons/fa6";
+import { FiSettings, FiUsers, FiLogOut } from "react-icons/fi";
 import { projects as mockProjects } from "../../mock/project";
 import ProjectCard from "../../components/workspace/ProjectCard";
+import { Menu, MenuItem } from "../../components/ui/Menu";
 
 export default function WorkspaceOverview() {
   const { workspaceId } = useParams();
   const { state } = useLocation();
   const [workspace] = useState(state || null);
   const [project, setProject] = useState<any[]>([]);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Nếu không có workspace trong state, có thể fetch từ API bằng workspaceId
@@ -22,10 +26,14 @@ export default function WorkspaceOverview() {
     );
   }, [workspace, workspaceId]);
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
     <div>
       <Header />
-      <main className="pt-6 px-6 max-w-7xl mx-auto min-h-screen">
+      <main className="pt-6 px-6 max-w-7xl mx-auto min-h-screen no-select">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 border-b pb-4">
           <div className="flex items-center space-x-4">
             {workspace?.logo_url ? (
@@ -65,14 +73,19 @@ export default function WorkspaceOverview() {
             <button className="flex items-center gap-2 bg-primary text-inverse px-4 py-2 rounded-full text-sm font-medium transition">
               <FaUserPlus size={14} /> Invite
             </button>
-            <button className="p-2 rounded-full transition">
+            <button
+              className="p-2 rounded-full transition"
+              onClick={toggleMenu}
+              ref={triggerRef}
+            >
               <FaGear size={24} />
             </button>
           </div>
         </div>
+
         {/* Projects List */}
         <div>
-          <h2 className="text-xl font-bold mb-4 text-[var(--color-primary-lighter)]">
+          <h2 className="!text-3xl font-bold mb-2 -mt-4 text-[var(--color-primary-lighter)]">
             Projects
           </h2>
           {project.length === 0 ? (
@@ -87,6 +100,27 @@ export default function WorkspaceOverview() {
             </div>
           )}
         </div>
+        <Menu isOpen={menuOpen} toggleMenu={toggleMenu} triggerRef={triggerRef}>
+          <MenuItem
+            icon={<FiSettings size={20} />}
+            onClick={() => alert("Settings clicked")}
+          >
+            Settings
+          </MenuItem>
+          <MenuItem
+            icon={<FiUsers size={20} />}
+            onClick={() => alert("Members clicked")}
+          >
+            Members
+          </MenuItem>
+          <MenuItem
+            icon={<FiLogOut size={20} color="var(--color-danger)" />}
+            type="danger"
+            onClick={() => alert("Leave clicked")}
+          >
+            Leave
+          </MenuItem>
+        </Menu>
       </main>
     </div>
   );
