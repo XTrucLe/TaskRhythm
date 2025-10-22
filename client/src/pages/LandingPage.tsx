@@ -1,8 +1,9 @@
+import Logo from "../components/ui/Logo";
 import { ThemeSwitch } from "../components/ui/ThemeSwitch";
 import useRouting from "../hooks/useRouting";
 
 export default function LandingPage() {
-  const { goDashboard } = useRouting();
+  const { goLogin } = useRouting();
 
   return (
     <div
@@ -13,9 +14,10 @@ export default function LandingPage() {
     >
       {/* Navbar */}
       <header
-        className="flex justify-between items-center px-8 sticky top-0 z-50 shadow-[var(--shadow-lg)]"
+        className="flex justify-between items-center px-4 py-2 sticky top-0 z-50 shadow-[var(--shadow-lg)]"
         style={{ backgroundColor: "var(--color-surface)" }}
       >
+        <Logo />
         <h1
           className="text-2xl font-bold flex"
           style={{ color: "var(--color-primary)" }}
@@ -35,7 +37,7 @@ export default function LandingPage() {
           <button
             className="px-4 py-2 rounded font-semibold"
             style={{ backgroundColor: "var(--color-primary)", color: "white" }}
-            onClick={() => goDashboard()}
+            onClick={() => goLogin()}
           >
             Get Started
           </button>

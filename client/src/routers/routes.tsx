@@ -6,6 +6,9 @@ const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 
+const HomePage = lazy(() => import("../pages/user/HomePage"));
+const WorkspaceOverview = lazy(()=> import("../pages/user/WorkspaceOverview"));
+
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -18,6 +21,14 @@ export const routes: RouteObject[] = [
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/home",
+    element: <HomePage />,
+  },
+  {
+    path: "/workspace/:workspaceId",
+    element: <WorkspaceOverview />,
   },
   {
     path: "*",

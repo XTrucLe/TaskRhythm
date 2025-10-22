@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import "./styles/index.css";
+@import "tailwindcss";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -68,4 +68,11 @@
 
 .animate-scale-fade {
   animation: scale-fade 0.15s ease-out;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
