@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type MenuProps = {
   isOpen: boolean;
@@ -122,10 +122,10 @@ const MenuItem = ({
 }) => {
   return (
     <div
-      className={`menu-item ${type === "danger" ? "danger-color" : ""}`}
+      className={`menu-item ${type === "danger" ? "danger-color" : ""} `}
       onClick={onClick}
     >
-      {icon && <div className="menu-item-icon">{icon}</div>}
+      {icon && <div className="text-lg">{icon}</div>}
       {children}
     </div>
   );

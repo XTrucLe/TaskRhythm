@@ -64,6 +64,7 @@ h3 {
   color: var(--color-primary-dark);
 }
 
-.text-error {
+.text-error,
+.text-danger {
   color: var(--color-danger);
 }

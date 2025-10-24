@@ -92,7 +92,7 @@ export default function Header() {
         <MenuItem
           onClick={() => authService.logout()}
           type="danger"
-          icon={<FiLogOut />}
+          icon={<FiLogOut className="text-current" />}
           children={"Logout"}
         />
       </Menu>

@@ -135,14 +135,15 @@ a:hover {
   outline: none;
 }
 
+.menu-item.danger-color:hover,
+.menu-item.danger-color:focus {
+  background-color: var(--color-danger-dark);
+  color: var(--color-text-inverse);
+}
+
 .menu-item.disabled {
   color: var(--color-text-disabled);
   cursor: not-allowed;
-}
-
-.menu-item-icon {
-  font-size: 18px;
-  color: var(--color-text-primary);
 }
 
 /* NOTIFICATION - TOAST STYLE */
@@ -193,4 +194,61 @@ a:hover {
 }
 .notification-close:hover {
   color: var(--color-text-primary);
+}
+
+/*MODAL STYLES*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-dark-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--color-surface);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  width: 90%;
+  max-width: 540px;
+  padding: 24px;
+  position: relative;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  line-height: 1;
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.multi-select {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  margin-top: 4px;
 }
