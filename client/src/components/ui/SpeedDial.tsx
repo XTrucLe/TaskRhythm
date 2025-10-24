@@ -43,11 +43,11 @@ export default function SpeedDial({ actions }: { actions: Action[] }) {
             onClick={action.onClick}
             className="relative group"
           >
-            <span className="absolute right-10 top-1/2 -translate-y-1/2  text-sm rounded-md px-2 py-1 whitespace-nowrap">
+            <span className="absolute right-12 top-1/2 -translate-y-1/2  text-sm rounded-lg p-2 whitespace-nowrap bg-[var(--color-background-secondary)] text-[var(--color-text-primary)] shadow-md ">
               {action.label}
             </span>
 
-            <div className="w-10 h-10 flex items-center justify-center rounded-full shadow-md transition">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full shadow-md bg-[var(--color-background-secondary)]">
               {action.icon}
             </div>
           </button>

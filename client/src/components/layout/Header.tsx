@@ -11,6 +11,8 @@ import {
   FiInfo,
   FiLogOut,
 } from "react-icons/fi";
+import { authService } from "../../services/authService";
+import SearchBox from "../ui/SearchBox";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,7 +29,7 @@ export default function Header() {
   useEffect(() => {
     const getInfo = () => {
       localStorage.getItem("userInfo");
-      // Giả sử userInfo được lưu dưới dạng JSON string
+
       const storedInfo = localStorage.getItem("currentUser");
       if (storedInfo) {
         const parsedInfo = JSON.parse(storedInfo);
@@ -35,7 +37,6 @@ export default function Header() {
           name: parsedInfo.fullName,
           email: parsedInfo.email,
         });
-        console.log(parsedInfo);
       }
     };
     getInfo();
@@ -45,7 +46,8 @@ export default function Header() {
     <header className="sticky top-0 z-50 flex w-full items-center bg-[var(--color-background-secondary)] justify-between px-4 py-2 shadow-lg">
       {/* Logo */}
       <Logo />
-
+      <div />
+      <SearchBox placeholder="Search..." />
       {/* Navigation */}
       <div className="flex items-center gap-6 pr-2">
         <ThemeSwitch />
@@ -88,7 +90,7 @@ export default function Header() {
         <MenuItem onClick={() => {}} icon={<FiInfo />} children={"About"} />
         <div className="divider" />
         <MenuItem
-          onClick={() => {}}
+          onClick={() => authService.logout()}
           type="danger"
           icon={<FiLogOut />}
           children={"Logout"}

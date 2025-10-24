@@ -4,6 +4,7 @@ import WorkspaceCard from "../../components/workspace/WorkspaceCard";
 import { data as mockWorkspaceData } from "../../mock/workspace";
 import SpeedDial from "../../components/ui/SpeedDial";
 import useRouting from "../../hooks/useRouting";
+import { notify } from "../../components/ui/Notification";
 
 export default function HomePage() {
   const [workspaceData] = useState(mockWorkspaceData);
@@ -47,6 +48,31 @@ export default function HomePage() {
     );
   };
 
+  const addToast = () => {
+    const toast = [
+      {
+        title: "Success",
+        message: "Workspace created successfully.",
+        type: "success" as const,
+      },
+      {
+        title: "Info",
+        message: "This is an informational message.",
+        type: "info" as const,
+      },
+      {
+        title: "Warning",
+        message: "This is a warning message.",
+        type: "warning" as const,
+      },
+      {
+        title: "Error",
+        message: "An error has occurred.",
+        type: "error" as const,
+      },
+    ];
+    toast.forEach((t, i) => setTimeout(() => notify(t), i * 500));
+  };
   return (
     <div className="min-h-screen">
       <Header />
@@ -57,7 +83,18 @@ export default function HomePage() {
         {renderSection("My Workspaces", myWorkspaces)}
         {renderSection("Invited Workspaces", invitedWorkspaces)}
       </main>
-      <SpeedDial actions={[]} />
+      <SpeedDial
+        actions={[
+          {
+            icon: "➕",
+            label: "New Workspace",
+            onClick: () => {
+              addToast();
+            },
+          },
+          { icon: "🔗", label: "Join Workspace", onClick: () => {} },
+        ]}
+      />
     </div>
   );
 }
