@@ -7,7 +7,9 @@ const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
 const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
 
 const HomePage = lazy(() => import("../pages/user/HomePage"));
-const WorkspaceOverview = lazy(()=> import("../pages/user/WorkspaceOverview"));
+const WorkspaceOverview = lazy(() => import("../pages/user/WorkspaceOverview"));
+const TaskPage = lazy(() => import("../pages/user/TaskPage"));
+const UserLayout = lazy(() => import("../components/layout"));
 
 export const routes: RouteObject[] = [
   {
@@ -29,6 +31,10 @@ export const routes: RouteObject[] = [
   {
     path: "/workspace/:workspaceId",
     element: <WorkspaceOverview />,
+  },
+  {
+    path: "/task",
+    element: <UserLayout showSearchBox={false} children={<TaskPage />} />,
   },
   {
     path: "*",

@@ -14,7 +14,7 @@ import {
 import { authService } from "../../services/authService";
 import SearchBox from "../ui/SearchBox";
 
-export default function Header() {
+export default function Header({ showSearch }: { showSearch?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const posRef = useRef<HTMLButtonElement>(null);
   const [userInfo, setUserInfo] = useState<{ name: string; email: string }>({
@@ -47,7 +47,7 @@ export default function Header() {
       {/* Logo */}
       <Logo />
       <div />
-      <SearchBox placeholder="Search..." />
+      {showSearch && <SearchBox placeholder="Search..." />}
       {/* Navigation */}
       <div className="flex items-center gap-6 pr-2">
         <ThemeSwitch />
