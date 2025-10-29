@@ -9,21 +9,26 @@ interface TaskContextProps {
   addTask: (newTask: Task) => void;
   updateTask: (updatedTask: Task) => void;
   deleteTask: (taskId: number) => void;
-  assignUser: (taskId: number, userId: number) => void;
+  assignTask: (taskId: number, userId: number) => void;
   claimTask: (taskId: number, userId: number) => void;
   unclaimTask: (taskId: number) => void;
+
   updateTaskStatus: (taskId: number, status: Task["status"]) => void;
 }
+
+const emptyFn = () => {};
 
 export const TaskContext = createContext<TaskContextProps>({
   tasks: [],
   permissions: {},
-  addTask: () => {},
-  updateTask: () => {},
-  deleteTask: () => {},
-  assignUser: () => {},
-  claimTask: () => {},
-  unclaimTask: () => {},
-  updateTaskStatus: () => {},
+
+  addTask: emptyFn,
+  updateTask: emptyFn,
+  deleteTask: emptyFn,
+  assignTask: emptyFn,
+  claimTask: emptyFn,
+  unclaimTask: emptyFn,
+  updateTaskStatus: emptyFn,
 });
+
 export const useTaskContext = () => useContext(TaskContext);

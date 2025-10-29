@@ -6,7 +6,6 @@ import {
   Avatar,
   IconButton,
   Typography,
-  Tooltip,
   Stack,
   Button,
   MenuItem,
@@ -18,18 +17,26 @@ import {
   FiChevronRight as Expand,
   FiChevronDown as Collapse,
 } from "react-icons/fi";
-import { mockTasks } from "../../mock/tasks";
-import type { Task } from "../../types/task";
-import { TaskContext } from "../../contexts/TaskContext";
-import TaskDrawer from "./TaskDrawer";
+import { mockTasks } from "../../../mock/tasks";
+import type { Task } from "../../../types/task";
+import { TaskContext } from "../../../contexts/TaskContext";
+import TaskDrawer from "../TaskDrawer";
 
-export default function TaskTableView() {
-  const { updateTaskStatus: handleStatusChange } = useContext(TaskContext);
-  const [expanded, setExpanded] = useState<number[]>([]);
+export default function TaskTableView({
+  expanded,
+  setExpanded,
+}: {
+  expanded: number[];
+  setExpanded: React.Dispatch<React.SetStateAction<number[]>>;
+}) {
+  const { tasks, updateTaskStatus: handleStatusChange } =
+    useContext(TaskContext);
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  const onRowClick = (task: Task) => {
+  const onRowClick = (task: Task, e: React.MouseEvent<HTMLElement>) => {
+    if ((e.target as HTMLElement).closest("#expand-icon")) return;
+
     setSelectedTask(task);
     setIsOpenDrawer(true);
   };
@@ -38,29 +45,19 @@ export default function TaskTableView() {
     setIsOpenDrawer(false);
   };
 
-  const toggleExpand = (taskId: number) => {
-    setExpanded((prev) =>
-      prev.includes(taskId)
-        ? prev.filter((id) => id !== taskId)
-        : [...prev, taskId]
-    );
-  };
-
   const visibleTasks = useMemo(() => {
     const result: Task[] = [];
 
     const addVisible = (task: Task) => {
       result.push(task);
       if (expanded.includes(task.id)) {
-        mockTasks
-          .filter((child) => child.parentId === task.id)
-          .forEach(addVisible);
+        tasks.filter((child) => child.parentId === task.id).forEach(addVisible);
       }
     };
 
-    mockTasks.filter((t) => !t.parentId).forEach(addVisible);
+    tasks.filter((t) => !t.parentId).forEach(addVisible);
     return result;
-  }, [expanded]);
+  }, [expanded, tasks]);
 
   const canChangeTask = (task: Task, currentUser: string) =>
     task.assignee === currentUser;
@@ -81,7 +78,15 @@ export default function TaskTableView() {
                 {hasChildren && (
                   <IconButton
                     size="small"
-                    onClick={() => toggleExpand(row.id)}
+                    id="expand-icon"
+                    onClick={() =>
+                      setExpanded((prev) => {
+                        if (prev.includes(row.id)) {
+                          return prev.filter((id) => id !== row.id);
+                        }
+                        return [...prev, row.id];
+                      })
+                    }
                     sx={{ mr: 0.5 }}
                   >
                     {isExpanded ? <Collapse size={14} /> : <Expand size={14} />}
@@ -148,43 +153,91 @@ export default function TaskTableView() {
         field: "status",
         headerName: "Status",
         width: 140,
+        resizable: false,
         renderCell: ({ row }) => {
-          const color =
-            row.status === "done"
-              ? "success"
-              : row.status === "todo"
-              ? "warning"
-              : "default";
-
-          // Check level cuối cùng: không có subtask
           const isLeaf = !mockTasks.some((t) => t.parentId === row.id);
 
-          if (isLeaf) {
+          const statusConfig = {
+            todo: { label: "Todo", color: "warning" },
+            in_progress: { label: "In Progress", color: "default" },
+            done: { label: "Done", color: "success" },
+          };
+
+          const { label, color } = statusConfig[
+            row.status as keyof typeof statusConfig
+          ] || {
+            label: "Unknown",
+            color: "warning",
+          };
+
+          if (!isLeaf) {
             return (
-              <Select
+              <Chip
                 size="small"
-                value={row.status}
-                onChange={(e) => handleStatusChange(row.id, e.target.value)}
-                sx={{ fontWeight: 500 }}
-              >
-                <MenuItem value="todo">Todo</MenuItem>
-                <MenuItem value="in_progress">In Progress</MenuItem>
-                <MenuItem value="done">Done</MenuItem>
-              </Select>
+                label={label}
+                color={color as keyof typeof Chip}
+                sx={{
+                  fontWeight: 500,
+                  alignItems: "center",
+                  width: 80,
+                  height: 32,
+                  fontSize: 14,
+                }}
+              />
             );
           }
 
           return (
-            <Chip
+            <Select
               size="small"
-              label={
-                row.status.charAt(0).toUpperCase() +
-                row.status.slice(1).replace("_", " ")
-              }
-              color={color}
-              sx={{ fontWeight: 500 }}
-            />
+              variant="standard"
+              value={row.status}
+              onChange={(e) => handleStatusChange(row.id, e.target.value)}
+              sx={{
+                fontWeight: 500,
+                width: "100%",
+                maxWidth: 160,
+                "& .MuiSelect-select": {
+                  pr: "0 !important",
+                },
+                "&::before": { borderBottom: "none" },
+                "&:hover::before": { borderBottom: "none !important" },
+                "&::after": { borderBottom: "none" },
+                "& .MuiSelect-icon": {
+                  position: "absolute",
+                  right: 0,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                },
+              }}
+            >
+              {Object.entries(statusConfig).map(([key, { label, color }]) => (
+                <MenuItem key={key} value={key}>
+                  <Chip
+                    label={label}
+                    color={color as keyof typeof Chip}
+                    size="small"
+                    sx={{
+                      fontWeight: 500,
+                      alignItems: "center",
+                      width: 80,
+                      height: 32,
+                      fontSize: 14,
+                    }}
+                  />
+                </MenuItem>
+              ))}
+            </Select>
           );
+        },
+      },
+      {
+        field: "progress",
+        headerName: "Progress",
+        width: 130,
+        renderCell: () => {
+          const progress = Math.floor(Math.random() * 101);
+          return <Typography variant="body2">{progress}%</Typography>;
         },
       },
       {
@@ -200,30 +253,8 @@ export default function TaskTableView() {
         headerName: "Last Updated",
         width: 160,
       },
-      {
-        field: "actions",
-        headerName: "",
-        sortable: false,
-        width: 40,
-        headerAlign: "center",
-        resizable: false,
-        disableColumnMenu: true,
-        align: "right",
-        position: "sticky",
-        renderCell: ({ row }) => (
-          <Stack direction="row" spacing={0}>
-            {(!row?.level || row.level < 2) && (
-              <Tooltip title="Add sub task">
-                <IconButton size="medium" color="primary">
-                  <Add fontSize="medium" />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Stack>
-        ),
-      },
     ],
-    [expanded, handleStatusChange]
+    [expanded, setExpanded, handleStatusChange]
   );
 
   return (
@@ -262,11 +293,12 @@ export default function TaskTableView() {
         columns={columns}
         getRowId={(r) => r.id}
         disableRowSelectionOnClick
+        filterMode="client"
         hideFooterPagination
         showCellVerticalBorder
         showColumnVerticalBorder
         rowHeight={48}
-        onRowClick={(taskRow) => onRowClick(taskRow.row as Task)}
+        onRowClick={(taskRow, e) => onRowClick(taskRow.row as Task, e)}
         sx={{
           border: "none",
           "& .MuiDataGrid-columnHeaders": {

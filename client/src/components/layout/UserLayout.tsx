@@ -8,9 +8,14 @@ function UserLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="h-screen flex flex-col">
       <Header showSearch={showSearchBox ?? true} />
-      <main className="w-7xl items-center mx-auto">{children}</main>
+      <main
+        className="flex-1 min-w-7xl items-center mx-auto w-full"
+        style={{ height: "calc(100vh -54px)" }}
+      >
+        {children}
+      </main>
     </div>
   );
 }

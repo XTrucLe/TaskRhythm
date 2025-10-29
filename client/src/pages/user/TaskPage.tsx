@@ -1,45 +1,54 @@
 import { FaChartGantt } from "react-icons/fa6";
-import TaskTable from "../../components/workspace/TaskTable";
+import TaskTable from "../../components/workspace/task-views/TaskTable";
 import { BsFillKanbanFill, BsTable } from "react-icons/bs";
-import { useState } from "react";
-import { Tooltip } from "@mui/material";
+import { useEffect, useState } from "react";
 import { mockTasks } from "../../mock/tasks";
 import { TaskContext } from "../../contexts/TaskContext";
 import type { Task } from "../../types/task";
+import KanbanBoard from "../../components/workspace/task-views/KabanView";
+import { useSearchParams } from "react-router-dom";
 
 type ViewStyle = "table" | "kanban" | "gantt";
 
 function TaskPage() {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [viewStyle, setViewStyle] = useState<ViewStyle>("table");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [viewStyle, setViewStyle] = useState<ViewStyle>(
+    (searchParams.get("view") as ViewStyle) || "table"
+  );
+  const [expanded, setExpanded] = useState<number[]>([]);
+
+  useEffect(() => {
+    const newTasks = mockTasks.map((task) => ({ ...task }));
+    setTasks([...newTasks]);
+  }, []);
 
   const viewIcons = {
-    table: <BsTable size={24} color="#6B7280" />,
-    kanban: <BsFillKanbanFill size={24} color="#3B82F6" />,
-    gantt: <FaChartGantt size={24} color="#8B5CF6" />,
+    table: <BsTable size={20} color="#6B7280" />,
+    kanban: <BsFillKanbanFill size={20} color="#3B82F6" />,
+    gantt: <FaChartGantt size={20} color="#8B5CF6" />,
   };
 
   const RenderTaskView = () => {
     switch (viewStyle) {
       case "table":
-        return <TaskTable />;
+        return <TaskTable expanded={expanded} setExpanded={setExpanded} />;
       case "kanban":
-        return <div>Kanban View - Coming Soon!</div>;
+        return <KanbanBoard />;
       case "gantt":
-        return <div>Gantt View - Coming Soon!</div>;
+        return <p>Gantt Chart View is not implemented yet.</p>;
       default:
         return null;
     }
   };
 
-  const handleChangeView = () => {
-    setViewStyle((prev) =>
-      prev === "table" ? "kanban" : prev === "kanban" ? "gantt" : "table"
-    );
+  const changeViewStyle = (style: ViewStyle) => {
+    setViewStyle(style);
+    searchParams.set("view", style);
+    setSearchParams(searchParams);
   };
 
-  // Handlers for TaskContext functions
-  const handleAssignUser = (taskId: number, userId: number) => {
+  const assignTask = (taskId: number, userId: number) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId ? { ...task, assigneeId: userId } : task
@@ -47,14 +56,15 @@ function TaskPage() {
     );
   };
 
-  const handleClaimTask = (taskId: number, userId: number) => {
+  const claimTask = (taskId: number, userId: number) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId ? { ...task, assigneeId: userId } : task
       )
     );
   };
-  const handleUnclaimTask = (taskId: number) => {
+
+  const unclaimTask = (taskId: number) => {
     setTasks((prev) =>
       prev.map((task) =>
         task.id === taskId ? { ...task, assigneeId: null } : task
@@ -62,46 +72,69 @@ function TaskPage() {
     );
   };
 
-  const handleAddTask = (newTask: (typeof mockTasks)[0]) => {
+  const addTask = (newTask: (typeof mockTasks)[0]) => {
     setTasks((prev) => [...prev, newTask]);
   };
 
-  const handleUpdateTask = (updatedTask: (typeof mockTasks)[0]) => {
+  const updateTask = (updatedTask: (typeof mockTasks)[0]) => {
     setTasks((prev) =>
       prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
     );
   };
 
-  const handleDeleteTask = (taskId: number) => {
+  const deleteTask = (taskId: number) => {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
   };
 
-  const handleUpdateTaskStatus = (taskId: number, status: Task["status"]) => {
+  const updateTaskStatus = (taskId: number, status: Task["status"]) => {
     setTasks((prev) =>
-      prev.map((task) => (task.id === taskId ? { ...task, status } : task))
+      prev.map((task) =>
+        task.id === taskId ? { ...task, status: status } : task
+      )
     );
   };
 
   return (
-    <div className="h-full w-full">
-      <Tooltip
-        title={viewStyle.charAt(0).toUpperCase() + viewStyle.slice(1)}
-        onClick={handleChangeView}
-      >
-        <div className="absolute right-10 top-16 rounded-full bg-[var(--color-background)] p-2.5">
-          {viewIcons[viewStyle]}
+    <div className="flex-1 h-full w-full">
+      <div className="absolute left-1 top-16 rounded-full bg-[var(--color-background)] p-1 border-2">
+        <div className="relative flex space-x-1">
+          <div
+            className="absolute top-0 bottom-0 z-10 rounded-full bg-primary transition-all duration-300 ease-in-out"
+            style={{
+              left: `${
+                (Object.keys(viewIcons).indexOf(viewStyle) * 100) /
+                Object.keys(viewIcons).length
+              }%`,
+              width: `${100 / Object.keys(viewIcons).length}%`,
+            }}
+          />
+          {Object.entries(viewIcons).map(([key, icon]) => {
+            return (
+              <div
+                key={key}
+                className="flex p-2 rounded-full cursor-pointer z-20 px-2"
+                onClick={() => changeViewStyle(key as ViewStyle)}
+              >
+                {icon}{" "}
+                <span className="ml-2 text-sm ">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                </span>
+              </div>
+            );
+          })}
         </div>
-      </Tooltip>
+      </div>
+
       <TaskContext.Provider
         value={{
           tasks,
-          assignUser: handleAssignUser,
-          addTask: handleAddTask,
-          updateTask: handleUpdateTask,
-          deleteTask: handleDeleteTask,
-          claimTask: handleClaimTask,
-          unclaimTask: handleUnclaimTask,
-          updateTaskStatus: handleUpdateTaskStatus,
+          assignTask,
+          addTask,
+          updateTask,
+          deleteTask,
+          claimTask,
+          unclaimTask,
+          updateTaskStatus,
           permissions: {},
         }}
       >
