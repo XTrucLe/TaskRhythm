@@ -8,12 +8,12 @@ interface TaskContextProps {
   // Function
   addTask: (newTask: Task) => void;
   updateTask: (updatedTask: Task) => void;
-  deleteTask: (taskId: number) => void;
-  assignTask: (taskId: number, userId: number) => void;
-  claimTask: (taskId: number, userId: number) => void;
-  unclaimTask: (taskId: number) => void;
+  deleteTask: (taskId: string) => void;
+  assignTask: (taskId: string, userId: string) => void;
+  claimTask: (taskId: string, userId: string) => void;
+  unclaimTask: (taskId: string) => void;
 
-  updateTaskStatus: (taskId: number, status: Task["status"]) => void;
+  updateTaskStatus: (taskId: string, status: Task["status"]) => void;
 }
 
 const emptyFn = () => {};

@@ -26,8 +26,8 @@ export default function TaskTableView({
   expanded,
   setExpanded,
 }: {
-  expanded: number[];
-  setExpanded: React.Dispatch<React.SetStateAction<number[]>>;
+  expanded: string[];
+  setExpanded: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
   const { tasks, updateTaskStatus: handleStatusChange } =
     useContext(TaskContext);
@@ -60,7 +60,7 @@ export default function TaskTableView({
   }, [expanded, tasks]);
 
   const canChangeTask = (task: Task, currentUser: string) =>
-    task.assignee === currentUser;
+    task.assignee.includes(currentUser);
 
   const columns = useMemo<GridColDef<Task>[]>(
     () => [
@@ -159,7 +159,7 @@ export default function TaskTableView({
 
           const statusConfig = {
             todo: { label: "Todo", color: "warning" },
-            in_progress: { label: "In Progress", color: "default" },
+            doing: { label: "Doing", color: "default" },
             done: { label: "Done", color: "success" },
           };
 
@@ -245,7 +245,9 @@ export default function TaskTableView({
         headerName: "Due Date",
         width: 120,
         renderCell: ({ row }) => (
-          <Typography variant="body2">{row.dueDate}</Typography>
+          <Typography variant="body2">
+            {row.dueDate?.toString() || "-"}
+          </Typography>
         ),
       },
       {

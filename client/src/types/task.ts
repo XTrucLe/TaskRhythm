@@ -1,13 +1,26 @@
 export interface Task {
-  id: number;
+  id: string;
   name: string;
-  assignee: string;
-  priority: TaskPriority;
+  description?: string;
+
   status: TaskStatus;
-  dueDate: string;
-  updatedAt: string;
-  parentId?: number | null;
+  priority: TaskPriority;
+  progress?: number;
+
+  parentId?: string | null;
+  type: TaskType;
   level?: number;
+  subTasks?: Task[];
+
+  assignee: string[];
+
+  startDate?: Date;
+  dueDate?: Date;
+  actualStartDate?: Date;
+  completedDate?: Date;
+
+  estimatedHours?: number;
+  loggedHours?: number;
 }
 
 export type TaskStatus =
@@ -20,3 +33,5 @@ export type TaskStatus =
   | "cancelled";
 
 export type TaskPriority = "low" | "medium" | "high";
+
+export type TaskType = "phase" | "milestone" | "task";

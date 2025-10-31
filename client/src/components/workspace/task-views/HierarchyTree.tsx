@@ -34,7 +34,7 @@ function groupByRoot(tasks: Task[]): Record<string, Task[]> {
 }
 
 function buildHierarchy(tasks: Task[]): { nodes: Node[]; edges: Edge[] } {
-  const map: Record<number, Task & { children: Task[] }> = {};
+  const map: Record<string, Task & { children: Task[] }> = {};
   const roots: (Task & { children: Task[] })[] = [];
 
   // Tạo map

@@ -37,12 +37,12 @@ interface FlatTaskNode extends Task {
   level: number;
   visible: boolean;
   collapsed?: boolean;
-  parentId?: number;
-  childrenIds: number[];
+  parentId?: string;
+  childrenIds: string[];
 }
 
 const flattenTasks = (tasks: Task[]): FlatTaskNode[] => {
-  const map: Record<number, FlatTaskNode> = {};
+  const map: Record<string, FlatTaskNode> = {};
   const roots: FlatTaskNode[] = [];
 
   tasks.forEach((t) => {
@@ -83,7 +83,7 @@ const TaskCard = ({
   toggleCollapse,
 }: {
   task: FlatTaskNode;
-  toggleCollapse: (id: number) => void;
+  toggleCollapse: (id: string) => void;
 }) => {
   if (!task.visible) return null;
 
@@ -130,6 +130,7 @@ const TaskCard = ({
             visibility: "hidden",
             transition: "opacity 0.2s ease",
           }}
+          onClick={(e: React.MouseEvent<HTMLElement>) => e.stopPropagation()}
         >
           <Tooltip title="Add Subtask">
             <IconButton size="small">
@@ -164,11 +165,11 @@ const TaskCard = ({
 
       {/* Meta info */}
       <Typography variant="caption" color="text.secondary" fontSize={11}>
-        Due: {task.dueDate}
+        Due: {task.dueDate?.toString() || "-"}
       </Typography>
 
       {/* Collapse toggle */}
-      {hasChildren && (
+      {hasChildren && task.level < 1 && (
         <Stack
           direction="row"
           alignItems="center"
@@ -261,9 +262,9 @@ export default function KanbanBoard() {
     setFlatTasks(flattenTasks(tasks));
   }, [tasks]);
 
-  const toggleCollapse = (id: number) => {
+  const toggleCollapse = (id: string) => {
     setFlatTasks((prev) => {
-      const map: Record<number, FlatTaskNode> = {};
+      const map: Record<string, FlatTaskNode> = {};
       prev.forEach((t) => (map[t.id] = { ...t }));
       const task = map[id];
       if (!task) return prev;
@@ -284,7 +285,7 @@ export default function KanbanBoard() {
   };
 
   const renderTaskTree = (task: FlatTaskNode) => {
-    if (!task.visible) return null;
+    if (!task.visible || task.level > 1) return null;
 
     const hasChildren = task.childrenIds.length > 0;
 
@@ -292,6 +293,7 @@ export default function KanbanBoard() {
       <Stack key={task.id} sx={{ ml: task.level * 2 }} spacing={1}>
         <TaskCard task={task} toggleCollapse={toggleCollapse} />
         {hasChildren &&
+          task.level < 1 &&
           task.childrenIds.map((cid) => {
             const child = flatTasks.find((t) => t.id === cid);
             if (child) {
