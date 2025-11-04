@@ -35,3 +35,8 @@ export type TaskStatus =
 export type TaskPriority = "low" | "medium" | "high";
 
 export type TaskType = "phase" | "milestone" | "task";
+
+export type TaskColumnsDef = Omit<
+  Task,
+  "id" | "subTasks" | "parentId" | "level"
+>;

@@ -1,14 +1,14 @@
 import { FaChartGantt } from "react-icons/fa6";
-import TaskTable from "../../components/workspace/task-views/TaskTable";
+import TaskTable from "../../components/task/task-views/TaskTable";
 import { BsFillKanbanFill, BsTable } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import { mockTasks } from "../../mock/tasks";
 import { TaskContext } from "../../contexts/TaskContext";
 import type { Task } from "../../types/task";
-import KanbanBoard from "../../components/workspace/task-views/KabanView";
+import KanbanBoard from "../../components/task/task-views/KabanView";
 import { useSearchParams } from "react-router-dom";
 import ToolBar from "../../components/workspace/ui/ToolBar";
-import TaskDetail from "../../components/workspace/task-views/TaskDetail";
+import TaskDetail from "../../components/task/task-views/TaskDetail";
 
 type ViewStyle = "table" | "kanban" | "gantt";
 

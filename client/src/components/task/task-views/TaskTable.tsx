@@ -20,7 +20,7 @@ import {
 import { mockTasks } from "../../../mock/tasks";
 import type { Task } from "../../../types/task";
 import { TaskContext } from "../../../contexts/TaskContext";
-import TaskDrawer from "../TaskDrawer";
+import TaskDrawer from "../../workspace/TaskDrawer";
 
 export default function TaskTableView({
   expanded,

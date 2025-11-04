@@ -9,10 +9,14 @@ import {
 } from "@mui/material";
 import type { TaskStatus } from "../../../types/task";
 import { FaTimes } from "react-icons/fa";
-import TaskTable from "../../ui/table/TaskTable";
+import TaskTable from "../table";
 import { useContext, useState } from "react";
-import { StatusIncrement } from "../../task/TaskStatus";
+import { StatusIncrement } from "../TaskStatus";
 import { TaskContext } from "../../../contexts/TaskContext";
+import Timer from "../../ui/Timer";
+import { PriorityDropdown } from "../TaskPriorities";
+import EditableField from "../../ui/EditableField";
+import EditableDate from "../../ui/EditableDate";
 
 type Props = {
   open: boolean;
@@ -81,7 +85,11 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
           sx={{
             flex: 1,
             display: "grid",
-            gridTemplateColumns: "2fr 1fr",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "2fr 1fr",
+              md: "2.3fr 1fr",
+            },
             overflow: "hidden",
           }}
         >
@@ -118,9 +126,14 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
               width="95%"
               display="grid"
               gridTemplateColumns={{ sm: "1fr", md: "1fr 1fr" }}
-              gap={2}
+              gap={1}
             >
-              <Box display="grid" gridTemplateColumns="90px 1fr">
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
                 <Typography variant="subtitle2" color="text.secondary">
                   Assignee:
                 </Typography>
@@ -129,17 +142,31 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
                 </Typography>
               </Box>
 
-              <Box display="grid" gridTemplateColumns="90px 1fr">
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
                 <Typography variant="subtitle2" color="text.secondary">
                   Priority:
                 </Typography>
                 <Typography variant="body1">
-                  {task.priority.charAt(0).toUpperCase() +
-                    task.priority.slice(1)}
+                  <PriorityDropdown
+                    priority={task.priority}
+                    onChange={(newPriority) => {
+                      console.log(`New priority: ${newPriority}`);
+                    }}
+                  />
                 </Typography>
               </Box>
 
-              <Box display="grid" gridTemplateColumns="90px 1fr">
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
                 <Typography variant="subtitle2" color="text.secondary">
                   Status:
                 </Typography>
@@ -149,13 +176,55 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
                 />
               </Box>
 
-              <Box display="grid" gridTemplateColumns="90px 1fr">
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
                 <Typography variant="subtitle2" color="text.secondary">
                   Due Date:
                 </Typography>
-                <Typography variant="body1">
-                  {task.dueDate?.toLocaleDateString("vi-VN") || "-"}
+                <EditableDate
+                  date={task.dueDate ? new Date(task.dueDate) : undefined}
+                  onSave={(newDate) => {
+                    console.log(`New due date: ${newDate}`);
+                  }}
+                  editing
+                />
+              </Box>
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
+                <Typography variant="subtitle2" color="text.secondary">
+                  Estimate time:
                 </Typography>
+                <EditableField
+                  value={
+                    task.estimatedHours ? task.estimatedHours.toString() : "-"
+                  }
+                  editing
+                  onSave={(newValue) => {
+                    console.log(`New estimated hours: ${newValue}`);
+                    // Setup logic to save the new estimated hours
+                  }}
+                />
+              </Box>
+              <Box
+                display="grid"
+                gridTemplateColumns="100px 1fr"
+                height={36}
+                alignItems="center"
+              >
+                <Typography variant="subtitle2" color="text.secondary">
+                  Tracking time:
+                </Typography>
+                <Timer
+                  initTime={task.loggedHours ? task.loggedHours * 3600 : 7600}
+                />
               </Box>
             </Box>
 
@@ -192,6 +261,7 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
               flex: 1,
               p: 2,
               overflowY: "auto",
+              maxWidth: { xs: "100%", sm: "100%", md: "400px" },
             }}
           >
             <Typography variant="h5" fontWeight={600}>
