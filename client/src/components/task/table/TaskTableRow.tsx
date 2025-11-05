@@ -59,7 +59,7 @@ export default function TaskTableRow({
           onSave={handleNameSave}
         />
 
-        <TableCell>{task.assignee?.join(", ") || "-"}</TableCell>
+        <TableCell>{task.assignee?.map(user => user.name).join(", ") || "-"}</TableCell>
 
         <TableCell>
           {task.dueDate

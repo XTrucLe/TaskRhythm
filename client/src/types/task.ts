@@ -1,3 +1,5 @@
+import type { UserBase } from "./user";
+
 export interface Task {
   id: string;
   name: string;
@@ -12,7 +14,7 @@ export interface Task {
   level?: number;
   subTasks?: Task[];
 
-  assignee: string[];
+  assignee: UserBase[];
 
   startDate?: Date;
   dueDate?: Date;

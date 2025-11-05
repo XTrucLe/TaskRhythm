@@ -152,8 +152,8 @@ const TaskCard = ({
 
       {/* Info */}
       <Stack direction="row" alignItems="center" spacing={1}>
-        <Avatar sx={{ width: 24, height: 24, fontSize: 11 }}>
-          {task.assignee?.[0]}
+        <Avatar src={task.assignee?.[0]?.avatarUrl} sx={{ width: 24, height: 24, fontSize: 11 }}>
+          {task.assignee?.[0]?.name?.[0]}
         </Avatar>
         <Chip
           size="small"

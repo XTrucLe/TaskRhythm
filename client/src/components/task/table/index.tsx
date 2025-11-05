@@ -21,7 +21,7 @@ type TaskTableProps = {
   setExpanded?: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
-export default function TaskTable({
+export default function SubTaskTable({
   data,
   expanded = [],
   setExpanded,

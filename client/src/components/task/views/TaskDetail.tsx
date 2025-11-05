@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import type { TaskStatus } from "../../../types/task";
 import { FaTimes } from "react-icons/fa";
-import TaskTable from "../table";
+import SubTaskTable from "../table";
 import { useContext, useState } from "react";
 import { StatusIncrement } from "../TaskStatus";
 import { TaskContext } from "../../../contexts/TaskContext";
@@ -247,7 +247,7 @@ export default function TaskDetail({ open, onClose, taskId }: Props) {
                 </Typography>
               </Stack>
 
-              <TaskTable
+              <SubTaskTable
                 data={task.subTasks}
                 expanded={expanded}
                 setExpanded={setExpanded}

@@ -1,4 +1,28 @@
 import type { Task } from "../types/task";
+import type { UserBase } from "../types/user";
+
+const user1: UserBase = {
+  id: "1",
+  name: "Linh",
+  avatarUrl: "https://i.pravatar.cc/150?u=linh",
+};
+const user2: UserBase = {
+  id: "2",
+  name: "An",
+  avatarUrl: "https://i.pravatar.cc/150?u=an",
+};
+const user3: UserBase = {
+  id: "3",
+  name: "Trúc Lê",
+  avatarUrl: "https://i.pravatar.cc/150?u=trucle",
+};
+const user4: UserBase = {
+  id: "4",
+  name: "Duy",
+  avatarUrl: "https://i.pravatar.cc/150?u=duy",
+};
+
+export const AllUsers: UserBase[] = [user1, user2, user3, user4];
 
 export const mockTasks: Task[] = [
   {
@@ -8,7 +32,7 @@ export const mockTasks: Task[] = [
     priority: "high",
     status: "todo",
     level: 0,
-    assignee: ["Linh", "An", "Trúc Lê", "Duy"],
+    assignee: [user1, user2, user3, user4],
     dueDate: new Date("2025-11-05"),
     subTasks: [
       {
@@ -19,7 +43,7 @@ export const mockTasks: Task[] = [
         priority: "high",
         status: "todo",
         level: 1,
-        assignee: ["Duy", "An", "Linh"],
+        assignee: [user4, user2, user1],
         dueDate: new Date("2025-11-04"),
         subTasks: [
           {
@@ -30,7 +54,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-02"),
           },
           {
@@ -41,7 +65,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-03"),
           },
           {
@@ -52,7 +76,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "cancelled",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-10-31"),
           },
         ],
@@ -65,7 +89,7 @@ export const mockTasks: Task[] = [
         priority: "low",
         status: "todo",
         level: 1,
-        assignee: ["Duy", "An"],
+        assignee: [user4, user2],
         dueDate: new Date("2025-11-06"),
         subTasks: [
           {
@@ -76,7 +100,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-07"),
           },
           {
@@ -87,7 +111,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-08"),
           },
         ],
@@ -100,7 +124,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "done",
         level: 1,
-        assignee: ["Trúc Lê", "An"],
+        assignee: [user3, user2],
         dueDate: new Date("2025-10-28"),
         subTasks: [
           {
@@ -111,7 +135,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "done",
             level: 2,
-            assignee: ["Trúc Lê"],
+            assignee: [user3],
             dueDate: new Date("2025-10-29"),
           },
           {
@@ -122,7 +146,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "done",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-10-30"),
           },
         ],
@@ -136,7 +160,7 @@ export const mockTasks: Task[] = [
     priority: "medium",
     status: "todo",
     level: 0,
-    assignee: ["Duy", "An", "Trúc Lê", "Linh"],
+    assignee: [user4, user2, user3, user1],
     dueDate: new Date("2025-11-20"),
     subTasks: [
       {
@@ -147,7 +171,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "todo",
         level: 1,
-        assignee: ["Linh", "Duy"],
+        assignee: [user1, user4],
         dueDate: new Date("2025-11-12"),
         subTasks: [
           {
@@ -158,7 +182,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-11-10"),
           },
           {
@@ -169,7 +193,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-11"),
           },
         ],
@@ -182,7 +206,7 @@ export const mockTasks: Task[] = [
         priority: "low",
         status: "todo",
         level: 1,
-        assignee: ["An", "Trúc Lê"],
+        assignee: [user2, user3],
         dueDate: new Date("2025-11-14"),
         subTasks: [
           {
@@ -193,7 +217,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-08"),
           },
           {
@@ -204,7 +228,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Trúc Lê"],
+            assignee: [user3],
             dueDate: new Date("2025-11-09"),
           },
         ],
@@ -217,7 +241,7 @@ export const mockTasks: Task[] = [
         priority: "high",
         status: "todo",
         level: 1,
-        assignee: ["Linh", "An"],
+        assignee: [user1, user2],
         dueDate: new Date("2025-11-16"),
         subTasks: [
           {
@@ -228,7 +252,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-11-15"),
           },
           {
@@ -239,7 +263,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-13"),
           },
         ],
@@ -253,7 +277,7 @@ export const mockTasks: Task[] = [
     priority: "high",
     status: "todo",
     level: 0,
-    assignee: ["Duy", "An", "Trúc Lê", "Linh"],
+    assignee: [user4, user2, user3, user1],
     dueDate: new Date("2025-11-10"),
     subTasks: [
       {
@@ -264,7 +288,7 @@ export const mockTasks: Task[] = [
         priority: "high",
         status: "todo",
         level: 1,
-        assignee: ["Duy", "An"],
+        assignee: [user4, user2],
         dueDate: new Date("2025-11-05"),
         subTasks: [
           {
@@ -275,7 +299,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-03"),
           },
           {
@@ -286,7 +310,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-04"),
           },
         ],
@@ -299,7 +323,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "done",
         level: 1,
-        assignee: ["Trúc Lê", "An"],
+        assignee: [user3, user2],
         dueDate: new Date("2025-10-30"),
         subTasks: [
           {
@@ -310,7 +334,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "done",
             level: 2,
-            assignee: ["Trúc Lê"],
+            assignee: [user3],
             dueDate: new Date("2025-10-28"),
           },
           {
@@ -321,7 +345,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-10-27"),
           },
         ],
@@ -334,7 +358,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "todo",
         level: 1,
-        assignee: ["Duy", "Linh"],
+        assignee: [user4, user1],
         dueDate: new Date("2025-11-07"),
         subTasks: [
           {
@@ -345,7 +369,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-06"),
           },
           {
@@ -356,7 +380,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-11-05"),
           },
         ],
@@ -370,7 +394,7 @@ export const mockTasks: Task[] = [
     priority: "low",
     status: "todo",
     level: 0,
-    assignee: ["An", "Duy", "Linh", "Trúc Lê"],
+    assignee: [user2, user4, user1, user3],
     dueDate: new Date("2025-11-15"),
     subTasks: [
       {
@@ -381,7 +405,7 @@ export const mockTasks: Task[] = [
         priority: "low",
         status: "todo",
         level: 1,
-        assignee: ["An", "Duy"],
+        assignee: [user2, user4],
         dueDate: new Date("2025-11-14"),
         subTasks: [
           {
@@ -392,7 +416,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-12"),
           },
           {
@@ -403,7 +427,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-11"),
           },
         ],
@@ -416,7 +440,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "todo",
         level: 1,
-        assignee: ["Linh", "An"],
+        assignee: [user1, user2],
         dueDate: new Date("2025-11-16"),
         subTasks: [
           {
@@ -427,7 +451,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-11-13"),
           },
           {
@@ -438,7 +462,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-15"),
           },
         ],
@@ -451,7 +475,7 @@ export const mockTasks: Task[] = [
         priority: "low",
         status: "todo",
         level: 1,
-        assignee: ["Duy", "Trúc Lê"],
+        assignee: [user4, user3],
         dueDate: new Date("2025-11-12"),
         subTasks: [
           {
@@ -462,7 +486,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-09"),
           },
           {
@@ -473,7 +497,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Trúc Lê"],
+            assignee: [user3],
             dueDate: new Date("2025-11-08"),
           },
         ],
@@ -487,7 +511,7 @@ export const mockTasks: Task[] = [
     priority: "medium",
     status: "done",
     level: 0,
-    assignee: ["An", "Linh", "Trúc Lê", "Duy"],
+    assignee: [user2, user1, user3, user4],
     dueDate: new Date("2025-10-29"),
     subTasks: [
       {
@@ -498,7 +522,7 @@ export const mockTasks: Task[] = [
         priority: "medium",
         status: "done",
         level: 1,
-        assignee: ["An", "Linh"],
+        assignee: [user2, user1],
         dueDate: new Date("2025-10-27"),
         subTasks: [
           {
@@ -509,7 +533,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "done",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-10-28"),
           },
           {
@@ -520,7 +544,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-10-29"),
           },
         ],
@@ -533,7 +557,7 @@ export const mockTasks: Task[] = [
         priority: "low",
         status: "todo",
         level: 1,
-        assignee: ["Trúc Lê", "An", "Duy", "Linh"],
+        assignee: [user3, user2, user4, user1],
         dueDate: new Date("2025-11-02"),
         subTasks: [
           {
@@ -544,7 +568,7 @@ export const mockTasks: Task[] = [
             priority: "high",
             status: "done",
             level: 2,
-            assignee: ["Trúc Lê"],
+            assignee: [user3],
             dueDate: new Date("2025-10-30"),
           },
           {
@@ -555,7 +579,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["An"],
+            assignee: [user2],
             dueDate: new Date("2025-11-01"),
           },
           {
@@ -566,7 +590,7 @@ export const mockTasks: Task[] = [
             priority: "low",
             status: "todo",
             level: 2,
-            assignee: ["Duy"],
+            assignee: [user4],
             dueDate: new Date("2025-11-02"),
           },
           {
@@ -577,7 +601,7 @@ export const mockTasks: Task[] = [
             priority: "medium",
             status: "todo",
             level: 2,
-            assignee: ["Linh"],
+            assignee: [user1],
             dueDate: new Date("2025-11-03"),
           },
         ],
