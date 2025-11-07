@@ -1,8 +1,9 @@
 import React, { Fragment } from "react";
 import { TableRow } from "@mui/material";
-import CellFactory from "./cells";
-import type { ColumnDef } from "./ColumnDef";
-import type { Task } from "../../../types/task";
+import CellFactory from "../cells";
+import type { ColumnDef } from "../types/columns";
+import type { Task } from "../../../../types/task";
+import NewRow from "./NewRow";
 
 type TableRowProps = {
   columns: ColumnDef[];
@@ -11,6 +12,13 @@ type TableRowProps = {
   expanded?: string[];
   setExpanded?: (expanded: string[]) => void;
   onStatusChange?: (id: string, status: string) => void;
+  onAddSubTask?: (parentId: string, level: number) => void;
+  addingRow?: {
+    parentId: string;
+    level: number;
+  } | null;
+  onSaveRow?: (newTask: Omit<Task, "id">) => void;
+  onCancelRow?: () => void;
 };
 
 function TaskRow({
@@ -20,6 +28,10 @@ function TaskRow({
   expanded,
   setExpanded,
   onStatusChange,
+  onAddSubTask,
+  addingRow,
+  onSaveRow,
+  onCancelRow,
 }: TableRowProps) {
   const toggleExpanded = () => {
     if (!setExpanded) return;
@@ -29,21 +41,12 @@ function TaskRow({
       setExpanded([...(expanded || []), task.id]);
     }
   };
+
   const isExpanded = expanded?.includes(task.id) || false;
 
   return (
     <Fragment>
-      <TableRow
-        sx={{
-          "& .MuiTableCell-root": {
-            padding: "6px 12px !important",
-            height: "32px !important",
-            lineHeight: "1.25rem",
-            verticalAlign: "middle",
-          },
-        }}
-        onClick={() => {}}
-      >
+      <TableRow onClick={() => {}}>
         {columns.map((column) => (
           <CellFactory
             key={column.key}
@@ -53,9 +56,11 @@ function TaskRow({
             onChange={() => {}}
             expanded={isExpanded}
             toggleExpanded={toggleExpanded}
+            onAddSubTask={onAddSubTask}
           />
         ))}
       </TableRow>
+
       {/* Render sub-tasks recursively */}
       {isExpanded &&
         task.subTasks?.map((subtask) => (
@@ -67,9 +72,31 @@ function TaskRow({
             expanded={expanded}
             setExpanded={setExpanded}
             onStatusChange={onStatusChange}
+            onAddSubTask={onAddSubTask}
+            addingRow={addingRow}
+            onSaveRow={onSaveRow}
+            onCancelRow={onCancelRow}
           />
         ))}
+
       {/* Render temporary row for new sub-task */}
+      {addingRow &&
+        onSaveRow &&
+        onCancelRow &&
+        addingRow.parentId === task.id && (
+          <NewRow
+            task={{
+              name: "",
+              status: "coming_soon",
+              priority: "low",
+              level: addingRow.level,
+              type: "task",
+              parentId: addingRow.parentId,
+            }}
+            onSave={onSaveRow}
+            onCancel={onCancelRow}
+          />
+        )}
     </Fragment>
   );
 }

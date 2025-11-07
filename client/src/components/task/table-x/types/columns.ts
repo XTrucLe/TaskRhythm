@@ -1,4 +1,4 @@
-import type { Task } from "../../../types/task";
+import type { Task } from "../../../../types/task";
 
 export type ColumnDef = {
   key: keyof Omit<Task, "id" | "subTasks" | "parentId" | "level">;
@@ -12,4 +12,5 @@ export const defaultColumns: ColumnDef[] = [
   { key: "status", label: "Status", width: 150 },
   { key: "priority", label: "Priority", width: 150 },
   { key: "dueDate", label: "Due Date", width: 150 },
+  { key: "progress", label: "Progress", width: 120 },
 ];

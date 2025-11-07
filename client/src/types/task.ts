@@ -14,7 +14,7 @@ export interface Task {
   level?: number;
   subTasks?: Task[];
 
-  assignee: UserBase[];
+  assignee?: UserBase[];
 
   startDate?: Date;
   dueDate?: Date;
@@ -42,3 +42,19 @@ export type TaskColumnsDef = Omit<
   Task,
   "id" | "subTasks" | "parentId" | "level"
 >;
+
+export const TaskFieldKeys: (keyof TaskColumnsDef)[] = [
+  "name",
+  "description",
+  "status",
+  "priority",
+  "progress",
+  "type",
+  "assignee",
+  "startDate",
+  "dueDate",
+  "actualStartDate",
+  "completedDate",
+  "estimatedHours",
+  "loggedHours",
+];

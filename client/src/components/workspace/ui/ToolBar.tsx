@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { IoFilterSharp, IoTrash } from "react-icons/io5";
+import { TaskFieldKeys } from "../../../types/task";
 
 const METHODS = [
   "contains",
@@ -118,7 +119,7 @@ export default function ToolBar() {
   ]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const fields = ["Title", "Status", "Assignee", "Due Date"];
+  const fields = TaskFieldKeys;
 
   const addFilter = () =>
     filters.length < 5 &&
@@ -133,6 +134,9 @@ export default function ToolBar() {
         ? [{ field: "", operation: "contains", value: "" }]
         : prev.filter((_, i) => i !== index)
     );
+  const addNewTask = () => {
+    console.log("Add new task");
+  };
 
   return (
     <Box display="flex" justifyContent="flex-end" p={2} gap={1}>
@@ -157,6 +161,11 @@ export default function ToolBar() {
         )}
       </Box>
 
+      <Box display="flex" alignItems="center" gap={1}>
+        <Button variant="outlined" size="small" onClick={addNewTask}>
+          + Add task
+        </Button>
+      </Box>
       <Popover
         open={Boolean(anchorEl)}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}

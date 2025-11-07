@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 // import TaskTableRow from "./../table/TaskTableRow";
 import { TaskContext } from "../../../contexts/TaskContext";
-import TaskTable from "../table-x/TaskTable";
-import { defaultColumns } from "../table-x/ColumnDef";
+import TaskTable from "../table-x";
+import { defaultColumns } from "../table-x/types/columns";
 
 type TaskTableViewProps = {
   expanded: string[];
@@ -36,74 +36,3 @@ export default function TaskTableView({
     </Paper>
   );
 }
-{
-  /* <TableContainer
-        component={Paper}
-        sx={{
-          maxHeight: "80vh",
-          overflow: "auto",
-          border: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Table
-          stickyHeader
-          size="small"
-          sx={{ tableLayout: "fixed", overflowX: "scroll" }}
-        >
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "grey.100" }}>
-              <TableCell
-                sx={{
-                  zIndex: 20,
-                  fontWeight: 600,
-                  bgcolor: "inherit",
-                  width: 320,
-                }}
-              >
-                Name
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: 600,
-                  bgcolor: "inherit",
-                  width: 150,
-                }}
-              >
-                Assignee
-              </TableCell>
-              <TableCell
-                sx={{ fontWeight: 600, bgcolor: "inherit", width: 150 }}
-              >
-                Due Date
-              </TableCell>
-              <TableCell
-                sx={{ fontWeight: 600, bgcolor: "inherit", width: 150 }}
-              >
-                Status
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* Replace the following with actual task data mapping */
-}
-//       {tasks.map((task) => (
-//         <TaskTableRow
-//           key={task.id}
-//           task={task}
-//           expanded={expanded}
-//           toggleExpand={(id) => {
-//             if (expanded.includes(id)) {
-//               setExpanded(expanded.filter((x) => x !== id));
-//             } else {
-//               setExpanded([...expanded, id]);
-//             }
-//           }}
-//           onStatusChange={(id, status) => {
-//             console.log(`Task ID: ${id}, New Status: ${status}`);
-//           }}
-//         />
-//       ))}
-//     </TableBody>
-//   </Table>
-// </TableContainer> */}

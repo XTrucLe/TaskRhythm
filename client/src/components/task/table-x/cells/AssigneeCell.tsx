@@ -1,5 +1,5 @@
 import React from "react";
-import type { CellProps } from "./CellProps";
+import type { CellProps } from "../types/cells";
 import {
   Avatar,
   Autocomplete,
