@@ -2,12 +2,12 @@ import React from "react";
 import type { CellProps } from "../types/cells";
 import { TextField, Typography } from "@mui/material";
 
-function DateCell({ value, onChange, editing, onBlur }: CellProps) {
+function DateCell({ value = "-", onChange, editing, onBlur }: CellProps) {
   if (editing) {
     return (
       <TextField
         type="date"
-        value={value}
+        value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         onBlur={onBlur}
         fullWidth
@@ -20,15 +20,17 @@ function DateCell({ value, onChange, editing, onBlur }: CellProps) {
     );
   }
   return (
-    <Typography variant="body1" sx={{ cursor: "pointer", userSelect: "none" }}>
-      {formatDate(value)}
+    <Typography
+      variant="body1"
+      sx={{
+        cursor: "pointer",
+        userSelect: "none",
+        color: value ? "auto" : "grey.500",
+      }}
+    >
+      {value ? value : "None"}
     </Typography>
   );
 }
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-
-  return date.toLocaleDateString("vi-VN");
-};
 export default React.memo(DateCell);

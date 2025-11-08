@@ -6,7 +6,8 @@ interface TaskColumnState {
   columns: TaskColumn[];
   allColumns: TaskColumn[];
   defaultColumns: string[];
-  setColumns: (columns: TaskColumn[]) => void;
+  addColumns: (key: string) => void;
+  removeColumns: (key: string) => void;
 }
 
 export const allColumns: TaskColumn[] = [
@@ -14,24 +15,24 @@ export const allColumns: TaskColumn[] = [
   { key: "name", label: "Name", width: 320 },
   { key: "description", label: "Description", width: 180 },
   { key: "type", label: "Type", width: 100 },
-  { key: "priority", label: "Priority", width: 80 },
+  { key: "priority", label: "Priority", width: 120 },
 
   // Phân công
   { key: "assignee", label: "Assignee", width: 180 },
 
   // Thời gian
-  { key: "startDate", label: "Start Date", width: 100 },
-  { key: "actualStartDate", label: "Start Actual", width: 100 },
-  { key: "dueDate", label: "Due Date", width: 100 },
-  { key: "completedDate", label: "Completed At", width: 100 },
+  { key: "startDate", label: "Start Date", width: 120 },
+  { key: "actualStartDate", label: "Start Actual", width: 120 },
+  { key: "dueDate", label: "Due Date", width: 120 },
+  { key: "completedDate", label: "Completed", width: 120 },
 
   // Tiến độ & trạng thái
   { key: "progress", label: "Progress", width: 80 },
   { key: "status", label: "Status", width: 100 },
 
   // ⏱Thời lượng
-  { key: "estimatedHours", label: "Estimated Hours", width: 100 },
-  { key: "loggedHours", label: "Hours Actual", width: 100 },
+  { key: "estimatedHours", label: "Estimated", width: 120 },
+  { key: "loggedHours", label: "Hours Actual", width: 120 },
 ];
 
 const defaultColumns = [
@@ -46,7 +47,7 @@ const defaultColumns = [
 export const useTaskColumnStore = create<TaskColumnState>()(
   devtools(
     persist(
-      (set) => ({
+      (set, get) => ({
         columns: defaultColumns
           .map((key) => allColumns.find((col) => col.key === key))
           .filter(Boolean) as TaskColumn[],
@@ -59,7 +60,18 @@ export const useTaskColumnStore = create<TaskColumnState>()(
           "dueDate",
           "progress",
         ],
-        setColumns: (columns: TaskColumn[]) => set({ columns }),
+        addColumns: (key: string) =>
+          set({
+            columns: [
+              ...get().columns,
+              allColumns.find((col) => col.key === key) as TaskColumn,
+            ],
+          }),
+        removeColumns: (key: string) =>
+          set({
+            columns: get().columns.filter((col) => col.key !== key),
+          }),
+
         reset: () =>
           set({
             columns: [],

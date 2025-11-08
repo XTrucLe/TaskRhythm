@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   IconButton,
   MenuItem,
   Popover,
@@ -14,7 +16,7 @@ import {
 import { useState } from "react";
 import { IoFilterSharp, IoTrash } from "react-icons/io5";
 import { FaColumns } from "react-icons/fa";
-import { TaskFieldKeys } from "../../../types/task";
+import { useTaskColumnStore } from "../../../store/taskColumn.store";
 
 const METHODS = [
   "contains",
@@ -29,6 +31,8 @@ export default function ToolBar() {
   const [filters, setFilters] = useState([
     { field: "", operation: "contains", value: "" },
   ]);
+  const { columns, allColumns, addColumns, removeColumns } =
+    useTaskColumnStore();
 
   // ✅ Quản lý độc lập 2 popover
   const [anchor, setAnchor] = useState<{
@@ -36,7 +40,7 @@ export default function ToolBar() {
     columns: HTMLElement | null;
   }>({ filter: null, columns: null });
 
-  const fields = TaskFieldKeys;
+  const fields = allColumns;
 
   const openPopover =
     (key: keyof typeof anchor) => (e: React.MouseEvent<HTMLElement>) =>
@@ -63,6 +67,19 @@ export default function ToolBar() {
     setFilters((prev) => prev.filter((_, i) => i !== index));
 
   const addNewTask = () => console.log("Add new task");
+
+  const checked = (field: string) => {
+    if (field === "name" || field === "status") return true;
+    return columns.some((col) => col.key === field);
+  };
+  const onCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked, id } = e.target;
+    if (checked) {
+      addColumns(id);
+    } else {
+      removeColumns(id);
+    }
+  };
 
   return (
     <Box display="flex" justifyContent="flex-end" p={2} gap={1}>
@@ -141,11 +158,11 @@ export default function ToolBar() {
               >
                 {fields.map((field) => (
                   <MenuItem
-                    key={field}
-                    value={field}
+                    key={field.key}
+                    value={field.key}
                     sx={{ fontSize: 13, fontWeight: 500 }}
                   >
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
+                    {field.label.charAt(0).toUpperCase() + field.label.slice(1)}
                   </MenuItem>
                 ))}
               </Select>
@@ -204,9 +221,21 @@ export default function ToolBar() {
           <Typography fontWeight={600} mb={1}>
             Manage Columns
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            (coming soon)
-          </Typography>
+          <Stack direction="column" spacing={1}>
+            {fields.map((field) => (
+              <FormControlLabel
+                key={field.key}
+                control={
+                  <Checkbox
+                    checked={checked(field.key)}
+                    onChange={onCheckedChange}
+                    id={field.key}
+                  />
+                }
+                label={field.label}
+              />
+            ))}
+          </Stack>
         </Box>
       </Popover>
     </Box>
