@@ -1,199 +1,129 @@
 import React from "react";
+import { Avatar, Autocomplete, Box, TextField, Tooltip } from "@mui/material";
 import type { CellProps } from "../types/cells";
-import {
-  Avatar,
-  Autocomplete,
-  Box,
-  TextField,
-  Tooltip,
-  IconButton,
-} from "@mui/material";
-import { FaTimes } from "react-icons/fa";
 import type { UserBase } from "../../../../types/user";
+import type { AutocompleteGetTagProps } from "@mui/material";
 
 type AssigneeCellProps = Omit<CellProps, "value" | "onChange"> & {
   value?: UserBase[];
   allUsers: UserBase[];
-  onChange?: (newUsers: UserBase[]) => void;
 };
 
 function AssigneeCell({
   value = [],
   allUsers,
-  onChange,
   editing,
   onBlur,
 }: AssigneeCellProps) {
-  const handleDelete = (userId: string) => {
-    const newValue = value.filter((user) => user.id !== userId);
-    onChange?.(newValue);
-  };
-
-  if (!value || value.length === 0) {
-    return editing ? (
-      <Autocomplete
-        multiple
-        options={allUsers}
-        getOptionLabel={(option) => option.name}
-        value={[]}
-        onChange={(_, newValue) => onChange?.(newValue)}
-        renderTags={() => null}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            sx={{
-              "& .MuiInputBase-input": {
-                padding: 0,
-                width: 0,
-                minWidth: 0,
-                caretColor: "transparent",
-                color: "transparent",
-              },
-            }}
-          />
-        )}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Avatar
-              src={option.avatarUrl}
-              sx={{ width: 24, height: 24, mr: 1 }}
-            >
-              {option.name[0]}
-            </Avatar>
-            {option.name}
-          </li>
-        )}
-        sx={{
-          "& .MuiInputBase-root": { border: "none" },
-          "& .MuiAutocomplete-endAdornment": { display: "none" },
-        }}
-      />
-    ) : (
-      <span>—</span>
-    );
-  }
-
-  if (editing) {
-    return (
-      <Autocomplete
-        multiple
-        disableCloseOnSelect
-        options={allUsers}
-        getOptionLabel={(option) => option.name}
-        value={value}
-        onChange={(_, newValue) => onChange?.(newValue)}
-        renderTags={(tagValue, getTagProps) => (
+  const renderTags = (
+    tagValue: UserBase[],
+    getTagProps: AutocompleteGetTagProps
+  ) => (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "nowrap",
+        gap: 0.5,
+        cursor: "pointer",
+      }}
+    >
+      {tagValue.map((option, index) => {
+        const { key, ...tagProps } = getTagProps({ index });
+        return (
           <Box
+            key={option.id}
+            position="relative"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "nowrap",
-              gap: 0.5,
-              cursor: "pointer",
+              "&:hover .delete-icon": { opacity: 1 },
+              display: "inline-block",
             }}
           >
-            {tagValue.map((option, index) => {
-              const { key, ...tagProps } = getTagProps({ index });
-              return (
-                <Box
-                  key={option.id}
-                  position="relative"
-                  sx={{
-                    "&:hover .delete-icon": { opacity: 1 },
-                  }}
-                >
-                  <Tooltip title={option.name}>
-                    <Avatar
-                      key={key}
-                      {...tagProps}
-                      src={option.avatarUrl}
-                      sx={{
-                        width: 28,
-                        height: 28,
-                        fontSize: 13,
-                        bgcolor: "primary.light",
-                        transition: "transform 0.15s ease-in-out",
-                        "&:hover": { transform: "scale(1.08)" },
-                      }}
-                    >
-                      {option.name[0]}
-                    </Avatar>
-                  </Tooltip>
-
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(option.id);
-                    }}
-                    className="delete-icon"
-                    sx={{
-                      position: "absolute",
-                      top: -4,
-                      right: -4,
-                      width: 16,
-                      height: 16,
-                      boxShadow: 1,
-                      opacity: 0,
-                      transition: "opacity 0.2s ease-in-out",
-                      "& svg": { width: 10, height: 10 },
-                    }}
-                  >
-                    <FaTimes size={8} color="black" />
-                  </IconButton>
-                </Box>
-              );
-            })}
+            <Tooltip title={option.name}>
+              <Avatar
+                key={key}
+                {...tagProps}
+                src={option.avatarUrl}
+                sx={{
+                  width: 28,
+                  height: 28,
+                  fontSize: 13,
+                  bgcolor: "primary.light",
+                  transition: "transform 0.15s ease-in-out",
+                  "&:hover": { transform: "scale(1.08)" },
+                }}
+              >
+                {option.name[0]}
+              </Avatar>
+            </Tooltip>
           </Box>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="standard"
-            placeholder=""
-            onBlur={onBlur}
-            sx={{
-              "& .MuiInputBase-input": {
-                padding: 0,
-                width: 0,
-                minWidth: 0,
-                caretColor: "transparent",
-                color: "transparent",
-              },
-            }}
-          />
-        )}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Avatar
-              src={option.avatarUrl}
-              sx={{ width: 24, height: 24, mr: 1 }}
-            >
-              {option.name[0]}
-            </Avatar>
-            {option.name}
-          </li>
-        )}
-        sx={{
-          "& .MuiInputBase-root": {
-            display: "flex",
-            alignItems: "center",
-            flexWrap: "nowrap",
-            gap: 0.5,
-            border: "none",
-            "&:before, &:after": { display: "none" },
-          },
-          "& .MuiAutocomplete-endAdornment": { display: "none" },
-        }}
-      />
-    );
+        );
+      })}
+    </Box>
+  );
+
+  const renderAutocomplete = (selected: UserBase[]) => (
+    <Autocomplete
+      multiple
+      disableCloseOnSelect
+      options={allUsers}
+      getOptionLabel={(option) => option.name}
+      value={selected}
+      renderTags={(tagValue, getTagProps) =>
+        tagValue.length > 0 ? renderTags(tagValue, getTagProps) : null
+      }
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="standard"
+          onBlur={onBlur}
+          placeholder=""
+          sx={{
+            "& .MuiInputBase-root": {
+              borderBottom: "none !important",
+              "&::before, &::after": { display: "none !important" },
+            },
+            "& .MuiInputBase-input": {
+              padding: 0,
+              width: 0,
+              minWidth: 0,
+              caretColor: "transparent",
+              color: "transparent",
+            },
+            "& fieldset": { border: "none", outline: "none" },
+          }}
+        />
+      )}
+      renderOption={(props, option) => (
+        <li {...props}>
+          <Avatar src={option.avatarUrl} sx={{ width: 24, height: 24, mr: 1 }}>
+            {option.name[0]}
+          </Avatar>
+          {option.name}
+        </li>
+      )}
+      sx={{
+        "& .MuiInputBase-root": {
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "nowrap",
+          gap: 0.5,
+          border: "none !important",
+        },
+        "& .MuiAutocomplete-endAdornment": { display: "none" },
+      }}
+    />
+  );
+
+  if (editing) {
+    return renderAutocomplete(value);
   }
 
-  // 🔵 Chế độ xem (view mode)
+  if (!value?.length) return <span>—</span>;
+
   return (
-    <Box sx={{ display: "flex", gap: 0.75 }}>
-      {value.map((user) => (
+    <Box sx={{ display: "flex" }}>
+      {value.map((user, index) => (
         <Tooltip key={user.id} title={user.name}>
           <Avatar
             src={user.avatarUrl}
@@ -201,8 +131,10 @@ function AssigneeCell({
               width: 32,
               height: 32,
               fontSize: 14,
+              border: "1px solid white",
+              mr: index !== value.length - 1 ? -1.2 : 0,
               transition: "transform 0.15s ease-in-out",
-              "&:hover": { transform: "scale(1.08)" },
+              "&:hover": { transform: "scale(1.08)", zIndex: 10 },
             }}
           >
             {user.name[0]}

@@ -1,9 +1,9 @@
 import React from "react";
-import { type ColumnDef } from "../types/columns";
+import { type TaskColumn } from "../../../../types/taskColumn";
 import { TableHead, TableRow, TableCell } from "@mui/material";
 
 type TableHeaderProps = {
-  columns: ColumnDef[];
+  columns: TaskColumn[];
 };
 
 function TableHeader({ columns }: TableHeaderProps) {

@@ -1,38 +1,91 @@
-import { useContext } from "react";
-import {
-  // Table,
-  // TableBody,
-  // TableCell,
-  // TableContainer,
-  // TableHead,
-  // TableRow,
-  Paper,
-} from "@mui/material";
-// import TaskTableRow from "./../table/TaskTableRow";
-import { TaskContext } from "../../../contexts/TaskContext";
-import TaskTable from "../table-x";
-import { defaultColumns } from "../table-x/types/columns";
+import { useState } from "react";
+import { Paper } from "@mui/material";
+import { Table, TableContainer, TableBody } from "@mui/material";
+import TableHeader from "../table-x/layout/TableHeader";
+import TaskRow from "../table-x/layout/TaskRow";
+import { useTaskStore } from "../../../store/task.store";
+import type { Task } from "../../../types/task";
+import { useTaskColumnStore } from "../../../store/taskColumn.store";
 
-type TaskTableViewProps = {
-  expanded: string[];
-  setExpanded: (expanded: string[]) => void;
-};
+export default function TaskTableView() {
+  const { tasks, toggleExpanded, expanded, addSubTask, setSelectedTask } =
+    useTaskStore();
+  const [newRow, setNewRow] = useState<{
+    parentId: string;
+    level: number;
+  } | null>(null);
+  const { columns } = useTaskColumnStore();
 
-export default function TaskTableView({
-  expanded,
-  setExpanded,
-}: TaskTableViewProps) {
-  const { tasks } = useContext(TaskContext);
+  const handleAddSubTask = (parentId: string, level: number) => {
+    setNewRow({ parentId, level });
+    if (toggleExpanded && expanded && !expanded.includes(parentId)) {
+      toggleExpanded(parentId);
+    }
+  };
+
+  const handleSaveNewTask = (newTask: Omit<Task, "id">) => {
+    if (newRow) {
+      // Save the new task
+      addSubTask(newRow.parentId, { ...newTask, id: Date.now().toString() });
+      // You can use your task store or any other method to save the task
+      console.log("Saving new task:", newTask);
+      // After saving, you might want to reset the newRow state
+      setNewRow(null);
+    }
+  };
+
+  const handleCancelNewTask = () => {
+    setNewRow(null);
+  };
+
+  const addingRow = newRow;
+
+  const onStatusChange = (id: string, status: string) => {
+    // Handle status change logic here
+    console.log(`Task ${id} status changed to ${status}`);
+  };
 
   return (
-    <Paper elevation={2} sx={{ margin: 2 }}>
-      <TaskTable
-        columns={defaultColumns}
-        tasks={tasks}
-        expanded={expanded}
-        setExpanded={setExpanded}
-        onStatusChange={() => {}}
-      />
+    <Paper elevation={2} sx={{ position: "relative", margin: 2 }}>
+      <TableContainer>
+        <Table
+          stickyHeader
+          size="small"
+          sx={{
+            tableLayout: "fixed",
+            overflowX: "scroll",
+          }}
+        >
+          <TableHeader columns={columns} />
+          <TableBody
+            sx={{
+              "& .MuiTableCell-body": {
+                padding: "8px !important",
+                height: "40px !important",
+              },
+              "& .MuiInputBase-input": {
+                padding: "2px 4px !important",
+              },
+            }}
+          >
+            {tasks.map((task) => (
+              <TaskRow
+                key={task.id}
+                columns={columns}
+                task={task}
+                expanded={expanded}
+                toggleExpanded={toggleExpanded}
+                onStatusChange={onStatusChange}
+                onAddSubTask={handleAddSubTask}
+                addingRow={addingRow}
+                onSaveRow={handleSaveNewTask}
+                onCancelRow={handleCancelNewTask}
+                openDetail={setSelectedTask}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Paper>
   );
 }

@@ -58,3 +58,20 @@ export const TaskFieldKeys: (keyof TaskColumnsDef)[] = [
   "estimatedHours",
   "loggedHours",
 ];
+
+export type Operation =
+  | "contains"
+  | "does not contain"
+  | "equals"
+  | "does not equal"
+  | "starts with"
+  | "does not start with"
+  | "ends with"
+  | "does not end with";
+
+
+export type TaskFilter = {
+  field: keyof TaskColumnsDef;
+  operation: Operation;
+  value: string;
+}

@@ -3,7 +3,6 @@ import type { CellProps } from "../types/cells";
 import { TextField, Typography } from "@mui/material";
 
 function DateCell({ value, onChange, editing, onBlur }: CellProps) {
-  if (!value) return <Typography variant="body1">—</Typography>;
   if (editing) {
     return (
       <TextField

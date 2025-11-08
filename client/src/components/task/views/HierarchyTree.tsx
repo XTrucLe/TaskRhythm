@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -9,8 +9,8 @@ import {
   Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { TaskContext } from "../../../contexts/TaskContext";
 import type { Task } from "../../../types/task";
+import { useTaskStore } from "../../../store/task.store";
 
 let yCounter = 0; // dùng chung cho toàn cây
 
@@ -132,14 +132,16 @@ function TaskNode({ data }: { data: { task: Task } }) {
         <span>
           {priorityEmoji} {task.priority}
         </span>
-        {task.assignee && <span>{task.assignee}</span>}
+        {task.assignee && (
+          <span>{task.assignee.flatMap((a) => a.name).join(", ")}</span>
+        )}
       </div>
     </div>
   );
 }
 
 export default function TaskFlowView() {
-  const { tasks } = useContext(TaskContext);
+  const { tasks } = useTaskStore();
 
   const { nodes, edges } = useMemo(() => {
     const groups = groupByRoot(tasks);

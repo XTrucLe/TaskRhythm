@@ -12,8 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { Task } from "../../types/task";
-import { useContext } from "react";
-import { TaskContext } from "../../contexts/TaskContext";
+import { useTaskStore } from "../../store/task.store";
 
 function TaskDrawer({
   isOpen,
@@ -24,8 +23,7 @@ function TaskDrawer({
   onClose: () => void;
   task: Task | null;
 }) {
-  const { deleteTask, assignUser, claimTask, updateTaskStatus } =
-    useContext(TaskContext);
+  const { claimTask, updateTaskStatus } = useTaskStore();
 
   if (!task) {
     return null;
@@ -37,20 +35,18 @@ function TaskDrawer({
   const canAssign = true; // Not implemented yet
   const canClaim = task.assignee === null; // Not implemented yet
   const handleAssign = () => {
-    if (canAssign) {
-      assignUser(task.id, 1); // Assign to user with ID 1 for demo
-    }
+    if (canAssign) return;
   };
 
   const handleClaim = () => {
     if (canClaim) {
-      claimTask(task.id, 1); // Claim by user with ID 1 for demo
+      claimTask(task.id, "1"); // Claim by user with ID 1 for demo
     }
   };
 
   const handleDelete = () => {
     if (canDelete) {
-      deleteTask(task.id);
+      return;
     }
   };
   return (
@@ -104,10 +100,12 @@ function TaskDrawer({
                     color: "#2563eb",
                   }}
                 >
-                  {task.assignee ? task.assignee[0] : "?"}
+                  {task.assignee ? task.assignee[0].name : "?"}
                 </Avatar>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {task.assignee || "Unassigned"}
+                  {task.assignee
+                    ? task.assignee.map((a) => a.name).join(", ")
+                    : "Unassigned"}
                 </Typography>
               </Stack>
             </Stack>

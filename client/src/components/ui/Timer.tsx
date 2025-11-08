@@ -6,44 +6,49 @@ type TimerProps = {
   initTime?: number;
 };
 
-function Timer({ initTime = 0 }: TimerProps) {
-  const [totalSeconds, setTotalSeconds] = useState(initTime);
-  const [isRunning, setIsRunning] = useState(false);
+export default function Timer({ initTime = 0 }: TimerProps) {
+  const [seconds, setSeconds] = useState(initTime);
+  const [running, setRunning] = useState(false);
 
-  const formatTime = (time: number) => {
-    return time < 10 ? `0${time}` : String(time);
-  };
+  useEffect(() => setSeconds(initTime), [initTime]);
 
   useEffect(() => {
-    setTotalSeconds(initTime);
-  }, [initTime]);
+    if (!running) return;
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [running]);
 
-  useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(() => {
-      setTotalSeconds((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isRunning]);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
 
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const timeText = isRunning
-    ? `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`
-    : `${hours > 0 ? `${hours} hour${hours > 1 ? "s" : ""}` : ""}${
-        minutes > 0 ? ` ${minutes} minute${minutes > 1 ? "s" : ""}` : ""
-      }`;
+  const timeText = running
+    ? `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s
+        .toString()
+        .padStart(2, "0")}`
+    : [h && `${h}h`, m && `${m}m`].filter(Boolean).join(" ") || "0m";
 
   return (
     <Typography variant="body1" display="flex" alignItems="center">
-      <IconButton onClick={() => setIsRunning(!isRunning)}>
-        {isRunning ? <FaPause size={14} /> : <FaPlay size={14} />}
+      <IconButton
+        onClick={() => setRunning((v) => !v)}
+        size="small"
+        sx={{
+          p: 1,
+          mr: 1,
+          bgcolor: running ? "success.light" : "error.light",
+          "&:hover": {
+            bgcolor: running ? "success.light" : "error.light",
+          },
+        }}
+      >
+        {running ? (
+          <FaPause size={14} color="white" />
+        ) : (
+          <FaPlay size={14} color="white" />
+        )}
       </IconButton>
       {timeText}
     </Typography>
   );
 }
-
-export default Timer;

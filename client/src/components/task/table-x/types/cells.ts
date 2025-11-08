@@ -3,4 +3,5 @@ export type CellProps = {
   onChange?: (newText: string) => void;
   editing?: boolean;
   onBlur?: () => void;
+  onClick?: () => void;
 };

@@ -1,24 +1,53 @@
 import { TextField, Typography } from "@mui/material";
 import type { CellProps } from "../types/cells";
+import { useState } from "react";
 
-function TextCell({ value, onChange, editing, onBlur }: CellProps) {
+export default function TextCell({
+  value = "",
+  onChange,
+  editing,
+  onBlur,
+  onClick,
+}: CellProps) {
+  const [displayValue, setDisplayValue] = useState<string>(value);
+
   if (editing) {
     return (
       <TextField
-        value={value.charAt(0).toUpperCase() + value.slice(1)}
-        onChange={(e) => onChange?.(e.target.value)}
+        value={displayValue === "—" ? "" : displayValue}
+        onChange={(e) => setDisplayValue(e.target.value)}
         onBlur={onBlur}
         fullWidth
-        sx={{ "& fieldset": { border: "none", outline: "none" } }}
-        onClick={(e) => e.stopPropagation()}
+        variant="standard"
+        InputProps={{ disableUnderline: true }}
+        sx={{
+          "& .MuiInputBase-root": { p: 0 },
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            onChange?.(displayValue);
+            onBlur?.();
+          }
+        }}
+        onClick={onClick}
+        onMouseDown={(e) => e.stopPropagation()}
       />
     );
   }
+
   return (
-    <Typography variant="body1" sx={{ cursor: "pointer", userSelect: "none" }}>
-      {value.charAt(0).toUpperCase() + value.slice(1) || "—"}
+    <Typography
+      variant="body2"
+      sx={{
+        cursor: "pointer",
+        userSelect: "none",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }}
+      onClick={onClick}
+    >
+      {displayValue}
     </Typography>
   );
 }
-
-export default TextCell;

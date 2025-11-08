@@ -9,8 +9,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { TaskContext } from "../../../contexts/TaskContext";
+import { useEffect, useMemo, useState } from "react";
 import type { Task, TaskStatus } from "../../../types/task";
 import {
   FiChevronDown as ExpandMore,
@@ -19,6 +18,7 @@ import {
   FiEdit as Edit,
   FiMoreHorizontal as More,
 } from "react-icons/fi";
+import { useTaskStore } from "../../../store/task.store";
 
 // ------------------------
 // Column definitions
@@ -239,7 +239,7 @@ const AddItemBox = ({
 // KanbanBoard component
 // ------------------------
 export default function KanbanBoard() {
-  const { tasks } = useContext(TaskContext);
+  const { tasks } = useTaskStore();
   const [visibleColumns, setVisibleColumns] = useState<TaskStatus[]>([
     "coming_soon",
     "todo",

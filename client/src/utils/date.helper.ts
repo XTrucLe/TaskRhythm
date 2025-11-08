@@ -38,10 +38,16 @@ export const validateAge = (birthdate: Date, minAge: number) => {
   return age >= minAge;
 };
 
-export const formatDate = (date: Date) => {
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
+export const formatDate = (date?: string | Date | null): string => {
+  if (!date) return "";
+
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
   return `${year}-${month}-${day}`;
 };
 

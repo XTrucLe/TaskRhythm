@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, memo } from "react";
 import { Box, TableCell } from "@mui/material";
 import type { Task } from "../../../../types/task";
-import type { ColumnDef } from "../types/columns";
+import type { TaskColumn } from "../../../../types/taskColumn";
 import type { UserBase } from "../../../../types/user";
 import { AllUsers } from "../../../../mock/tasks";
+
 import { StatusCell } from "../../TaskStatus";
 import { PriorityCell } from "../../TaskPriorities";
 import AssigneeCell from "./AssigneeCell";
@@ -11,20 +12,24 @@ import DateCell from "./DateCell";
 import ExpandCell from "./ExpandCell";
 import TextCell from "./TextCell";
 import ToolBox from "../layout/ToolBox";
+import { formatDate } from "../../../../utils/date.helper";
 
-type CellFactoryProps = {
+type OnChangeValue = string | UserBase[] | Date;
+
+interface CellFactoryProps {
   task: Task;
-  columnKey: ColumnDef["key"];
+  columnKey: TaskColumn["key"];
   editing?: boolean;
-  onChange: (value: string | UserBase[] | Date) => void;
+  onChange: (value: OnChangeValue) => void;
   expanded?: boolean;
   toggleExpanded?: () => void;
   onAddSubTask?: (id: string, level: number) => void;
-};
+  onClick?: () => void;
+}
 
-type CellRendererProps = CellFactoryProps & {
+interface CellRendererProps extends CellFactoryProps {
   onBlur?: () => void;
-};
+}
 
 const NameCell: React.FC<CellRendererProps> = ({
   task,
@@ -32,139 +37,122 @@ const NameCell: React.FC<CellRendererProps> = ({
   expanded,
   toggleExpanded,
   onAddSubTask,
+  onClick,
 }) => {
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const onAdd = () => {
-    if (onAddSubTask) {
-      onAddSubTask(task.id, (task.level || 0) + 1);
-    }
-  };
+  const handleAdd = () => onAddSubTask?.(task.id, (task.level ?? 0) + 1);
+  const handleBlur = () => setIsEditing(false);
 
   return (
     <Box
       className="flex items-center gap-1"
       sx={{
         pl: (task.level ?? 0) * 2 + (task.subTasks?.length ? 0 : 3),
-        "&:hover .table-toolbox": {
-          display: "flex",
-        },
+        "&:hover .table-toolbox": { display: isEditing ? "none" : "flex" },
       }}
     >
-      {task.subTasks && task.subTasks.length > 0 && (
-        <ExpandCell
-          expanded={expanded || false}
-          toggleExpanded={toggleExpanded}
-        />
-      )}
+      {task.subTasks?.length ? (
+        <ExpandCell expanded={!!expanded} toggleExpanded={toggleExpanded} />
+      ) : null}
+
       <TextCell
         value={task.name}
-        onChange={onChange as (value: string) => void}
+        onChange={(v) => onChange(v)}
         editing={isEditing}
+        onBlur={handleBlur}
+        onClick={onClick}
       />
+
       <ToolBox
         hide={task.level === 2 ? ["add"] : []}
-        onAdd={onAdd}
+        onAdd={handleAdd}
         onEdit={() => setIsEditing(true)}
       />
     </Box>
   );
 };
 
-const cellRenderers: Partial<
-  Record<ColumnDef["key"], React.FC<CellRendererProps>>
+const cellRenderers: Record<
+  TaskColumn["key"],
+  React.FC<CellRendererProps> | undefined
 > = {
   name: NameCell,
   dueDate: ({ task, onChange, editing, onBlur }) => (
     <DateCell
-      value={new Date(task.dueDate || "").toISOString().split("T")[0]}
+      value={formatDate(task.dueDate)}
       onChange={onChange}
       editing={editing}
       onBlur={onBlur}
     />
   ),
-  assignee: ({ task, onChange, editing, onBlur }) => (
+  assignee: ({ task, editing, onBlur }) => (
     <AssigneeCell
-      value={task.assignee}
-      onChange={onChange as (value: UserBase[]) => void}
-      editing={editing}
-      onBlur={onBlur}
       allUsers={AllUsers}
+      value={task.assignee}
+      editing={task.subTasks ? false : editing}
+      onBlur={onBlur}
     />
   ),
   status: ({ task }) => <StatusCell status={task.status} />,
   priority: ({ task }) => <PriorityCell priority={task.priority} />,
   description: ({ task, onChange, editing }) => (
     <TextCell
-      value={task.description || ""}
-      onChange={onChange as (value: string) => void}
+      value={task.description ?? "-"}
+      onChange={(v) => onChange(v)}
       editing={editing}
     />
   ),
   progress: ({ task, onChange }) => (
     <TextCell
-      value={task.progress?.toString() || ""}
-      onChange={onChange as (value: string) => void}
+      value={task.progress?.toString() ?? "-"}
+      onChange={(v) => onChange(v)}
     />
   ),
   type: ({ task, onChange, editing }) => (
     <TextCell
-      value={task.type || ""}
-      onChange={onChange as (value: string) => void}
+      value={task.type ?? ""}
+      onChange={(v) => onChange(v)}
       editing={editing}
     />
   ),
   actualStartDate: ({ task, onChange, editing, onBlur }) => (
     <DateCell
-      value={new Date(task.actualStartDate || "").toISOString().split("T")[0]}
+      value={formatDate(task.actualStartDate)}
       onChange={onChange}
       editing={editing}
       onBlur={onBlur}
     />
   ),
-  startDate: ({ task, onChange, onBlur }) => (
+  startDate: ({ task, onChange }) => (
     <DateCell
-      value={new Date(task.startDate || "").toISOString().split("T")[0]}
+      value={formatDate(task.startDate)}
       onChange={onChange}
       editing={false}
-      onBlur={onBlur}
     />
   ),
-  completedDate: ({ task, onChange, onBlur }) => (
+  completedDate: ({ task, onChange }) => (
     <DateCell
-      value={new Date(task.completedDate || "").toISOString().split("T")[0]}
+      value={formatDate(task.completedDate)}
       onChange={onChange}
       editing={false}
-      onBlur={onBlur}
     />
   ),
-  estimatedHours: ({ task, onChange, editing, onBlur }) => (
+  estimatedHours: ({ task, onChange, editing }) => (
     <TextCell
-      value={task.estimatedHours?.toString() || ""}
-      onChange={onChange as (value: string) => void}
+      value={task.estimatedHours?.toString() ?? "-"}
+      onChange={(v) => onChange(v)}
       editing={editing}
-      onBlur={onBlur}
     />
   ),
-  loggedHours: ({ task, onBlur }) => (
-    <TextCell value={task.loggedHours?.toString() || ""} onBlur={onBlur} />
+  loggedHours: ({ task }) => (
+    <TextCell value={task.loggedHours?.toString() ?? "-"} />
   ),
 };
 
-function CellFactory(props: CellFactoryProps) {
+const CellFactory: React.FC<CellFactoryProps> = (props) => {
   const { columnKey } = props;
-  const onBlur = () => {
-    // Placeholder for onBlur logic if needed
-  };
-
   const CellComponent = cellRenderers[columnKey];
-
-  const renderCell = () => {
-    if (CellComponent) {
-      return <CellComponent {...props} onBlur={onBlur} />;
-    }
-    return <span>—</span>;
-  };
 
   return (
     <TableCell
@@ -176,9 +164,9 @@ function CellFactory(props: CellFactoryProps) {
         bgcolor: columnKey === "name" ? "background.paper" : "inherit",
       }}
     >
-      {renderCell()}
+      {CellComponent ? <CellComponent {...props} /> : <span>—</span>}
     </TableCell>
   );
-}
+};
 
-export default React.memo(CellFactory);
+export default memo(CellFactory);

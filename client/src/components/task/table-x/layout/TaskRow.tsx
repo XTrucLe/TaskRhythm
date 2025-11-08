@@ -1,102 +1,95 @@
 import React, { Fragment } from "react";
 import { TableRow } from "@mui/material";
 import CellFactory from "../cells";
-import type { ColumnDef } from "../types/columns";
+import type { TaskColumn } from "../../../../types/taskColumn";
 import type { Task } from "../../../../types/task";
 import NewRow from "./NewRow";
 
 type TableRowProps = {
-  columns: ColumnDef[];
+  columns: TaskColumn[];
   task: Task;
   level?: number;
   expanded?: string[];
-  setExpanded?: (expanded: string[]) => void;
+  toggleExpanded?: (id: string) => void;
   onStatusChange?: (id: string, status: string) => void;
   onAddSubTask?: (parentId: string, level: number) => void;
-  addingRow?: {
-    parentId: string;
-    level: number;
-  } | null;
+  addingRow?: { parentId: string; level: number } | null;
   onSaveRow?: (newTask: Omit<Task, "id">) => void;
   onCancelRow?: () => void;
+  openDetail?: (taskId: string) => void;
 };
 
 function TaskRow({
   columns,
   task,
-  level,
-  expanded,
-  setExpanded,
-  onStatusChange,
+  level = 0,
+  expanded = [],
+  toggleExpanded,
   onAddSubTask,
   addingRow,
   onSaveRow,
   onCancelRow,
+  openDetail,
 }: TableRowProps) {
-  const toggleExpanded = () => {
-    if (!setExpanded) return;
-    if (expanded?.includes(task.id)) {
-      setExpanded(expanded.filter((id) => id !== task.id));
-    } else {
-      setExpanded([...(expanded || []), task.id]);
-    }
-  };
+  const isExpanded = expanded.includes(task.id);
 
-  const isExpanded = expanded?.includes(task.id) || false;
+  const handleClick = (columnKey: string) => {
+    if (columnKey === "name") openDetail?.(task.id);
+  };
 
   return (
     <Fragment>
-      <TableRow onClick={() => {}}>
-        {columns.map((column) => (
+      <TableRow
+        sx={{ fontSize: "0.875rem", "& input": { fontSize: "0.875rem" } }}
+      >
+        {columns.map((col) => (
           <CellFactory
-            key={column.key}
+            key={col.key}
             task={task}
-            columnKey={column.key}
-            editing={true}
+            columnKey={col.key}
+            editing
             onChange={() => {}}
             expanded={isExpanded}
-            toggleExpanded={toggleExpanded}
+            toggleExpanded={() => toggleExpanded?.(task.id)}
             onAddSubTask={onAddSubTask}
+            onClick={() => handleClick(col.key)}
           />
         ))}
       </TableRow>
 
       {/* Render sub-tasks recursively */}
       {isExpanded &&
-        task.subTasks?.map((subtask) => (
+        task.subTasks?.map((sub) => (
           <TaskRow
-            key={subtask.id}
+            key={sub.id}
             columns={columns}
-            task={subtask}
-            level={(level || 0) + 1}
+            task={sub}
+            level={level + 1}
             expanded={expanded}
-            setExpanded={setExpanded}
-            onStatusChange={onStatusChange}
+            toggleExpanded={toggleExpanded}
             onAddSubTask={onAddSubTask}
             addingRow={addingRow}
             onSaveRow={onSaveRow}
             onCancelRow={onCancelRow}
+            openDetail={openDetail}
           />
         ))}
 
-      {/* Render temporary row for new sub-task */}
-      {addingRow &&
-        onSaveRow &&
-        onCancelRow &&
-        addingRow.parentId === task.id && (
-          <NewRow
-            task={{
-              name: "",
-              status: "coming_soon",
-              priority: "low",
-              level: addingRow.level,
-              type: "task",
-              parentId: addingRow.parentId,
-            }}
-            onSave={onSaveRow}
-            onCancel={onCancelRow}
-          />
-        )}
+      {/* Temporary row for new sub-task */}
+      {addingRow?.parentId === task.id && onSaveRow && onCancelRow && (
+        <NewRow
+          task={{
+            name: "",
+            status: "coming_soon",
+            priority: "low",
+            level: addingRow.level,
+            type: "task",
+            parentId: addingRow.parentId,
+          }}
+          onSave={onSaveRow}
+          onCancel={onCancelRow}
+        />
+      )}
     </Fragment>
   );
 }
