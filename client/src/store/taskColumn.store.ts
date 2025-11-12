@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import type { TaskColumn } from "../types/taskColumn";
+import type { StatusColumn, TaskColumn } from "../types/taskColumn";
 
 export const allColumns: TaskColumn[] = [
   { key: "name", label: "Name", width: 320 },
@@ -18,7 +18,7 @@ export const allColumns: TaskColumn[] = [
   { key: "loggedHours", label: "Hours Actual", width: 120 },
 ];
 
-const defaultColumns = [
+export const defaultColumns = [
   "name",
   "assignee",
   "status",
@@ -27,37 +27,35 @@ const defaultColumns = [
   "progress",
 ];
 
-const pickColumns = (keys: string[]) =>
-  allColumns.filter((c) => keys.includes(c.key));
+export const allStatusColumns: StatusColumn[] = [
+  { key: "coming_soon", label: "Not Started", options: [] },
+  { key: "todo", label: "To Do", options: [] },
+  { key: "doing", label: "In Progress", options: [] },
+  { key: "done", label: "Completed", options: [] },
+  { key: "overdue", label: "Overdue", options: [] },
+  { key: "done_late", label: "Done Late", options: [] },
+  { key: "cancelled", label: "Cancelled", options: [] },
+];
 
-export const useTaskColumnStore = create<TaskColumnState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        columns: pickColumns(defaultColumns),
-        allColumns,
-        defaultColumns,
-        addColumns: (key: string) =>
-          set(() => {
-            const { columns } = get();
-            const col = allColumns.find((c) => c.key === key);
-            if (!col) return { columns };
-            const merged = [...columns.filter((c) => c.key !== key), col];
-            const sorted = allColumns.filter((c) =>
-              merged.some((m) => m.key === c.key)
-            );
-            return { columns: sorted };
-          }),
-        removeColumns: (key: string) =>
-          set({
-            columns: get().columns.filter((c) => c.key !== key),
-          }),
-        reset: () => set({ columns: pickColumns(defaultColumns) }),
-      }),
-      { name: "task-column-storage" }
-    )
-  )
-);
+export const defaultStatusColumns: StatusColumn[] = [
+  { key: "todo", label: "To Do", options: [] },
+  { key: "doing", label: "In Progress", options: [] },
+  { key: "done", label: "Completed", options: [] },
+];
+
+const pickColumns = <T extends { key: string }>(all: T[], keys: string[]) =>
+  all.filter((c) => keys.includes(c.key));
+
+const mergeAndSort = <T extends { key: string }>(
+  all: T[],
+  current: T[],
+  key: string
+) => {
+  const col = all.find((c) => c.key === key);
+  if (!col) return current;
+  const merged = [...current.filter((c) => c.key !== key), col];
+  return all.filter((c) => merged.some((m) => m.key === c.key));
+};
 
 interface TaskColumnState {
   columns: TaskColumn[];
@@ -66,4 +64,49 @@ interface TaskColumnState {
   addColumns: (key: string) => void;
   removeColumns: (key: string) => void;
   reset: () => void;
+
+  statusColumns: StatusColumn[];
+  allStatusColumns: StatusColumn[];
+  defaultStatusColumns: StatusColumn[];
+  addStatusColumns: (key: string) => void;
+  removeStatusColumns: (key: string) => void;
+  resetStatus: () => void;
 }
+
+export const useTaskColumnStore = create<TaskColumnState>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        columns: pickColumns(allColumns, defaultColumns),
+        allColumns,
+        defaultColumns,
+        addColumns: (key) =>
+          set(() => ({
+            columns: mergeAndSort(allColumns, get().columns, key),
+          })),
+        removeColumns: (key) =>
+          set(() => ({ columns: get().columns.filter((c) => c.key !== key) })),
+        reset: () =>
+          set(() => ({ columns: pickColumns(allColumns, defaultColumns) })),
+
+        statusColumns: defaultStatusColumns,
+        allStatusColumns,
+        defaultStatusColumns,
+        addStatusColumns: (key) =>
+          set(() => ({
+            statusColumns: mergeAndSort(
+              allStatusColumns,
+              get().statusColumns,
+              key
+            ),
+          })),
+        removeStatusColumns: (key) =>
+          set(() => ({
+            statusColumns: get().statusColumns.filter((c) => c.key !== key),
+          })),
+        resetStatus: () => set(() => ({ statusColumns: defaultStatusColumns })),
+      }),
+      { name: "task-column-storage" }
+    )
+  )
+);

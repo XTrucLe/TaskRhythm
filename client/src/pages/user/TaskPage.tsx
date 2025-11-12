@@ -26,7 +26,6 @@ function TaskPage() {
 
   useEffect(() => {
     setOpenDetail(!!selectedTask);
-    console.log("selectedTask changed", selectedTask);
   }, [selectedTask]);
 
   const changeViewStyle = (style: ViewStyle) => {

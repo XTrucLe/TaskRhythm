@@ -83,7 +83,12 @@ export const useTaskStore = create<TaskStore>()(
         setLoading: (loading: boolean) => set({ loading }),
 
         addTask: (task: Task) =>
-          set((state) => ({ tasks: [...state.tasks, task] })),
+          set((state) => {
+            console.log("Before:", state.tasks.length);
+            const newTasks = [...state.tasks, task];
+            console.log("After:", newTasks.length);
+            return { tasks: newTasks };
+          }),
 
         addSubTask: (parentId: string, task: Task) =>
           set((state) => {
