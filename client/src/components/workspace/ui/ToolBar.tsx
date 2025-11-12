@@ -17,6 +17,7 @@ import { useState } from "react";
 import { IoFilterSharp, IoTrash } from "react-icons/io5";
 import { FaColumns } from "react-icons/fa";
 import { useTaskColumnStore } from "../../../store/taskColumn.store";
+import { RiResetLeftLine } from "react-icons/ri";
 
 const METHODS = [
   "contains",
@@ -31,7 +32,7 @@ export default function ToolBar() {
   const [filters, setFilters] = useState([
     { field: "", operation: "contains", value: "" },
   ]);
-  const { columns, allColumns, addColumns, removeColumns } =
+  const { columns, allColumns, addColumns, removeColumns, reset } =
     useTaskColumnStore();
 
   // ✅ Quản lý độc lập 2 popover
@@ -69,7 +70,6 @@ export default function ToolBar() {
   const addNewTask = () => console.log("Add new task");
 
   const checked = (field: string) => {
-    if (field === "name" || field === "status") return true;
     return columns.some((col) => col.key === field);
   };
   const onCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +80,8 @@ export default function ToolBar() {
       removeColumns(id);
     }
   };
+
+  const resetColumn = () => reset();
 
   return (
     <Box display="flex" justifyContent="flex-end" p={2} gap={1}>
@@ -217,25 +219,60 @@ export default function ToolBar() {
         onClose={() => closePopover("columns")}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
-        <Box p={2} minWidth={200}>
-          <Typography fontWeight={600} mb={1}>
-            Manage Columns
-          </Typography>
-          <Stack direction="column" spacing={1}>
-            {fields.map((field) => (
-              <FormControlLabel
-                key={field.key}
-                control={
-                  <Checkbox
-                    checked={checked(field.key)}
-                    onChange={onCheckedChange}
-                    id={field.key}
+        <Box minWidth={200}>
+          <Box
+            position="sticky"
+            top={0}
+            zIndex={10}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            p={2}
+            pb={1}
+            borderBottom="1px solid"
+            borderColor="divider"
+            bgcolor="background.paper"
+          >
+            <Typography fontWeight={600} variant="subtitle1">
+              Manage Columns
+            </Typography>
+            <IconButton
+              onClick={resetColumn}
+              size="small"
+              sx={{
+                color: "text.secondary",
+                "&:hover": {
+                  color: "text.primary",
+                  transform: "rotate(-20deg)",
+                },
+                transition: "0.2s",
+              }}
+            >
+              <RiResetLeftLine size={20} />
+            </IconButton>
+          </Box>
+
+          <Box flex={1} my={2} maxHeight={360} overflow="auto" pl={1}>
+            <Stack direction="column" spacing={1}>
+              {fields
+                .filter(
+                  (field) => field.key !== "name" && field.key !== "status"
+                )
+                .map((field) => (
+                  <FormControlLabel
+                    key={field.key}
+                    control={
+                      <Checkbox
+                        checked={checked(field.key)}
+                        onChange={onCheckedChange}
+                        id={field.key}
+                      />
+                    }
+                    label={field.label}
                   />
-                }
-                label={field.label}
-              />
-            ))}
-          </Stack>
+                ))}
+            </Stack>
+          </Box>
         </Box>
       </Popover>
     </Box>
