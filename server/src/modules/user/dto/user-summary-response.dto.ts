@@ -1,5 +1,8 @@
+import { Exclude, Expose } from "class-transformer";
+
+@Exclude()
 export class UserSummaryResponseDto {
-  id!: string;
-  name!: string;
-  avatarUrl?: string;
+  @Expose() id!: string;
+  @Expose({ name: "fullName" }) name!: string;
+  @Expose() avatarUrl?: string;
 }

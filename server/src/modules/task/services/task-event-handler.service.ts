@@ -8,36 +8,18 @@ import { TaskDependencyAddedEvent } from "src/common/events/task.event";
 export class TaskEventHandlerService {
   constructor(private readonly taskService: TaskService) {}
 
-  @OnEvent(EmitterEvent.TASK_DEPENDENCY_ADDED)
-  async handleTaskDependencyAddedEvent(payload: TaskDependencyAddedEvent) {
-    const { projectId, taskId } = payload;
-    this.taskService.toggleBlock(projectId, taskId, "block");
-  }
-
-  @OnEvent(EmitterEvent.TASK_DEPENDENCY_REMOVED)
-  async handleTaskDependencyRemovedEvent(payload: TaskDependencyAddedEvent) {
-    const { projectId, taskId } = payload;
-    this.taskService.toggleBlock(projectId, taskId, "unblock");
-  }
-
-  @OnEvent(EmitterEvent.TASK_UNLOCKED)
-  async handleTaskUnlockedEvent(payload: {
-    projectId: string;
-    taskId: string;
-  }) {
-    const { projectId, taskId } = payload;
-    this.taskService.toggleBlock(projectId, taskId, "unblock");
-  }
-
   @OnEvent(EmitterEvent.TASK_STATUS_UPDATED)
-  async handleTaskStatusUpdatedEvent(payload: {
+  async handleTaskStatusUpdated(event: {
     projectId: string;
     taskId: string;
-    status: string;
+    userId: string;
+    oldStatus: string;
+    newStatus: string;
   }) {
-    const { projectId, taskId, status } = payload;
-    if (status === "completed") {
-      this.taskService.toggleBlock(projectId, taskId, "unblock");
+    const { projectId, taskId, newStatus } = event;
+
+    if (newStatus === "done") {
+      await this.taskService.update(projectId, taskId, { progress: 100 });
     }
   }
 }

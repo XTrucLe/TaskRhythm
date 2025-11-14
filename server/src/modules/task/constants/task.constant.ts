@@ -25,3 +25,9 @@ export enum TaskDirection {
   BLOCKED = "blocked", // Task is blocked by another task
   BLOCKED_BY = "blocked_by", // Task is blocking another task
 }
+
+export enum TaskType {
+  TASK = "task",
+  MILESTONE = "milestone",
+  PHASE = "phase",
+}

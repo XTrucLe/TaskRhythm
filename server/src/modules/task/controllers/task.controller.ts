@@ -11,18 +11,12 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { TaskService } from "../services/task.service";
-import {
-  CreateTaskDto,
-  CreateTaskWithSubTasksDto,
-} from "../dto/task/create-task.dto";
+import { CreateTaskDto } from "../dto/task/create-task.dto";
 import { UpdateTaskDto } from "../dto/task/update-task.dto";
 import { CurrentUser } from "src/common/decorators/current-user.decorator";
 import { TaskMapper } from "../mappers/task.mapper";
-import { TaskQueryDto } from "../dto/task/task-query.dto";
-import {
-  TaskResponseDto,
-  TaskResponseWithChildDto,
-} from "../dto/task/task-response.dto";
+import { QueryTaskDto } from "../dto/task/query-task.dto";
+import { TaskResponseDto } from "../dto/task/task-response.dto";
 import { TaskQueryService } from "../services/task-query.service";
 
 @Controller("projects/:projectId/tasks")
@@ -37,29 +31,32 @@ export class TaskController {
   @Post()
   async create(
     @Param("projectId") projectId: string,
-    @CurrentUser("id") userId: string,
+    @CurrentUser("currentUser") currentUser: any,
     @Body() dto: CreateTaskDto
   ): Promise<TaskResponseDto> {
-    const task = await this.taskService.createTask(projectId, userId, dto);
+    const task = await this.taskService.createTask(
+      projectId,
+      currentUser.id,
+      dto
+    );
     return this.taskMapper.toDto(task);
   }
 
   @Get()
   async list(
     @Param("projectId") projectId: string,
-    @Query() query: TaskQueryDto
+    @Query() query: QueryTaskDto
   ): Promise<TaskResponseDto[]> {
     const tasks = await this.taskQueryService.list(projectId, query);
     return this.taskMapper.toDtos(tasks);
   }
 
-  @Get(":taskId")
-  async getById(
-    @Param("projectId") projectId: string,
-    @Param("taskId") taskId: string
-  ): Promise<TaskResponseWithChildDto> {
-    const task = await this.taskQueryService.getTaskById(projectId, taskId);
-    return this.taskMapper.toDtoWithChildren(task);
+  @Get("tree")
+  async listTrees(
+    @Param("projectId") projectId: string
+  ): Promise<(TaskResponseDto & { children?: TaskResponseDto[] })[]> {
+    const tasks = await this.taskQueryService.listTrees(projectId);
+    return this.taskMapper.toDtosTree(tasks);
   }
 
   @Patch(":taskId")
@@ -78,5 +75,14 @@ export class TaskController {
     @Param("taskId") taskId: string
   ): Promise<void> {
     await this.taskService.delete(projectId, taskId);
+  }
+
+  @Get(":taskId")
+  async getTaskById(
+    @Param("projectId") projectId: string,
+    @Param("taskId") taskId: string
+  ): Promise<TaskResponseDto> {
+    const task = await this.taskQueryService.findById(taskId);
+    return this.taskMapper.toDto(task);
   }
 }

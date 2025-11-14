@@ -8,35 +8,32 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
+  UpdateDateColumn,
 } from "typeorm";
-import { TaskPriority, TaskStatus } from "../constants/task.constant";
-import { TaskDependency } from "./task-dependency.entity";
+import { TaskPriority, TaskStatus, TaskType } from "../constants/task.constant";
 import { Project } from "src/modules/project/entities/project.entity";
 import { User } from "src/modules/user/entities/user.entity";
 import { TaskComment } from "./task-comment.entity";
+import { TaskAssignee } from "./task-assignee.entity";
 
 @Entity("tasks")
-@Unique(["projectId", "title"])
+@Index("idx_task_project_status", ["projectId", "status"])
 @Check(`"level" >= 0 AND "level" < 3`)
 @Check(`"progress" >= 0 AND "progress" <= 100`)
 export class Task {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
+  // --- 1. Thông tin Core & Quan hệ Chính ---
   @Column()
   @Index()
-  projectId?: string;
+  projectId!: string;
 
   @ManyToOne(() => Project, (project) => project.tasks, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "project_id" })
   project!: Project;
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: "assignee_id" })
-  assignee?: User;
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: "creator_id" })
@@ -45,9 +42,10 @@ export class Task {
   @Column()
   title!: string;
 
-  @Column({ nullable: true })
-  description!: string;
+  @Column({ type: "text", nullable: true })
+  description?: string;
 
+  // --- 2. Phân loại (Enums) ---
   @Index()
   @Column({ type: "enum", enum: TaskStatus, default: TaskStatus.TODO })
   status!: TaskStatus;
@@ -55,43 +53,36 @@ export class Task {
   @Column({ type: "enum", enum: TaskPriority, default: TaskPriority.LOW })
   priority!: TaskPriority;
 
+  @Column({ type: "enum", enum: TaskType, default: TaskType.TASK })
+  type!: TaskType;
+
+  // --- 3. Cấu trúc Cây (Hierarchy) ---
   @Index()
   @Column({ default: 0 })
   level!: number;
 
-  @ManyToOne(() => Task, (task) => task.subTasks, {
-    nullable: true,
-    onDelete: "CASCADE",
-  })
-  @JoinColumn({ name: "parent_task_id" })
-  parentTask?: Task;
+  @Column({ type: "uuid", nullable: true })
+  @Index()
+  parentId?: string;
 
-  @OneToMany(() => Task, (task) => task.parentTask)
-  subTasks?: Task[];
+  @Column({ type: "varchar", length: 255, nullable: true })
+  @Index()
+  path?: string;
 
-  @OneToMany(() => TaskDependency, (dependencies) => dependencies.task)
-  dependencies!: TaskDependency[];
-
-  @OneToMany(() => TaskComment, (comment) => comment.task)
-  comments!: TaskComment[];
-
-  @Column({ type: "boolean", default: false })
-  isMilestone!: boolean;
-
-  @Column({ type: "boolean", default: false })
-  isBlocked!: boolean;
-
+  // --- 4. Trạng thái & Tiến độ ---
   @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
   progress!: number;
 
-  @Column({ type: "timestamp", nullable: true })
-  plannedStartAt?: Date;
+  @Column({ type: "integer", default: 0 })
+  estimatedHours!: number;
+
+  @Column({ type: "integer", default: 0 })
+  loggedHours!: number;
+
+  // --- 5. Timestamps (Ngày tháng) ---
 
   @Column({ type: "timestamp", nullable: true })
   startAt?: Date;
-
-  @Column({ type: "timestamp", nullable: true })
-  assignedAt?: Date;
 
   @Index()
   @Column({ type: "timestamp", nullable: true })
@@ -100,9 +91,16 @@ export class Task {
   @Column({ type: "timestamp", nullable: true })
   completedAt?: Date;
 
-  @Column({ type: "timestamp", nullable: true })
-  cancelledAt?: Date;
-
   @CreateDateColumn()
   createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  // --- 6. Các Quan hệ khác (Relations) ---
+  @OneToMany(() => TaskAssignee, (assignee) => assignee.task)
+  assignees?: TaskAssignee[];
+
+  @OneToMany(() => TaskComment, (comment) => comment.task)
+  comments!: TaskComment[];
 }

@@ -6,17 +6,13 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Task } from "../entities/task.entity";
-import {
-  CreateTaskDto,
-  CreateTaskWithSubTasksDto,
-} from "../dto/task/create-task.dto";
+import { CreateTaskDto } from "../dto/task/create-task.dto";
 import { UpdateTaskDto } from "../dto/task/update-task.dto";
-import { TaskStatus } from "../constants/task.constant";
+import { TaskStatus, TaskType } from "../constants/task.constant";
 import { TaskQueryService } from "./task-query.service";
 import { ProjectService } from "src/modules/project/services/project.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EmitterEvent } from "src/common/constants/emitter.constant";
-import { TaskDependencyService } from "./task-dependency.service";
 
 @Injectable()
 export class TaskService {
@@ -24,7 +20,6 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly taskQuery: TaskQueryService,
-    private readonly taskDependency: TaskDependencyService,
     private readonly projectService: ProjectService,
     private readonly emitter: EventEmitter2
   ) {}
@@ -34,76 +29,34 @@ export class TaskService {
     currentUserId: string,
     createDto: CreateTaskDto
   ): Promise<Task> {
-    await this.ensureCreatable(projectId, createDto);
-
-    const { dependencies, ...dto } = createDto;
-
     const project = await this.projectService.getProjectById(projectId);
-    const level = await this.computeLevel(projectId, dto.parentTaskId);
+    const level = await this.computeLevel(projectId, createDto.parentId);
+
+    if (level > 2) {
+      throw new ConflictException("Cannot create task deeper than level 2");
+    }
 
     const task = this.taskRepository.create({
-      ...dto,
+      ...createDto,
       project,
       projectId,
       creator: { id: currentUserId },
-      parentTask: dto.parentTaskId ? { id: dto.parentTaskId } : undefined,
       level,
     });
-
+    task.path = await this.createPath(
+      createDto.parentId || "",
+      createDto.title
+    );
     const saved = await this.taskRepository.save(task);
 
     this.emitter.emit(EmitterEvent.TASK_CREATED, {
       projectId,
       taskId: saved.id,
+      userId: currentUserId,
+      status: saved.status,
     });
-
-    if (dependencies) {
-      await this.taskDependency.addDependency(
-        projectId,
-        saved.id,
-        dependencies,
-        this.taskRepository.manager
-      );
-    }
 
     return saved;
-  }
-
-  async createMilestone(
-    projectId: string,
-    currentUserId: string,
-    dto: CreateTaskWithSubTasksDto
-  ): Promise<Task> {
-    const milestone = await this.createTask(projectId, currentUserId, {
-      title: dto.title,
-      description: dto.description,
-      dueDate: dto.dueDate,
-      isMilestone: true,
-    });
-
-    if (dto.subTasks?.length) {
-      for (const subDto of dto.subTasks) {
-        await this.createTask(projectId, currentUserId, {
-          ...subDto,
-          parentTaskId: milestone.id,
-        });
-      }
-    }
-
-    return milestone;
-  }
-
-  async createSubtask(
-    projectId: string,
-    currentUserId: string,
-    parentId: string,
-    dto: CreateTaskDto
-  ): Promise<Task> {
-    await this.taskQuery.getTaskById(projectId, parentId);
-    return this.createTask(projectId, currentUserId, {
-      ...dto,
-      parentTaskId: parentId,
-    });
   }
 
   async update(
@@ -112,66 +65,48 @@ export class TaskService {
     dto: UpdateTaskDto
   ): Promise<Task> {
     const task = await this.taskQuery.getTaskById(projectId, taskId);
-    Object.assign(task, dto);
-    return this.taskRepository.save(task);
-  }
 
-  async updateStatus(
-    projectId: string,
-    taskId: string,
-    status: TaskStatus
-  ): Promise<Task> {
-    const task = await this.taskQuery.getTaskById(projectId, taskId);
-    if (task.isMilestone) {
-      throw new ConflictException("Cannot update status of a milestone task");
+    // Check for changes to avoid unnecessary updates
+    const hasChange = (Object.keys(dto) as (keyof UpdateTaskDto)[]).some(
+      (key) => task[key as keyof Task] !== dto[key]
+    );
+    if (!hasChange) {
+      throw new ConflictException("No changes detected in the update request");
     }
-    await this.taskDependency.handleTaskStatusUpdate(projectId, taskId, status);
 
-    task.status = status;
-    this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
+    const updated = this.taskRepository.merge(task, dto);
+    const saved = await this.taskRepository.save(updated);
+
+    this.emitter.emit(EmitterEvent.TASK_UPDATED, {
       projectId,
       taskId,
-      status,
+      userId: task.creator.id,
     });
-    return this.taskRepository.save(task);
+
+    if (dto.status && dto.status !== task.status)
+      this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
+        projectId,
+        taskId,
+        userId: task.creator.id,
+        oldStatus: task.status,
+        newStatus: dto.status,
+      });
+
+    return saved;
   }
 
   async delete(projectId: string, taskId: string): Promise<void> {
     const task = await this.taskQuery.getTaskById(projectId, taskId);
     await this.taskRepository.remove(task);
-    this.emitter.emit(EmitterEvent.TASK_DELETED, { projectId, taskId });
-  }
 
-  async toggleBlock(
-    projectId: string,
-    taskId: string,
-    action: "block" | "unblock"
-  ): Promise<Task> {
-    const task = await this.taskQuery.getTaskById(projectId, taskId);
-    task.isBlocked = action === "block";
-    return this.taskRepository.save(task);
+    this.emitter.emit(EmitterEvent.TASK_DELETED, {
+      projectId,
+      taskId,
+      status: task.status,
+    });
   }
 
   // --- PRIVATE HELPERS --- //
-
-  private async ensureCreatable(
-    projectId: string,
-    dto: CreateTaskDto
-  ): Promise<void> {
-    const titleExists = await this.taskRepository.exists({
-      where: { projectId, title: dto.title },
-    });
-    if (titleExists)
-      throw new ConflictException("A task with this title already exists");
-
-    if (dto.parentTaskId) {
-      const parentExists = await this.taskRepository.exists({
-        where: { id: dto.parentTaskId, projectId },
-      });
-      if (!parentExists) throw new NotFoundException("Parent task not found");
-    }
-  }
-
   private async computeLevel(
     projectId: string,
     parentTaskId?: string
@@ -183,6 +118,26 @@ export class TaskService {
       select: ["level"],
     });
 
-    return parent ? parent.level + 1 : 0;
+    if (!parent) {
+      throw new NotFoundException(
+        `Parent task ${parentTaskId} not found in project ${projectId}`
+      );
+    }
+
+    return parent.level + 1;
+  }
+
+  private async createPath(parentId: string, title: string): Promise<string> {
+    if (!parentId) {
+      return `/${title.replace(/\s+/g, "-").toLowerCase()}`;
+    }
+    const parent = await this.taskRepository.findOne({
+      where: { id: parentId },
+      select: ["path"],
+    });
+    if (!parent) {
+      throw new NotFoundException(`Parent task ${parentId} not found`);
+    }
+    return `${parent.path}/${title.replace(/\s+/g, "-").toLowerCase()}`;
   }
 }

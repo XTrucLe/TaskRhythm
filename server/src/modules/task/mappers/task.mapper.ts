@@ -1,9 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { Task } from "../entities/task.entity";
-import {
-  TaskResponseDto,
-  TaskResponseWithChildDto,
-} from "../dto/task/task-response.dto";
+import { TaskResponseDto } from "../dto/task/task-response.dto";
 
 export class TaskMapper {
   toDto(entity: Task): TaskResponseDto {
@@ -14,13 +11,36 @@ export class TaskMapper {
     return entities.map((entity) => this.toDto(entity));
   }
 
-  toDtoWithChildren(entity: Task): TaskResponseWithChildDto {
-    return plainToInstance(TaskResponseWithChildDto, entity, {
-      excludeExtraneousValues: true,
-    });
-  }
+  toDtosTree(
+    entities: Task[]
+  ): (TaskResponseDto & { children?: TaskResponseDto[] })[] {
+    const entityMap: Record<
+      string,
+      TaskResponseDto & { children?: TaskResponseDto[] }
+    > = {};
+    const roots: (TaskResponseDto & { children?: TaskResponseDto[] })[] = [];
 
-  toDtosWithChildren(entities: Task[]): TaskResponseWithChildDto[] {
-    return entities.map((entity) => this.toDtoWithChildren(entity));
+    // First, create a map of all entities
+    entities.forEach((entity) => {
+      const dto = this.toDto(entity) as TaskResponseDto & {
+        children?: TaskResponseDto[];
+      };
+      entityMap[entity.id] = dto;
+    });
+    // Then, build the tree structure
+    entities.forEach((entity) => {
+      const dto = entityMap[entity.id];
+      if (entity.parentId) {
+        const parent = entityMap[entity.parentId];
+        if (!parent.children) {
+          parent.children = [];
+        }
+        parent.children.push(dto);
+      } else {
+        roots.push(dto);
+      }
+    });
+
+    return roots;
   }
 }

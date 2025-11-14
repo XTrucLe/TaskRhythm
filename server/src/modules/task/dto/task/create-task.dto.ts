@@ -1,23 +1,31 @@
 import {
   IsString,
+  IsUUID,
   IsOptional,
   IsEnum,
-  IsUUID,
-  IsDate,
-  IsBoolean,
-  IsInt,
-  ValidateNested,
+  IsNumber,
+  IsDateString,
+  MinLength,
+  Min,
 } from "class-validator";
-import { TaskPriority, TaskStatus } from "../../constants/task.constant";
-import { CreateDependencyDto } from "../task-dependence/create-task-dependency.dto";
+import {
+  TaskPriority,
+  TaskStatus,
+  TaskType,
+} from "../../constants/task.constant";
 
 export class CreateTaskDto {
   @IsString()
+  @MinLength(1)
   title!: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsUUID()
+  parentId?: string;
 
   @IsOptional()
   @IsEnum(TaskStatus)
@@ -28,31 +36,15 @@ export class CreateTaskDto {
   priority?: TaskPriority;
 
   @IsOptional()
-  @IsUUID()
-  parentTaskId?: string;
+  @IsEnum(TaskType)
+  type?: TaskType;
 
   @IsOptional()
-  @IsInt()
-  progress?: number;
+  @IsNumber()
+  @Min(0)
+  estimatedHours?: number;
 
   @IsOptional()
-  @IsDate()
-  startDate?: Date;
-
-  @IsOptional()
-  @IsBoolean()
-  isMilestone?: boolean;
-
-  @IsOptional()
-  @IsDate()
-  dueDate?: Date;
-
-  @IsOptional()
-  @ValidateNested()
-  dependencies?: CreateDependencyDto;
-}
-
-export class CreateTaskWithSubTasksDto extends CreateTaskDto {
-  @IsOptional()
-  subTasks?: CreateTaskDto[];
+  @IsDateString()
+  dueDate?: string;
 }

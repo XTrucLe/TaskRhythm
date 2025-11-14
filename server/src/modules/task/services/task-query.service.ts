@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, FindOptionsWhere, ILike } from "typeorm";
 import { Task } from "../entities/task.entity";
-import { TaskQueryDto } from "../dto/task/task-query.dto";
+import { QueryTaskDto } from "../dto/task/query-task.dto";
 
 @Injectable()
 export class TaskQueryService {
@@ -14,11 +14,11 @@ export class TaskQueryService {
   async getTaskById(
     projectId: string,
     taskId: string,
-    relations?: string[]
+    relations: string[] = ["assignees", "creator"]
   ): Promise<Task> {
     const task = await this.taskRepository.findOne({
-      where: { id: taskId, project: { id: projectId } },
-      relations: relations || ["subTasks", "assignee", "creator"],
+      where: { id: taskId, projectId },
+      relations,
     });
 
     if (!task) {
@@ -29,10 +29,13 @@ export class TaskQueryService {
     return task;
   }
 
-  async findById(taskId: string): Promise<Task> {
+  async findById(
+    taskId: string,
+    relations: string[] = ["assignees", "creator"]
+  ): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
-      relations: ["subTasks", "assignee", "creator"],
+      relations,
     });
 
     if (!task) {
@@ -41,26 +44,45 @@ export class TaskQueryService {
     return task;
   }
 
-  async list(projectId: string, query: TaskQueryDto): Promise<Task[]> {
+  async list(projectId: string, query: QueryTaskDto): Promise<Task[]> {
     const {
-      parentTaskId,
       page = 1,
       limit = 20,
+      status,
+      priority,
+      type,
+      parentId,
+      search,
       sortBy = "createdAt",
-      sortOrder = "ASC",
-      ...filters
+      sortOrder = "DESC",
     } = query;
-    const where: any = { project: { id: projectId }, ...filters };
-    if (parentTaskId) {
-      where.parentTask = { id: parentTaskId };
-    } else {
-      where.level = 0;
+
+    const where: FindOptionsWhere<Task> = { projectId };
+
+    if (status) where.status = status;
+    if (priority) where.priority = priority;
+    if (type) where.type = type;
+    if (parentId) where.parentId = parentId;
+    else where.level = 0;
+
+    if (search) {
+      where.title = ILike(`%${search}%`);
     }
+
     return this.taskRepository.find({
       where,
       order: { [sortBy]: sortOrder },
       skip: (page - 1) * limit,
       take: limit,
+      relations: ["creator"],
     });
+  }
+
+  async listTrees(projectId: string): Promise<Task[]> {
+    const roots = await this.taskRepository.find({
+      where: { projectId },
+      relations: ["creator", "assignees"],
+    });
+    return roots;
   }
 }
