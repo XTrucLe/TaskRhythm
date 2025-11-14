@@ -8,7 +8,6 @@ import { Repository } from "typeorm";
 import { Task } from "../entities/task.entity";
 import { CreateTaskDto } from "../dto/task/create-task.dto";
 import { UpdateTaskDto } from "../dto/task/update-task.dto";
-import { TaskStatus, TaskType } from "../constants/task.constant";
 import { TaskQueryService } from "./task-query.service";
 import { ProjectService } from "src/modules/project/services/project.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
@@ -74,6 +73,11 @@ export class TaskService {
       throw new ConflictException("No changes detected in the update request");
     }
 
+    if (dto.status && task.level < 2)
+      throw new ConflictException(
+        "Only level 2 tasks can have their status updated"
+      );
+
     const updated = this.taskRepository.merge(task, dto);
     const saved = await this.taskRepository.save(updated);
 
@@ -83,13 +87,10 @@ export class TaskService {
       userId: task.creator.id,
     });
 
-    if (dto.status && dto.status !== task.status)
+    if (dto.status)
       this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
         projectId,
         taskId,
-        userId: task.creator.id,
-        oldStatus: task.status,
-        newStatus: dto.status,
       });
 
     return saved;
@@ -103,6 +104,39 @@ export class TaskService {
       projectId,
       taskId,
       status: task.status,
+    });
+  }
+
+  async computeProgress(projectId: string, taskId: string): Promise<void> {
+    const [currentTask, subtasks] = await Promise.all([
+      this.taskQuery.findById(taskId),
+      this.taskRepository.find({
+        where: { parentId: taskId, projectId },
+        select: ["id", "progress", "estimatedHours"],
+      }),
+    ]);
+
+    let progress = 0;
+    if (subtasks.length === 0) {
+      progress = currentTask.status.includes("done") ? 100 : 0;
+    } else {
+      const totalWeight = subtasks.reduce(
+        (sum, subtask) => sum + (subtask.estimatedHours || 1),
+        0
+      );
+
+      for (const subtask of subtasks) {
+        const weight = subtask.estimatedHours || 1;
+        progress += (subtask.progress * weight) / totalWeight;
+      }
+    }
+    const updated = await this.update(projectId, taskId, {
+      progress: progress,
+    });
+
+    this.emitter.emit(EmitterEvent.TASK_PROGRESS_CHANGED, {
+      projectId,
+      parentId: updated.parentId,
     });
   }
 
