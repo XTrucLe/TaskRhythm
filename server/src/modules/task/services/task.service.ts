@@ -53,6 +53,7 @@ export class TaskService {
       taskId: saved.id,
       userId: currentUserId,
       status: saved.status,
+      priority: saved.priority,
     });
 
     return saved;
@@ -64,7 +65,7 @@ export class TaskService {
     dto: UpdateTaskDto
   ): Promise<Task> {
     const task = await this.taskQuery.getTaskById(projectId, taskId);
-
+    const oldTask = { ...task };
     // Check for changes to avoid unnecessary updates
     const hasChange = (Object.keys(dto) as (keyof UpdateTaskDto)[]).some(
       (key) => task[key as keyof Task] !== dto[key]
@@ -91,8 +92,16 @@ export class TaskService {
       this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
         projectId,
         taskId,
+        oldStatus: oldTask.status,
+        newStatus: dto.status,
       });
-
+    if (dto.priority)
+      this.emitter.emit(EmitterEvent.TASK_PRIORITY_CHANGED, {
+        projectId,
+        taskId,
+        oldPriority: oldTask.priority,
+        newPriority: dto.priority,
+      });
     return saved;
   }
 
@@ -104,6 +113,7 @@ export class TaskService {
       projectId,
       taskId,
       status: task.status,
+      priority: task.priority,
     });
   }
 

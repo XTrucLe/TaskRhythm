@@ -5,7 +5,8 @@ export class ProjectStatsResponseDto {
   @Expose() totalTasks!: number;
   @Expose() completedTasks!: number;
   @Expose() pendingTasks!: number;
-  @Expose() inProgressTasks!: number;
+  @Expose() doingTasks!: number;
+  @Expose() canceledTasks!: number;
   @Expose() progressRate!: number;
   @Expose() highPriorityTasks!: number;
   @Expose() mediumPriorityTasks!: number;

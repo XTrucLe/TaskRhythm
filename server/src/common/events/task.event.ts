@@ -2,6 +2,8 @@ export class TaskCreatedEvent {
   projectId!: string;
   creatorId!: string;
   parentTaskId?: string;
+  status!: string;
+  priority?: string;
 }
 
 export class TaskUpdatedStatusEvent {

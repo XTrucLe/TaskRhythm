@@ -34,7 +34,10 @@ export class ProjectStats {
   pendingTasks!: number;
 
   @Column({ type: "int", default: 0 })
-  inProgressTasks!: number;
+  doingTasks!: number;
+
+  @Column({ type: "int", default: 0 })
+  canceledTasks!: number;
 
   @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
   progressRate!: number;
