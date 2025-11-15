@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Logger,
   Post,
   Req,
   Res,
@@ -88,7 +87,6 @@ export class AuthController {
     @Body() dto: ChangePasswordDto,
     @CurrentUser("id") currentUserId: string
   ): Promise<void> {
-    Logger.log(`Changing password for user: ${JSON.stringify(currentUserId)}`);
     return this.authService.changePassword(currentUserId, dto);
   }
 }

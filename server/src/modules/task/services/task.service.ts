@@ -12,6 +12,7 @@ import { TaskQueryService } from "./task-query.service";
 import { ProjectService } from "src/modules/project/services/project.service";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { EmitterEvent } from "src/common/constants/emitter.constant";
+import { TaskStatus } from "../constants/task.constant";
 
 @Injectable()
 export class TaskService {
@@ -62,10 +63,12 @@ export class TaskService {
   async update(
     projectId: string,
     taskId: string,
-    dto: UpdateTaskDto
+    dto: UpdateTaskDto,
+    options?: { bypassLevelCheck?: boolean }
   ): Promise<Task> {
     const task = await this.taskQuery.getTaskById(projectId, taskId);
     const oldTask = { ...task };
+
     // Check for changes to avoid unnecessary updates
     const hasChange = (Object.keys(dto) as (keyof UpdateTaskDto)[]).some(
       (key) => task[key as keyof Task] !== dto[key]
@@ -74,34 +77,50 @@ export class TaskService {
       throw new ConflictException("No changes detected in the update request");
     }
 
-    if (dto.status && task.level < 2)
+    // Restrict status update to level 2 tasks
+    if (options && !options.bypassLevelCheck && dto.status && task.level < 2) {
       throw new ConflictException(
         "Only level 2 tasks can have their status updated"
       );
+    }
 
+    // Auto-set completedAt if status becomes DONE or DONE_LATE
+    if (
+      dto.status &&
+      [TaskStatus.DONE, TaskStatus.DONE_LATE].includes(dto.status as TaskStatus)
+    ) {
+      dto.completedAt ??= new Date().toISOString();
+    }
+
+    // Merge and save
     const updated = this.taskRepository.merge(task, dto);
     const saved = await this.taskRepository.save(updated);
 
+    // Emit events
     this.emitter.emit(EmitterEvent.TASK_UPDATED, {
       projectId,
       taskId,
       userId: task.creator.id,
     });
 
-    if (dto.status)
+    if (dto.status) {
       this.emitter.emit(EmitterEvent.TASK_STATUS_UPDATED, {
         projectId,
         taskId,
         oldStatus: oldTask.status,
         newStatus: dto.status,
       });
-    if (dto.priority)
+    }
+
+    if (dto.priority) {
       this.emitter.emit(EmitterEvent.TASK_PRIORITY_CHANGED, {
         projectId,
         taskId,
         oldPriority: oldTask.priority,
         newPriority: dto.priority,
       });
+    }
+
     return saved;
   }
 
@@ -144,6 +163,22 @@ export class TaskService {
       progress: progress,
     });
 
+    // Automatically update status based on progress 1
+    const newStatus = this.updateStatusBasedOnProgress(
+      updated.status,
+      updated.progress,
+      updated.dueDate
+    );
+
+    if (newStatus) {
+      await this.update(
+        projectId,
+        taskId,
+        { status: newStatus },
+        { bypassLevelCheck: true }
+      );
+    }
+
     this.emitter.emit(EmitterEvent.TASK_PROGRESS_CHANGED, {
       projectId,
       parentId: updated.parentId,
@@ -183,5 +218,22 @@ export class TaskService {
       throw new NotFoundException(`Parent task ${parentId} not found`);
     }
     return `${parent.path}/${title.replace(/\s+/g, "-").toLowerCase()}`;
+  }
+
+  private updateStatusBasedOnProgress(
+    currentStatus: TaskStatus,
+    progress: number,
+    dueDate?: Date
+  ): TaskStatus | null {
+    let newStatus: TaskStatus;
+    if (progress === 100) {
+      const isLate = dueDate ? new Date() > dueDate : false;
+      newStatus = isLate ? TaskStatus.DONE_LATE : TaskStatus.DONE;
+    } else if (progress > 0) {
+      newStatus = TaskStatus.DOING;
+    } else {
+      newStatus = TaskStatus.TODO;
+    }
+    return newStatus !== currentStatus ? newStatus : null;
   }
 }
