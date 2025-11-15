@@ -1,18 +1,6 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Matches,
-  MinLength,
-} from "class-validator";
-import { CreateUserDto } from "src/modules/user/dto/create-user.dto";
+import { IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
 
-export class RegisterDto extends CreateUserDto {
-  @IsEmail()
-  email!: string;
-
-  @IsString()
-  @IsNotEmpty()
+class PasswordBaseDto {
   @MinLength(8, { message: "Password must be at least 8 characters long" })
   @Matches(/(?=.*[a-z])/, {
     message: "Password must contain a lowercase letter",
@@ -24,5 +12,17 @@ export class RegisterDto extends CreateUserDto {
   @Matches(/(?=.*[!@#$%^&*(),.?":{}|<>])/, {
     message: "Password must contain a special character",
   })
-  password!: string;
+  newPassword!: string;
+}
+
+export class ResetPasswordDto extends PasswordBaseDto {
+  @IsString()
+  @IsNotEmpty()
+  otp!: string;
+}
+
+export class ChangePasswordDto extends PasswordBaseDto {
+  @IsString()
+  @IsNotEmpty()
+  currentPassword!: string;
 }
