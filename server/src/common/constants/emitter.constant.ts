@@ -8,7 +8,12 @@ export enum EmitterEvent {
   TASK_DEPENDENCY_REMOVED = "task.dependency.removed",
   TASK_UNLOCKED = "task.unblocked",
   TASK_STATUS_UPDATED = "task.status.updated",
-  TASK_ASSIGNEE_CHANGED = "task.assignee.changed",
+
+  TASK_ASSIGN_CREATED = "task.assigned",
+  TASK_ASSIGN_REMOVED = "task.assigned.removed",
+  TASK_CLAIMED = "task.claimed",
+  TASK_UNCLAIMED = "task.unclaimed",
+
   TASK_PRIORITY_CHANGED = "task.priority.changed",
   TASK_DUE_DATE_CHANGED = "task.due_date.changed",
   TASK_PROGRESS_CHANGED = "task.progress.changed",

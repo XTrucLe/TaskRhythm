@@ -1,4 +1,4 @@
-import { Exclude, Expose, Type } from "class-transformer";
+import { Exclude, Expose, Transform, Type } from "class-transformer";
 import {
   TaskPriority,
   TaskStatus,
@@ -34,6 +34,12 @@ export class TaskResponseDto {
   creator!: UserSummaryResponseDto;
 
   @Expose()
-  @Type(() => UserSummaryResponseDto)
+  @Transform(({ obj }) =>
+    obj.assignees?.map((a: any) => ({
+      id: a.assignee.id,
+      name: a.assignee.fullName,
+      avatarUrl: a.assignee.avatarUrl,
+    }))
+  )
   assignees?: UserSummaryResponseDto[];
 }

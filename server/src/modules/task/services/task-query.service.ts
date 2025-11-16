@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, FindOptionsWhere, ILike } from "typeorm";
 import { Task } from "../entities/task.entity";
@@ -31,7 +31,7 @@ export class TaskQueryService {
 
   async findById(
     taskId: string,
-    relations: string[] = ["assignees", "creator"]
+    relations: string[] = ["assignees", "creator", "assignees.assignee"]
   ): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
@@ -41,6 +41,8 @@ export class TaskQueryService {
     if (!task) {
       throw new NotFoundException(`Task with ID ${taskId} not found`);
     }
+
+    Logger.log(JSON.stringify(task), "TaskQueryService");
     return task;
   }
 
@@ -81,7 +83,7 @@ export class TaskQueryService {
   async listTrees(projectId: string): Promise<Task[]> {
     const roots = await this.taskRepository.find({
       where: { projectId },
-      relations: ["creator", "assignees"],
+      relations: ["creator", "assignees", "assignees.assignee"],
     });
     return roots;
   }

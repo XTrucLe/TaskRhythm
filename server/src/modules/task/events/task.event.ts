@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
-import { TaskService } from "./task.service";
+import { TaskService } from "../services/task.service";
 import { EmitterEvent } from "../../../common/constants/emitter.constant";
 import { TaskStatus } from "../constants/task.constant";
 
 @Injectable()
-export class TaskEventHandlerService {
+export class TaskEventHandler {
   constructor(private readonly taskService: TaskService) {}
 
   @OnEvent(EmitterEvent.TASK_STATUS_UPDATED)

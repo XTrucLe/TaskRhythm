@@ -78,10 +78,7 @@ export class TaskController {
   }
 
   @Get(":taskId")
-  async getTaskById(
-    @Param("projectId") projectId: string,
-    @Param("taskId") taskId: string
-  ): Promise<TaskResponseDto> {
+  async getTaskById(@Param("taskId") taskId: string): Promise<TaskResponseDto> {
     const task = await this.taskQueryService.findById(taskId);
     return this.taskMapper.toDto(task);
   }
