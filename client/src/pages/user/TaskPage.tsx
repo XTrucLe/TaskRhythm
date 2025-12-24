@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import ToolBar from "../../components/workspace/ui/ToolBar";
-import TaskDetail from "../../components/task/views/TaskDetail";
-import KanbanBoard from "../../components/task/views/KabanView";
-import ViewSwitcher from "../../components/workspace/ui/ViewSwitcher";
-import TaskTable from "../../components/task/views/TaskTable";
-import { useTaskStore } from "../../store/task.store";
+import ToolBar from "../../features/tasks/components/shared/ToolBar";
+import TaskDetail from "../../features/tasks/components/TaskDetail/TaskDetail";
+import KanbanBoard from "../../features/tasks/components/KabanView/KabanView";
+import ViewSwitcher from "../../features/tasks/components/shared/ViewSwitcher";
+import TaskTable from "../../features/tasks/components/TableView/TaskTable";
+import { useTaskStore } from "../../features/tasks/stores/task.store";
 import { mockTasks } from "../../mock/tasks";
 
 type ViewStyle = "table" | "kanban" | "gantt";

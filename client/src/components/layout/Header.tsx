@@ -11,7 +11,7 @@ import {
   FiInfo,
   FiLogOut,
 } from "react-icons/fi";
-import { authService } from "../../services/authService";
+import { authService } from "../../features/auth/services/authService";
 import SearchBox from "../ui/SearchBox";
 
 export default function Header({ showSearch }: { showSearch?: boolean }) {

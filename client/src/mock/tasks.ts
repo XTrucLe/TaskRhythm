@@ -1,5 +1,5 @@
-import type { Task } from "../types/task";
-import type { UserBase } from "../types/user";
+import type { Task } from "../features/tasks/types/task";
+import type { UserBase } from "../features/auth/types/user";
 
 const user1: UserBase = {
   id: "1",

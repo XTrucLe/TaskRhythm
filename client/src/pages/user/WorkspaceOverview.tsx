@@ -4,14 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { FaGear, FaUserPlus, FaUsers, FaFolder } from "react-icons/fa6";
 import { FiSettings, FiUsers, FiLogOut } from "react-icons/fi";
 import { projects as mockProjects } from "../../mock/project";
-import ProjectCard from "../../components/workspace/ProjectCard";
+import ProjectCard from "../../features/projects/components/ProjectCard";
 import { Menu, MenuItem } from "../../components/ui/Menu";
+import type { Project } from "@/features/projects/types/project";
 
 export default function WorkspaceOverview() {
   const { workspaceId } = useParams();
   const { state } = useLocation();
   const [workspace] = useState(state || null);
-  const [project, setProject] = useState<any[]>([]);
+  const [project, setProject] = useState<Project[]>([]);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -85,9 +86,6 @@ export default function WorkspaceOverview() {
 
         {/* Projects List */}
         <div>
-          <h2 className="!text-3xl font-bold mb-2 -mt-4 text-[var(--color-primary-lighter)]">
-            Projects
-          </h2>
           {project.length === 0 ? (
             <p className="text-gray-600 dark:text-gray-400">
               No projects found in this workspace.

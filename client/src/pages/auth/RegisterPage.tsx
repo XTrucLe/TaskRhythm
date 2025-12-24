@@ -3,7 +3,7 @@ import { InputField } from "../../components/ui/InputField";
 import {
   registerSchema,
   type RegisterSchemas,
-} from "../../validates/auth.validate";
+} from "../../features/auth/utils/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FloatingInput } from "../../components/ui/FloatingInput";

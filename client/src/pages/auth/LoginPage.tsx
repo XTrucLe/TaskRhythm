@@ -2,7 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaGoogle, FaGithub, FaFacebook } from "react-icons/fa";
 import { InputField } from "../../components/ui/InputField";
-import { type LoginSchemas, loginSchema } from "../../validates/auth.validate";
+import {
+  type LoginSchemas,
+  loginSchema,
+} from "../../features/auth/utils/auth.validate";
 
 export default function LoginPage() {
   const {

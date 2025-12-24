@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { TokenManager } from "../services/tokenManager";
+import { TokenManager } from "@/features/auth/services/tokenManager";
+import type { Workspace } from "@/features/workspaces/types/workspace";
 
 export default function useRouting() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function useRouting() {
     // Mặc định fallback
     goHome: () => navigate(isAuthenticated ? "/home" : "/"),
 
-    goWorkspace: (workspace: any) =>
+    goWorkspace: (workspace: Workspace) =>
       navigate(`/workspace/${workspace.id}`, { state: workspace }),
   };
 }

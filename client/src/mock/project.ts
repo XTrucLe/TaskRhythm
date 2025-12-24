@@ -1,4 +1,6 @@
-export const projects = [
+import type { Project } from "@/features/projects/types/project";
+
+export const projects: Project[] = [
   // Workspace 1: TaskRhythm Team
   {
     id: "p1a",
@@ -29,7 +31,7 @@ export const projects = [
     description: "Build a dashboard for project statistics and task metrics.",
     status: "PLANNING",
     start_date: "2025-10-01",
-    end_date: null,
+    end_date: undefined,
     project_lead_id: "u3",
     total_tasks: 0,
     completed_tasks: 0,
@@ -73,8 +75,8 @@ export const projects = [
     name: "Design System",
     description: "Create a reusable design component library for future apps.",
     status: "PLANNING",
-    start_date: null,
-    end_date: null,
+    start_date: undefined,
+    end_date: undefined,
     project_lead_id: "u6",
     total_tasks: 0,
     completed_tasks: 0,
@@ -119,7 +121,7 @@ export const projects = [
     description: "Migrate legacy services into a unified Kubernetes cluster.",
     status: "PLANNING",
     start_date: "2025-11-01",
-    end_date: null,
+    end_date: undefined,
     project_lead_id: "u9",
     total_tasks: 0,
     completed_tasks: 0,
@@ -161,7 +163,7 @@ export const projects = [
     description: "Develop a native mobile app for iOS and Android.",
     status: "PLANNING",
     start_date: "2026-01-10",
-    end_date: null,
+    end_date: undefined,
     project_lead_id: "u5",
     total_tasks: 0,
     completed_tasks: 0,
@@ -179,7 +181,8 @@ export const projects = [
     workspace_id: "w1",
     creator_id: "u2",
     name: "User Feedback System",
-    description: "Implement a system for collecting and managing user feedback.",
+    description:
+      "Implement a system for collecting and managing user feedback.",
     status: "COMPLETED",
     start_date: "2025-06-01",
     end_date: "2025-09-30",
@@ -200,7 +203,8 @@ export const projects = [
     workspace_id: "w1",
     creator_id: "u1",
     name: "Security Audit",
-    description: "Perform a comprehensive security audit of the entire platform.",
+    description:
+      "Perform a comprehensive security audit of the entire platform.",
     status: "IN_PROGRESS",
     start_date: "2025-10-15",
     end_date: "2025-12-15",
@@ -223,7 +227,8 @@ export const projects = [
     workspace_id: "w2",
     creator_id: "u4",
     name: "Brand Identity Refresh",
-    description: "Refresh the company's brand identity, including logo and color palette.",
+    description:
+      "Refresh the company's brand identity, including logo and color palette.",
     status: "IN_PROGRESS",
     start_date: "2025-10-01",
     end_date: "2025-12-20",
@@ -244,10 +249,11 @@ export const projects = [
     workspace_id: "w2",
     creator_id: "u6",
     name: "Illustration Library",
-    description: "Create a library of custom illustrations for marketing materials.",
+    description:
+      "Create a library of custom illustrations for marketing materials.",
     status: "PLANNING",
     start_date: "2025-12-01",
-    end_date: null,
+    end_date: undefined,
     project_lead_id: "u4",
     total_tasks: 0,
     completed_tasks: 0,
@@ -265,7 +271,8 @@ export const projects = [
     workspace_id: "w2",
     creator_id: "u4",
     name: "UX Research",
-    description: "Conduct user research to identify pain points and opportunities for improvement.",
+    description:
+      "Conduct user research to identify pain points and opportunities for improvement.",
     status: "COMPLETED",
     start_date: "2025-08-01",
     end_date: "2025-09-30",
@@ -286,7 +293,8 @@ export const projects = [
     workspace_id: "w2",
     creator_id: "u6",
     name: "Animation System",
-    description: "Develop a system for creating and implementing animations across the app.",
+    description:
+      "Develop a system for creating and implementing animations across the app.",
     status: "IN_PROGRESS",
     start_date: "2025-11-15",
     end_date: "2026-03-15",
@@ -309,7 +317,8 @@ export const projects = [
     workspace_id: "w3",
     creator_id: "u7",
     name: "Monitoring and Alerting",
-    description: "Set up a comprehensive monitoring and alerting system for all services.",
+    description:
+      "Set up a comprehensive monitoring and alerting system for all services.",
     status: "IN_PROGRESS",
     start_date: "2025-09-01",
     end_date: "2025-12-01",
@@ -333,7 +342,7 @@ export const projects = [
     description: "Migrate all infrastructure to be managed by Terraform.",
     status: "PLANNING",
     start_date: "2026-01-01",
-    end_date: null,
+    end_date: undefined,
     project_lead_id: "u7",
     total_tasks: 0,
     completed_tasks: 0,
@@ -351,7 +360,8 @@ export const projects = [
     workspace_id: "w3",
     creator_id: "u8",
     name: "Disaster Recovery Plan",
-    description: "Develop and test a disaster recovery plan for critical systems.",
+    description:
+      "Develop and test a disaster recovery plan for critical systems.",
     status: "COMPLETED",
     start_date: "2025-07-01",
     end_date: "2025-09-30",
@@ -372,7 +382,8 @@ export const projects = [
     workspace_id: "w3",
     creator_id: "u7",
     name: "Log Management System",
-    description: "Implement a centralized log management system using the ELK stack.",
+    description:
+      "Implement a centralized log management system using the ELK stack.",
     status: "IN_PROGRESS",
     start_date: "2025-10-20",
     end_date: "2026-01-20",
@@ -387,5 +398,5 @@ export const projects = [
     low_priority_tasks: 10,
     created_at: "2025-10-20T09:00:00Z",
     updated_at: "2025-11-15T15:00:00Z",
-  }
+  },
 ];
