@@ -26,7 +26,7 @@ export const FloatingInput: React.FC<FloatingInputProps> = ({
         </label>
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="text-[12px] text-red-600">{error}</p>}
     </div>
   );
 };

@@ -52,7 +52,7 @@ export const data = [
     logo_url: null,
     name: "Marketing Team",
     total_members: 11,
-    total_project: 9,
+    total_project: 0,
     isOwner: false,
   },
 ];

@@ -43,7 +43,7 @@ export default function Header({ showSearch }: { showSearch?: boolean }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 flex w-full items-center bg-[var(--color-background-secondary)] justify-between px-4 py-2 shadow-lg">
+    <header className="sticky top-0 z-50 flex w-full items-center bg-[var(--color-background-secondary)] justify-between px-1 py-1 shadow-lg">
       {/* Logo */}
       <Logo />
       <div />

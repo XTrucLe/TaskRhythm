@@ -5,7 +5,7 @@ import {
   type RegisterSchemas,
 } from "../../features/auth/utils/auth.validate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { FloatingInput } from "../../components/ui/FloatingInput";
 
 export default function RegisterPage() {
@@ -16,9 +16,8 @@ export default function RegisterPage() {
   } = useForm<RegisterSchemas>({
     resolver: zodResolver(registerSchema),
   });
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
+
+  // useEffect(() => {}, []);
 
   const onSubmit = (data: RegisterSchemas) => {
     console.log("Form Data:", data);
@@ -27,11 +26,11 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center  px-3">
       <div className="card w-full max-w-lg shadow-md rounded-2xl p-8 my-2">
-        <div className="text-center mb-4">
-          <h1 className="text-3xl font-bold text-center mb-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
             Register Account
           </h1>
-          <p className="text-center mb-6 text-slate-400">
+          <p className="text-center mb-4 text-slate-400">
             Create an account to get started
           </p>
         </div>
@@ -52,20 +51,22 @@ export default function RegisterPage() {
             error={errors.email?.message}
           />
 
-          <InputField
-            label="Phone Number"
-            placeholder="(+84) 123 456 789"
-            type="tel"
-            {...register("phoneNumber")}
-            error={errors.phoneNumber?.message}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <InputField
+              label="Phone Number"
+              placeholder="(+84) 123 456 789"
+              type="tel"
+              {...register("phoneNumber")}
+              error={errors.phoneNumber?.message}
+            />
 
-          <InputField
-            label="Date of Birth"
-            type="date"
-            {...register("dateOfBirth")}
-            error={errors.dateOfBirth?.message}
-          />
+            <InputField
+              label="Date of Birth"
+              type="date"
+              {...register("dateOfBirth")}
+              error={errors.dateOfBirth?.message}
+            />
+          </div>
 
           <InputField
             label="Password"

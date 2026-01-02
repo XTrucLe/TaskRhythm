@@ -1,4 +1,9 @@
-import { FaCalendarAlt, FaUserTie, FaCheckCircle } from "react-icons/fa";
+import {
+  FaUserTie,
+  FaCheckCircle,
+  FaCalendarAlt,
+  FaFlagCheckered,
+} from "react-icons/fa";
 
 interface ProjectCardProps {
   name: string;
@@ -61,18 +66,19 @@ export default function ProjectCard({
       )}
 
       {/* Dates */}
-      <div className="flex justify-between text-xs text-mute mb-2">
+      <div className="flex justify-between items-center px-1 text-sm  mb-2 ">
         <span className="flex items-center gap-1">
-          <FaCalendarAlt size={12} /> {start_date || "--/--/----"}
+          <FaCalendarAlt /> <span className="font-medium"> Start:</span>
+          {start_date || "--/--/----"}
         </span>
-        <span className="flex items-center gap-1">
-          <FaCalendarAlt size={12} /> {end_date || "--/--/----"}
+        <span className="flex items-center gap-1 ml-4">
+          <FaFlagCheckered /> <span className="font-medium">Due:</span>
+          {end_date || "--/--/----"}
         </span>
       </div>
 
       {/* Progress bar */}
       <div className="flex items-center w-full gap-3 mb-1">
-        {/* 1. Thanh Bar: Thêm class 'flex-1' để nó tự động giãn hết chiều rộng còn lại */}
         <div className="flex-1 bg-[var(--color-dark-overlay)] h-2 rounded-full overflow-hidden">
           <div
             className="h-full bg-primary rounded-full transition-all duration-500"
@@ -80,9 +86,16 @@ export default function ProjectCard({
           />
         </div>
 
-        {/* 2. Text Phần trăm: Nằm ngay bên phải */}
-        <div className="text-xs text-muted font-medium w-[30px] text-left">
-          {progress_rate.toFixed(0)}%
+        <div
+          className={`text-xs  font-medium w-[30px] text-left ${
+            progress_rate.toFixed(0) === "100"
+              ? "text-[var(--color-success)]"
+              : "text-muted"
+          }`}
+        >
+          {progress_rate.toFixed(0) === "100"
+            ? "Done"
+            : `${progress_rate.toFixed(0)}%`}
         </div>
       </div>
 

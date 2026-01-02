@@ -1,124 +1,82 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+
+// Components
 import Header from "../../components/layout/Header";
-import { useEffect, useRef, useState } from "react";
-import { FaGear, FaUserPlus, FaUsers, FaFolder } from "react-icons/fa6";
-import { FiSettings, FiUsers, FiLogOut } from "react-icons/fi";
-import { projects as mockProjects } from "../../mock/project";
-import ProjectCard from "../../features/projects/components/ProjectCard";
-import { Menu, MenuItem } from "../../components/ui/Menu";
-import type { Project } from "@/features/projects/types/project";
+import WorkspaceHeader from "@/features/workspaces/components/WorkspaceHeader";
+import WorkspaceTabView from "@/features/workspaces/components/WorkspaceTabView";
+import ToolBox from "@/features/workspaces/components/ToolBox";
+
+// Tabs
+import ProjectTab from "@/features/workspaces/tabs/ProjectTab";
+import MemberTab from "@/features/workspaces/tabs/MemberTab";
+import SettingTab from "@/features/workspaces/tabs/SettingTab";
+
+// Store & Types
+import { useWorkspaceStore } from "@/features/workspaces/stores/useWorkspaceStore";
+import type { Workspace } from "@/features/workspaces/types";
 
 export default function WorkspaceOverview() {
   const { workspaceId } = useParams();
-  const { state } = useLocation();
-  const [workspace] = useState(state || null);
-  const [project, setProject] = useState<Project[]>([]);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [searchParams] = useSearchParams();
 
+  // Lấy tab hiện tại, mặc định là projects
+  const currentTab = searchParams.get("tab")?.toLowerCase() || "projects";
+
+  const {
+    workspace,
+    fetchWorkspace,
+    fetchProjects,
+    fetchMembers,
+    setSearch,
+    searches,
+  } = useWorkspaceStore();
+
+  // Chỉ fetch lại khi workspaceId thay đổi
   useEffect(() => {
-    // Nếu không có workspace trong state, có thể fetch từ API bằng workspaceId
-    if (!workspace && workspaceId) {
-      // Giả sử có hàm fetchWorkspaceById để lấy dữ liệu workspace
-      // fetchWorkspaceById(workspaceId).then((data) => setWorkspace(data));
+    if (workspaceId) {
+      fetchWorkspace(workspaceId);
+      fetchProjects(workspaceId);
+      fetchMembers(workspaceId);
     }
-    setProject(
-      mockProjects.filter((proj) => proj.workspace_id === workspaceId)
-    );
-  }, [workspace, workspaceId]);
+  }, [workspaceId, fetchWorkspace, fetchProjects, fetchMembers]);
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+  // Hàm render content sạch sẽ, không chứa Hook bên trong logic switch
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "projects":
+        return <ProjectTab />;
+      case "members":
+        return <MemberTab />;
+      case "settings":
+        return <SettingTab />;
+      default:
+        return <ProjectTab />;
+    }
   };
 
   return (
-    <div>
+    <div className="min-h-screen">
       <Header />
-      <main className="pt-6 px-6 max-w-7xl mx-auto min-h-screen no-select">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 border-b pb-4">
-          <div className="flex items-center space-x-4">
-            {workspace?.logo_url ? (
-              <img
-                src={workspace.logo_url}
-                alt={workspace.name}
-                className="w-14 h-14 rounded-full object-cover select-none border"
-                draggable={false}
-              />
-            ) : (
-              <div className="w-14 h-14 flex items-center justify-center text-3xl font-semibold leading-none rounded-full select-none border bg-gray-300 dark:bg-gray-600/20">
-                {workspace?.name?.charAt(0).toUpperCase() || "W"}
-              </div>
-            )}
+      <main className="pt-3 px-6 max-w-7xl mx-auto no-select">
+        {/* Border 1px tinh tế theo Line Style */}
+        <div className="flex flex-col w-full items-center sm:flex-row mb-6 border-b-2">
+          <WorkspaceHeader workspace={workspace as Workspace} />
+          <WorkspaceTabView />
 
-            <div>
-              <h1>{workspace?.name || "Workspace Overview"}</h1>
-              <div className="flex items-center space-x-3 text-sm text-muted mt-1">
-                <span className="flex items-center gap-1">
-                  <FaUsers size={13} /> {workspace?.total_members || 0} members
-                </span>
-                <span className="flex items-center gap-1">
-                  <FaFolder size={13} /> {workspace?.total_project || 0}{" "}
-                  projects
-                </span>
-                {workspace?.isOwner && (
-                  <span className="text-xs bg-primary text-inverse font-medium px-2 py-0.5 rounded-md">
-                    Owner
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center space-x-3 mt-4 sm:mt-0">
-            <button className="flex items-center gap-2 bg-primary text-inverse px-4 py-2 rounded-full text-sm font-medium transition">
-              <FaUserPlus size={14} /> Invite
-            </button>
-            <button
-              className="p-2 rounded-full transition"
-              onClick={toggleMenu}
-              ref={triggerRef}
-            >
-              <FaGear size={24} />
-            </button>
+          <div className="ml-auto pb-2">
+            <ToolBox
+              titleTooltip="New Project"
+              searchOnchange={(e) => setSearch(currentTab, e.target.value)}
+              value={searches[currentTab] || ""}
+              btnOnClick={() => {}}
+            />
           </div>
         </div>
 
-        {/* Projects List */}
-        <div>
-          {project.length === 0 ? (
-            <p className="text-gray-600 dark:text-gray-400">
-              No projects found in this workspace.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {project.map((proj) => (
-                <ProjectCard key={proj.id} {...proj} />
-              ))}
-            </div>
-          )}
-        </div>
-        <Menu isOpen={menuOpen} toggleMenu={toggleMenu} triggerRef={triggerRef}>
-          <MenuItem
-            icon={<FiSettings size={20} />}
-            onClick={() => alert("Settings clicked")}
-          >
-            Settings
-          </MenuItem>
-          <MenuItem
-            icon={<FiUsers size={20} />}
-            onClick={() => alert("Members clicked")}
-          >
-            Members
-          </MenuItem>
-          <MenuItem
-            icon={<FiLogOut size={20} color="var(--color-danger)" />}
-            type="danger"
-            onClick={() => alert("Leave clicked")}
-          >
-            Leave
-          </MenuItem>
-        </Menu>
+        <section className="animate-in fade-in duration-300">
+          {renderTabContent()}
+        </section>
       </main>
     </div>
   );

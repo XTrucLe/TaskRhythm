@@ -49,7 +49,7 @@ const StatusColors: Record<TaskStatus, string> = {
   coming_soon: "gray",
   todo: "slateblue",
   doing: "blue",
-  done: "darkgreen",
+  done: "green",
   overdue: "red",
   done_late: "darkorange",
   cancelled: "red",

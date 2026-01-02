@@ -10,8 +10,9 @@ import { useState } from "react";
 import { FiPlusCircle } from "react-icons/fi";
 import { useTaskStore } from "../../stores/task.store";
 import { useTaskColumnStore } from "../../stores/taskColumn.store";
-import TaskCard from "../../temp/kanban/TaskCard";
-import AddTaskCard from "../../temp/kanban/AddTaskCard";
+import TaskCard from "./TaskCard";
+import AddTaskCard from "./AddTaskCard";
+import { StatusColors } from "../shared/TaskStatus";
 
 export default function KabanView() {
   const { tasks, expanded, toggleExpanded } = useTaskStore();
@@ -41,10 +42,14 @@ export default function KabanView() {
             maxHeight: "calc(100vh - 140px)",
             display: "flex",
             flexDirection: "column",
-            bgcolor: "#f9fafb",
+            bgcolor: `color-mix(in srgb,${
+              StatusColors[col.key] || "#f9fafb"
+            }, white 75%)`,
             borderRadius: 2,
             p: 1,
             minHeight: 0,
+            borderTop: "3px solid",
+            borderColor: StatusColors[col.key] || "primary.main",
           }}
         >
           <Box

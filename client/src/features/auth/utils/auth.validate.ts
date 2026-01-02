@@ -34,7 +34,13 @@ export const registerSchema = z
       .string()
       .optional()
       .superRefine((date, ctx) => {
-        if (!date?.trim()) return; // optional
+        if (!date?.trim()) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Date of birth is required",
+          });
+          return;
+        }
 
         // Format: DD-MM-YYYY
         const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());

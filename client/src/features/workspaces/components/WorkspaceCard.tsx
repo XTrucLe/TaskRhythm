@@ -16,11 +16,11 @@ export default function WorkspaceCard({
   return (
     <div
       onClick={onClick}
-      className="max-w-lg cursor-pointer bg-[var(--color-surface-elevated)] dark:bg-surface-elevated rounded-2xl shadow-md dark:shadow-lg p-4 flex items-center space-x-4
+      className="max-w-lg cursor-pointer bg-[var(--color-surface-elevated)] dark:bg-surface-elevated rounded-2xl shadow-md dark:shadow-lg p-2 flex items-center space-x-4
                  hover:shadow-xl hover:scale-[1.02] transition-transform duration-200 no-select"
     >
       {/* Logo with gradient border */}
-      <div className="flex-shrink-0 relative">
+      <div className="flex-shrink-0 relative shadow-md rounded-full">
         <div className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500">
           {logo_url ? (
             <img
