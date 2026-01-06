@@ -1,63 +1,71 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { type WorkspaceTab, WorkspaceTabs } from "../types";
 
-const TABWIDTH = 96;
-
 function WorkspaceTabView() {
   const location = useLocation();
   const navigate = useNavigate();
-  const tabs: WorkspaceTab[] = Object.keys(WorkspaceTabs) as WorkspaceTab[];
 
-  const queryParams = new URLSearchParams(location.search);
-  const tabParam = queryParams.get("tab");
+  const tabs = Object.keys(WorkspaceTabs) as WorkspaceTab[];
 
-  const activeTab: WorkspaceTab =
+  const params = new URLSearchParams(location.search);
+  const tabParam = params.get("tab");
+
+  const activeTab =
     tabParam && tabs.includes(tabParam.toUpperCase() as WorkspaceTab)
       ? (tabParam.toUpperCase() as WorkspaceTab)
       : tabs[0];
 
+  const activeIndex = tabs.indexOf(activeTab);
+  const tabWidth = 100 / tabs.length;
+
   const changeTab = (tab: WorkspaceTab) => {
     const params = new URLSearchParams(location.search);
     params.set("tab", tab.toLowerCase());
-
     navigate({ search: params.toString() }, { replace: true });
   };
 
   return (
-    <div className="self-end ml-4">
-      <div className="relative flex">
+    <nav
+      className="relative w-full"
+      style={{ maxWidth: `calc(${tabs.length}* 160px)` }}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 160px))`,
+          gap: "0px",
+          alignItems: "center",
+        }}
+      >
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => changeTab(tab)}
             className={`
-                text-center py-1 text-lg font-medium bg-transparent z-10 rounded-md outline-none
-                ${
-                  tab === activeTab
-                    ? "text-[var(--color-text)]"
-                    : "text-gray-500 hover:text-[var(--color-text)] hover:bg-gray-200 dark:hover:bg-gray-300"
-                }
+              py-2 px-3
+              text-md font-medium
+              whitespace-nowrap
+              transition-colors min-w-min w-full
+              ${
+                tab === activeTab
+                  ? "text-primary"
+                  : "text-muted hover:text-secondary"
+              }
             `}
-            style={{ width: TABWIDTH }}
           >
-            {tab.slice(0, 1).toUpperCase() + tab.slice(1).toLowerCase()}
+            {tab[0] + tab.slice(1).toLowerCase()}
           </button>
         ))}
-        {/* Mask */}
-        <div
-          className="absolute border-2 h-full -mb-1 border-b-2 transition-all duration-300 rounded-t-lg"
-          style={{
-            width: TABWIDTH,
-            marginLeft: tabs.indexOf(activeTab) * TABWIDTH,
-          }}
-        >
-          <div className="absolute -bottom-[3px] -left-2 -right-2 h-2 bg-[var(--color-background-mix)]">
-            <div className="absolute bg-transparent border-b-2 border-r-2 h-2 left-0 w-2 rounded-br-lg" />
-            <div className="absolute bg-transparent border-b-2 border-l-2 h-2 right-0 w-2 rounded-bl-lg" />
-          </div>
-        </div>
       </div>
-    </div>
+
+      <span
+        className="absolute bottom-0 h-[2px] bg-primary transition-transform duration-300"
+        style={{
+          width: `${tabWidth}%`,
+          transform: `translateX(${activeIndex * 100}%)`,
+        }}
+      />
+    </nav>
   );
 }
 

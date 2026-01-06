@@ -1,3 +1,6 @@
+import { FaChevronRight, FaFolderOpen, FaUsers } from "react-icons/fa";
+import WorkspaceAvatar from "./WorkspaceAvatar";
+
 interface WorkspaceCardProps {
   logo_url?: string;
   name: string;
@@ -16,37 +19,40 @@ export default function WorkspaceCard({
   return (
     <div
       onClick={onClick}
-      className="max-w-lg cursor-pointer bg-[var(--color-surface-elevated)] dark:bg-surface-elevated rounded-2xl shadow-md dark:shadow-lg p-2 flex items-center space-x-4
-                 hover:shadow-xl hover:scale-[1.02] transition-transform duration-200 no-select"
+      className="group relative w-full max-w-sm cursor-pointer select-none
+          bg-[var(--color-surface-elevated)] dark:bg-surface-elevated 
+          rounded-2xl border border-transparent dark:border-white/10
+          shadow-sm hover:shadow-xl hover:-translate-y-1 
+          p-4 flex items-center gap-4 
+          transition-all duration-300 ease-out
+        "
     >
-      {/* Logo with gradient border */}
-      <div className="flex-shrink-0 relative shadow-md rounded-full">
-        <div className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500">
-          {logo_url ? (
-            <img
-              src={logo_url}
-              alt={name}
-              className="h-full w-full object-cover rounded-full select-none"
-              draggable={false}
-            />
-          ) : (
-            <div className="h-full w-full bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-700 dark:text-gray-300 font-bold select-none">
-              {name.charAt(0).toUpperCase()}
-            </div>
-          )}
-        </div>
-      </div>
+      <WorkspaceAvatar logoUrl={logo_url} name={name} />
 
-      {/* Info */}
-      <div className="flex-1 flex flex-col justify-center min-w-0">
-        <h3 className="text-lg font-bold truncate text-[var(--color-info-dark)]">
+      <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+        <h3 className="text-lg font-bold truncate text-[var(--color-text-main)] group-hover:text-indigo-500 transition-colors">
           {name}
         </h3>
 
-        <div className="flex space-x-4 text-sm mt-1">
-          <span>{total_members} members</span>
-          <span>{total_project} projects</span>
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1.5">
+            <FaUsers size={12} className="text-gray-400" />
+            <span className="font-medium">{total_members}</span>
+            <span className="text-xs opacity-80">members</span>
+          </div>
+
+          <div className="w-[1px] h-3 bg-gray-300 dark:bg-gray-600" />
+
+          <div className="flex items-center gap-1.5">
+            <FaFolderOpen size={12} className="text-gray-400" />
+            <span className="font-medium">{total_project}</span>
+            <span className="text-xs opacity-80">projects</span>
+          </div>
         </div>
+      </div>
+
+      <div className="text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all duration-300">
+        <FaChevronRight size={18} />
       </div>
     </div>
   );

@@ -68,3 +68,7 @@ h3 {
 .text-danger {
   color: var(--color-danger);
 }
+
+.text-active {
+  color: var(--color-secondary);
+}
