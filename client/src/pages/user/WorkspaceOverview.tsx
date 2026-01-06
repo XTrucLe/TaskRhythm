@@ -10,6 +10,9 @@ import { useWorkspaceStore } from "@/features/workspaces/stores/useWorkspaceStor
 import type { Workspace } from "@/features/workspaces/types";
 import SearchBox from "@/components/ui/SearchBox";
 import { NewButton } from "@/features/workspaces/components/NewButton";
+import type { NewButtonType } from "@/features/workspaces/types/new_button";
+import { FaPlus } from "react-icons/fa";
+import { IoPersonAdd } from "react-icons/io5";
 
 export default function WorkspaceOverview() {
   const { workspaceId } = useParams();
@@ -47,6 +50,33 @@ export default function WorkspaceOverview() {
     }
   };
 
+  const newButtonProps: NewButtonType = {
+    PROJECTS: {
+      title: "New Project",
+      onClick: () => {},
+      icon: <FaPlus size={14} />,
+    },
+    MEMBERS: {
+      title: "Add Member",
+      onClick: () => {},
+      icon: <IoPersonAdd size={14} />,
+    },
+    SETTINGS: { title: "New Setting", onClick: () => {}, icon: <></> },
+  };
+
+  const renderNewButton = () => {
+    switch (currentTab) {
+      case "projects":
+        return <NewButton {...newButtonProps.PROJECTS} />;
+      case "members":
+        return <NewButton {...newButtonProps.MEMBERS} />;
+      case "settings":
+        return <></>;
+      default:
+        return <NewButton {...newButtonProps.PROJECTS} />;
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Header />
@@ -70,7 +100,7 @@ export default function WorkspaceOverview() {
               </div>
 
               <div className="hidden md:block shrink-0">
-                <NewButton onClick={() => {}} />
+                {renderNewButton()}
               </div>
             </div>
 
@@ -79,9 +109,7 @@ export default function WorkspaceOverview() {
                 <WorkspaceTabView />
               </div>
 
-              <div className="md:hidden shrink-0 mb-1">
-                <NewButton onClick={() => {}} />
-              </div>
+              <div className="md:hidden shrink-0 mb-1">{renderNewButton()}</div>
             </div>
           </div>
         </header>
