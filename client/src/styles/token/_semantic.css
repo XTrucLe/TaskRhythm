@@ -1,53 +1,31 @@
 :root {
-  /* SUCCESS */
-  --color-success: #16a34a;
-  --color-success-light: #22c55e;
-  --color-success-dark: #15803d;
-  --color-success-bg: #dcfce7;
-  --color-success-border: #86efac;
+  /* Primary */
+  --color-primary: var(--color-brand-primary);
+  --color-primary-hover: #4c4ccb;
+  --color-primary-active: #3f3fbf;
+  --color-primary-soft: rgba(91, 91, 214, 0.12);
+  --color-primary-muted: rgba(91, 91, 214, 0.24);
+  --color-primary-foreground: #ffffff;
 
-  /* WARNING */
-  --color-warning: #ea580c;
-  --color-warning-light: #f97316;
-  --color-warning-dark: #c2410c;
-  --color-warning-bg: #ffedd5;
-  --color-warning-border: #fdba74;
-
-  /* DANGER */
-  --color-danger: #dc2626;
-  --color-danger-light: #ef4444;
-  --color-danger-dark: #b91c1c;
-  --color-danger-bg: #fee2e2;
-  --color-danger-border: #fca5a5;
-
-  --color-info: #0891b2;
-  --color-info-light: #06b6d4;
-  --color-info-dark: #0e7490;
-  --color-info-bg: #d8efff;
-  --color-info-border: #7dd3fc;
+  /* Secondary */
+  --color-secondary: var(--color-brand-secondary);
+  --color-secondary-hover: #23a1ab;
+  --color-secondary-active: #1b8e97;
+  --color-secondary-soft: rgba(44, 177, 188, 0.12);
+  --color-secondary-foreground: #ffffff;
 }
+
 :root.dark {
-  --color-success: #10b981;
-  --color-success-light: #34d399;
-  --color-success-dark: #059669;
-  --color-success-bg: #064e3b;
-  --color-success-border: #047857;
+  --color-primary: var(--color-brand-primary);
+  --color-primary-hover: #8a8af5;
+  --color-primary-active: #6b6be6;
+  --color-primary-soft: rgba(124, 124, 240, 0.18);
+  --color-primary-muted: rgba(124, 124, 240, 0.32);
+  --color-primary-foreground: #0b0b1a;
 
-  --color-warning: #f59e0b;
-  --color-warning-light: #fbbf24;
-  --color-warning-dark: #d97706;
-  --color-warning-bg: #451a03;
-  --color-warning-border: #92400e;
-
-  --color-danger: #f87171;
-  --color-danger-light: #fca5a5;
-  --color-danger-dark: #ef4444;
-  --color-danger-bg: #450a0a;
-  --color-danger-border: #991b1b;
-
-  --color-info: #38bdf8;
-  --color-info-light: #7dd3fc;
-  --color-info-dark: #0ea5e9;
-  --color-info-bg: #0c4a6e;
-  --color-info-border: #0369a1;
+  --color-secondary: var(--color-brand-secondary);
+  --color-secondary-hover: #5fe0ea;
+  --color-secondary-active: #3fc6d0;
+  --color-secondary-soft: rgba(77, 214, 224, 0.18);
+  --color-secondary-foreground: #022629;
 }

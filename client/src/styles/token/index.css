@@ -1,5 +1,5 @@
-@import "./_component.css";
+@import "./_base.css";
+@import "./_content.css";
 @import "./_semantic.css";
+@import "./_status.css";
 @import "./_surfaces.css";
-@import "./_theme.css";
-@import "./_typography.css";

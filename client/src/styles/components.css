@@ -93,10 +93,6 @@ a:hover {
   background-color: var(--color-secondary);
 }
 
-.bg-accent {
-  background-color: var(--color-accent);
-}
-
 .bg-surface {
   background-color: var(--color-surface);
 }

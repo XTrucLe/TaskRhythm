@@ -1,0 +1,151 @@
+/* Background */
+.bg-page {
+  background-color: var(--color-bg-page);
+}
+.bg-surface {
+  background-color: var(--color-bg-surface);
+}
+.bg-card {
+  background-color: var(--color-bg-card);
+}
+.bg-elevated {
+  background-color: var(--color-bg-elevated);
+}
+.bg-muted {
+  background-color: var(--color-bg-muted);
+}
+
+.bg-hover {
+  background-color: var(--color-bg-hover);
+}
+.bg-active {
+  background-color: var(--color-bg-active);
+}
+
+/* Text */
+.text-primary {
+  color: var(--color-text-primary);
+}
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+.text-tertiary {
+  color: var(--color-text-tertiary);
+}
+.text-muted {
+  color: var(--color-text-muted);
+}
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+.text-inverse {
+  color: var(--color-text-inverse);
+}
+
+/* Border */
+.border-default {
+  border-color: var(--color-border-default);
+}
+.border-strong {
+  border-color: var(--color-border-strong);
+}
+.border-subtitle {
+  border-color: var(--color-border-subtitle);
+}
+.border-focus {
+  border-color: var(--color-border-focus);
+}
+.border-disabled {
+  border-color: var(--color-border-disabled);
+}
+
+/* Action */
+.overlay-light {
+  background-color: var(--color-overlay-light);
+}
+.overlay-medium {
+  background-color: var(--color-overlay-medium);
+}
+.overlay-dark {
+  background-color: var(--color-overlay-heavy);
+}
+
+/* Status */
+.bg-success {
+  background-color: var(--color-status-success);
+}
+
+.bg-success-soft {
+  background-color: var(--color-status-success-soft);
+}
+.text-success {
+  color: var(--color-status-success);
+}
+
+.text-success-foreground {
+  color: var(--color-status-success-foreground);
+}
+
+.bg-warning {
+  background-color: var(--color-status-warning);
+}
+
+.bg-warning-soft {
+  background-color: var(--color-status-warning-soft);
+}
+.text-warning {
+  color: var(--color-status-warning);
+}
+.text-warning-foreground {
+  color: var(--color-status-warning-foreground);
+}
+
+.bg-error {
+  background-color: var(--color-status-error);
+}
+
+.bg-error-soft {
+  background-color: var(--color-status-error-soft);
+}
+.text-error {
+  color: var(--color-status-error);
+}
+.text-error-foreground {
+  color: var(--color-status-error-foreground);
+}
+
+.bg-info {
+  background-color: var(--color-status-info);
+}
+
+.bg-info-soft {
+  background-color: var(--color-status-info-soft);
+}
+
+.text-info {
+  color: var(--color-status-info);
+}
+
+.text-info-foreground {
+  color: var(--color-status-info-foreground);
+}
+
+.status-success {
+  background-color: var(--color-status-success);
+  color: var(--color-status-success-foreground);
+}
+
+.status-warning {
+  background-color: var(--color-status-warning);
+  color: var(--color-status-warning-foreground);
+}
+
+.status-error {
+  background-color: var(--color-status-error);
+  color: var(--color-status-error-foreground);
+}
+
+.status-info {
+  background-color: var(--color-status-info);
+  color: var(--color-status-info-foreground);
+}

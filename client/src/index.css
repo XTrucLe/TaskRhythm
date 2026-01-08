@@ -6,7 +6,7 @@
   line-height: 1.5;
   font-weight: 400;
   color: var(--color-text-primary);
-  background: var(--color-background-mix);
+  background: var(--color-bg-page);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -14,8 +14,8 @@
 }
 
 ::selection {
-  background-color: #1f2937;
-  color: #f9fafb;
+  background-color: var(--color-surface-selection);
+  color: var(--color-text-inverse);
 }
 
 @layer base {

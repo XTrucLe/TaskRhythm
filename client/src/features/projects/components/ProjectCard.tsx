@@ -1,22 +1,17 @@
-import {
-  FaUserTie,
-  FaCheckCircle,
-  FaCalendarAlt,
-  FaFlagCheckered,
-} from "react-icons/fa";
+import { FaUserTie, FaCheckCircle, FaCalendarAlt } from "react-icons/fa";
+import type { Project } from "../types/project";
 
-interface ProjectCardProps {
-  name: string;
-  description?: string;
-  status?: "PLANNING" | "IN_PROGRESS" | "COMPLETED" | "ON_HOLD";
-  start_date?: string;
-  end_date?: string;
-  total_tasks?: number;
-  completed_tasks?: number;
-  progress_rate?: number;
+interface ProjectCardProps extends Project {
   project_lead_name?: string;
   onClick?: () => void;
 }
+
+const STATUS_META = {
+  PLANNING: { label: "Planning", dot: "bg-warning"},
+  IN_PROGRESS: { label: "In Progress", dot: "bg-info" },
+  COMPLETED: { label: "Completed", dot: "bg-success" },
+  ON_HOLD: { label: "On Hold", dot: "bg-error" },
+} as const;
 
 export default function ProjectCard({
   name,
@@ -30,85 +25,82 @@ export default function ProjectCard({
   project_lead_name,
   onClick,
 }: ProjectCardProps) {
-  const statusColors: Record<string, string> = {
-    PLANNING: "warning",
-    IN_PROGRESS: "info",
-    COMPLETED: "success",
-    ON_HOLD: "danger",
-  };
+  const statusMeta = STATUS_META[status];
+  const progress = Math.min(100, Math.max(0, progress_rate));
 
   return (
     <div
       onClick={onClick}
-      className="backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 border-gray-700/50 p-5 cursor-pointer border-strong"
+      className="
+        group cursor-pointer max-w-96
+        rounded-2xl border border-strong
+        bg-background
+        p-4 shadow-sm hover:shadow-md
+        transition-all duration-200
+      "
     >
       {/* Header */}
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-semibold leading-tight truncate">{name}</h3>
-        <span
-          className={`px-1 py-1.5 text-xs font-bold rounded-full w-28 text-center ${statusColors[status]}`}
+      <div className="flex items-start justify-between gap-3 border-b pb-1">
+        <h3 className="text-base font-semibold leading-tight truncate">
+          {name}
+        </h3>
+
+        <div
+          className="flex items-center gap-1 text-xs whitespace-nowrap font-bold p-1 px-2 rounded-md text-muted"
         >
-          {status.replace("_", " ")}
-        </span>
+          <span className={`w-2 h-2 rounded-full ${statusMeta.dot} `} />
+          {statusMeta.label}
+        </div>
       </div>
-      <div className="divider"></div>
+
+
       {/* Description */}
       {description && (
-        <p
-          className="text-sm line-clamp-2 mb-4 indent-1"
-          style={{
-            lineHeight: "1.25rem",
-            minHeight: "2.5rem",
-          }}
-        >
+        <p className="indent-2 mt-1 text-sm text-muted line-clamp-2 leading-5 min-h-[2.5rem]">
           {description}
         </p>
       )}
 
-      {/* Dates */}
-      <div className="flex justify-between items-center px-1 text-sm  mb-2 ">
-        <span className="flex items-center gap-1">
-          <FaCalendarAlt /> <span className="font-medium"> Start:</span>
-          {start_date || "--/--/----"}
-        </span>
-        <span className="flex items-center gap-1 ml-4">
-          <FaFlagCheckered /> <span className="font-medium">Due:</span>
-          {end_date || "--/--/----"}
-        </span>
-      </div>
+      {/* Progress */}
+      <div className="mt-4">
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-2 rounded-full overlay-medium overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
 
-      {/* Progress bar */}
-      <div className="flex items-center w-full gap-3 mb-1">
-        <div className="flex-1 bg-[var(--color-dark-overlay)] h-2 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary rounded-full transition-all duration-500"
-            style={{ width: `${progress_rate}%` }}
-          />
-        </div>
-
-        <div
-          className={`text-xs  font-medium w-[30px] text-left ${
-            progress_rate.toFixed(0) === "100"
-              ? "text-[var(--color-success)]"
-              : "text-muted"
-          }`}
-        >
-          {progress_rate.toFixed(0) === "100"
-            ? "Done"
-            : `${progress_rate.toFixed(0)}%`}
+          <span
+            className={`text-xs font-medium w-10 text-right ${
+              progress === 100 ? "text-success" : "text-muted"
+            }`}
+          >
+            {progress === 100 ? "Done" : `${progress}%`}
+          </span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex justify-between items-center text-sm text-muted">
-        <div className="flex items-center gap-2">
-          <FaUserTie size={14} />
-          <span>{project_lead_name || "Unassigned"}</span>
+      <div className="mt-3 flex items-center justify-between text-xs text-muted">
+        <div className="flex items-center gap-1.5">
+          <FaUserTie size={12} />
+          <span className="truncate max-w-[120px]">
+            {project_lead_name || "Unassigned"}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
-          <FaCheckCircle size={14} color="var(--color-success)" />
+
+        <div className="flex items-center gap-1.5">
+          <FaCheckCircle size={12} className="text-success" />
           <span>
-            {completed_tasks}/{total_tasks} tasks
+            {completed_tasks}/{total_tasks}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <FaCalendarAlt size={12} />
+          <span>
+            {start_date || "--"} → {end_date || "--"}
           </span>
         </div>
       </div>

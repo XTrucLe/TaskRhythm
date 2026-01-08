@@ -92,7 +92,7 @@ export default function WorkspaceOverview() {
                 </div>
               </div>
 
-              <div className="flex-1 min-w-0">
+              <div className="absolute md:static right-2 md:flex-1 min-w-0">
                 <SearchBox
                   value={searches[currentTab] || ""}
                   onChange={(e) => setSearch(currentTab, e.target.value)}

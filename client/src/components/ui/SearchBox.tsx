@@ -28,20 +28,16 @@ function SearchBox({ placeholder, value, onChange }: SearchBoxProps) {
   const handleCollapse = (e: React.MouseEvent) => {
     e.stopPropagation();
     setExpanded(false);
-  };  
+  };
 
   return (
     <div className="relative flex justify-end w-full bg-[var(--color-background-mix)]">
       <div
         className={`
             relative flex items-center rounded-md bg-background
-            transition-all duration-300 ease-in-out
+            transition-all duration-300 ease-in-out border
             border-strong
-            ${
-              expanded
-                ? "w-full shadow-md"
-                : "w-10"
-            }
+            ${expanded ? "w-full shadow-md" : "w-10"}
             max-w-56 md:w-full
           `}
       >
